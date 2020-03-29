@@ -61,9 +61,10 @@ int trigo(int dir, int length, bool x){ //x or y
   return length*temp;
 }
 
-void trigoVec(int dir, int length, vec2* pos){ //x or y
-  pos->x+=trigo(dir, length, true);
-  pos->y+=trigo(dir, length, false);
+vec2 trigoVec(int dir, int length, vec2 pos){ //x or y
+  pos.x+=trigo(dir, length, true);
+  pos.y+=trigo(dir, length, false);
+  return pos;
 }
 
 

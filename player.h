@@ -1,31 +1,32 @@
 #ifndef _PLAYER_
 #define _PLAYER_
 
-#define SPEED_MAX 10
+#define SPEED_MAX 50
 
 #include "globals.h"
 #include "trigo.h"
-//#include "shot.h"
+#include "shot.h"
 
 class Player {
   public:
     vec2 pos;
     vec2 speed;    
     byte dir;
+    int coolDown;
+    Shot shots[SHOTS_MAX];
     //Player() : x(64),y(30),dir(0) {}
     Player(int x, int y, int dir){
       this->pos.x=x;
       this->pos.y=y;
       this->dir=dir;
+      this->coolDown=0;
       this->speed=vec2(0,0);
     }
     void Player::draw();
 };
 void Player::draw(){
   //Background ajust
-//  mapX+=trigo(this->dir,this->speed,true);
-//  mapY+=trigo(this->dir,this->speed,false);
-  mapCoord-=this->speed;
+  mapCoord-=(this->speed/10);
   if (0<=mapCoord.x){
     mapCoord.x=0;
     this->speed.x=0;
@@ -37,10 +38,27 @@ void Player::draw(){
   ab.fillCircle(pos.x,pos.y,4);
   ab.fillCircle(pos.x+trigo(dir,4,true),pos.y+trigo(dir,4,false),3);
   ab.fillCircle(pos.x+trigo(dir,4,true),pos.y+trigo(dir,4,false),2,0);
+  /*
   if (speed.x>0)
     speed.x--;
   if (speed.y>0)
-    speed.y--;  
+    speed.y--; 
+*/    
+    
+  //draw shots
+  for (int i=0;i<SHOTS_MAX;i++){
+    if (this->shots[i].actif>0){
+      this->shots[i].pos-=this->speed/10;
+      this->shots[i].draw();
+    }
+  }
+  if (this->coolDown>0)
+    this->coolDown--;
+    
+  //debug    
+  ab.setCursor(0,0);
+  ab.print(magn(this->speed));
+    
 }
 
 #endif

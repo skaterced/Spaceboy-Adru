@@ -49,13 +49,19 @@ vec2 operator-(vec2 lhs, const vec2 &rhs)
     return (lhs -= rhs);
 }
 
+vec2 operator/(vec2 lhs, const int &rhs)
+{
+    lhs.x /= rhs;
+    lhs.y /= rhs;
+    return lhs;
+}
+
 vec2 operator<<(vec2 lhs, const int &rhs)
 {
     lhs.x <<= rhs;
     lhs.y <<= rhs;
     return lhs;
 }
-
 vec2 operator>>(vec2 lhs, const int &rhs)
 {
     lhs.x >>= rhs;
@@ -63,5 +69,8 @@ vec2 operator>>(vec2 lhs, const int &rhs)
     return lhs;
 }
 
+int magn(vec2 a){
+  return sqrt(a.x*a.x+a.y*a.y);
+}
 
 #endif

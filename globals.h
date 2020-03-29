@@ -1,6 +1,7 @@
 #ifndef _GLOBALS_ 
 #define _GLOBALS_ 
 
+//#include "shot.h"
 #include "vec2.h"
 
 #include <Arduboy2.h>
