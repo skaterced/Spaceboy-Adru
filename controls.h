@@ -20,6 +20,7 @@ void controls(Player* p1){
     }
   }
   if (ab.pressed(UP_BUTTON)){
+    drawFlames(p1);
     if (ab.everyXFrames(2)){
       p1->speed+=trigoVec(p1->dir,3,vec2(0,0));
       if (magn(p1->speed)>SPEED_MAX) {
@@ -27,15 +28,19 @@ void controls(Player* p1){
       }
     }
   }
+  if (ab.pressed(DOWN_BUTTON)){
+    p1->speed=vec2(0,0);
+  }  
   if (ab.justPressed(A_BUTTON)){    //another weapons allows to hold fire button
     if (0==p1->coolDown){ 
       for (int i=0;i<SHOTS_MAX;i++){        
         if (0==p1->shots[i].actif){          
           p1->shots[i].actif=SHOT_DURATION;
           p1->coolDown=COOLDOWN;
-          p1->shots[i].pos=p1->pos+trigoVec(p1->dir,10,vec2(0,0));
+          //p1->shots[i].pos=p1->pos+trigoVec(p1->dir,10,vec2(0,0));
+          p1->shots[i].pos=p1->pos-mapCoord+trigoVec(p1->dir,10,vec2(0,0))+p1->speed/5;
           p1->shots[i].dir=p1->dir;
-          p1->shots[i].speed=p1->speed+trigoVec(p1->dir,5,vec2(0,0));
+          p1->shots[i].speed=p1->speed/5+trigoVec(p1->dir,6,vec2(0,0));
           i=99;
         }
       }

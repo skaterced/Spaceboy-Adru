@@ -3,8 +3,22 @@
 
 #include "vec2.h"
 
+#define NB_DIR 16
 
 #define LINE_LENGTH 10
+
+int trueDir(int dir){
+  if (0>dir)
+    dir+=NB_DIR;
+  if (dir>=NB_DIR)
+    dir-=NB_DIR;
+  return dir;
+}
+
+int invDir(int dir){
+  dir-=NB_DIR/2;
+  return trueDir(dir);
+}
 
 int trigo(int dir, int length, bool x){ //x or y
   float temp;

@@ -26,12 +26,12 @@ class Player {
 };
 void Player::draw(){
   //Background ajust
-  mapCoord-=(this->speed/10);
-  if (0<=mapCoord.x){
+  mapCoord-=(this->speed/5);
+  if (0<mapCoord.x){
     mapCoord.x=0;
     this->speed.x=0;
   }
-  if (0<=mapCoord.y){
+  if (0<mapCoord.y){
     mapCoord.y=0;
     this->speed.y=0;
   }
@@ -48,7 +48,7 @@ void Player::draw(){
   //draw shots
   for (int i=0;i<SHOTS_MAX;i++){
     if (this->shots[i].actif>0){
-      this->shots[i].pos-=this->speed/10;
+      //this->shots[i].pos-=this->speed/5;
       this->shots[i].draw();
     }
   }
@@ -59,6 +59,14 @@ void Player::draw(){
   ab.setCursor(0,0);
   ab.print(magn(this->speed));
     
+}
+
+void  drawFlames(Player* p1){
+  volatile bool burn;
+  vec2 temp=trigoVec(invDir(p1->dir),burn? 16:14,p1->pos);
+  drawVecLine(temp, trigoVec(trueDir(p1->dir+1),6,temp));
+  drawVecLine(temp, trigoVec(trueDir(p1->dir-1),6,temp));
+  burn=!burn;
 }
 
 #endif

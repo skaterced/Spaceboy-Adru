@@ -24,13 +24,9 @@ class Shot {
     void Shot::draw();
 };
 void Shot::draw(){
-  /*
-  ab.drawPixel(x,y);
-  this->x+=trigo(dir, 2, true);
-  this->y+=trigo(dir, 2, false);
-  */
+
   //vec2 temp=trigoVec(this->dir,2,this->pos);
-  drawVecLine(this->pos,trigoVec(this->dir,4,this->pos));
+  drawVecLine(this->pos+mapCoord,trigoVec(this->dir,4,this->pos+mapCoord));
   this->pos+=this->speed;  //trigoVec(this->dir,2,vec2(0,0));
   if (--this->actif<=0)
     this->actif=0;
@@ -42,4 +38,3 @@ void Shot::draw(){
 
 
 #endif
-
