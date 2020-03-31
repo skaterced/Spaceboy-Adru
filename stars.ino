@@ -30,7 +30,7 @@ void setup()
   ab.initRandomSeed();  
   
   pointB+=vec2(pointC);
-  mapCenter();
+  //mapCenter();
 
   putMeteor(1);
 }
@@ -50,6 +50,7 @@ void loop() {
   drawBackground(mapCoord.x,mapCoord.y, 3309);
   //drawMeteor(vec2(100,80),false);
   ship.draw();
+  ship.checkColision();
   
   ab.display();
   

@@ -21,7 +21,7 @@ int invDir(int dir){
 }
 
 int trigo(int dir, int length, bool x){ //x or y
-  float temp;
+  double temp;
   switch (dir){
     case 0:
       temp= x? 0:-0.9;

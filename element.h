@@ -30,7 +30,8 @@ void Element::draw(){
 class Meteor : public Element {
   public:
     void Meteor::draw() {
-      this->pos+=this->speed;
+      if (ab.everyXFrames(2))
+        this->pos+=this->speed;
       sprites.drawExternalMask(pos.x+mapCoord.x, pos.y+mapCoord.y, this->life<50? meteor_dmg:meteor, meteor_mask, 0,0);
     }
 };

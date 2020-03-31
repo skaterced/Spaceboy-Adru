@@ -35,6 +35,11 @@ struct vec2
   }
 };
 
+boolean operator!=(vec2 lhs, const vec2 &rhs)
+{    
+    return (!(lhs.x==rhs.x&&lhs.y==rhs.y));
+}
+
 vec2 operator+(vec2 lhs, const vec2 &rhs)
 {
     //vec2 t = lhs;
@@ -69,8 +74,9 @@ vec2 operator>>(vec2 lhs, const int &rhs)
     return lhs;
 }
 
+
 int magn(vec2 a){
-  return sqrt(a.x*a.x+a.y*a.y);
+  return sqrt((double)a.x*(double)a.x+(double)a.y*(double)a.y);
 }
 
 #endif

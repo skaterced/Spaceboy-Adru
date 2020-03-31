@@ -7,6 +7,7 @@
 #include "shot.h"
 
 void controls(Player* p1){
+
   if (ab.pressed(RIGHT_BUTTON)){
     if (ab.everyXFrames(2)){
       if (++p1->dir>15)
@@ -19,7 +20,7 @@ void controls(Player* p1){
         p1->dir=15;
     }
   }
-  if (ab.pressed(UP_BUTTON)){
+  if (ab.pressed(B_BUTTON)||ab.pressed(UP_BUTTON)){
     drawFlames(p1);
     if (ab.everyXFrames(2)){
       p1->speed+=trigoVec(p1->dir,3,vec2(0,0));
@@ -29,8 +30,18 @@ void controls(Player* p1){
     }
   }
   if (ab.pressed(DOWN_BUTTON)){
-    p1->speed=vec2(0,0);
-  }  
+    //p1->speed=vec2(0,0);
+    if (magn(p1->speed)<=1) {
+      p1->speed=vec2(0,0);
+    }
+    else {
+      drawRetroFlames(p1);      
+      if (ab.everyXFrames(2)){
+        p1->speed.x-=abs(p1->speed.x)/p1->speed.x;
+        p1->speed.y-=abs(p1->speed.y)/p1->speed.y;
+      }
+    }
+  }
   if (ab.justPressed(A_BUTTON)){    //another weapons allows to hold fire button
     if (0==p1->coolDown){ 
       for (int i=0;i<SHOTS_MAX;i++){        
@@ -38,14 +49,38 @@ void controls(Player* p1){
           p1->shots[i].actif=SHOT_DURATION;
           p1->coolDown=COOLDOWN;
           //p1->shots[i].pos=p1->pos+trigoVec(p1->dir,10,vec2(0,0));
-          p1->shots[i].pos=p1->pos-mapCoord+trigoVec(p1->dir,10,vec2(0,0))+p1->speed/5;
+          p1->shots[i].pos=p1->pos-mapCoord+trigoVec(p1->dir,10,vec2(0,0))+p1->speed/SPEED_DIVISOR;
           p1->shots[i].dir=p1->dir;
-          p1->shots[i].speed=p1->speed/5+trigoVec(p1->dir,6,vec2(0,0));
+          p1->shots[i].speed=p1->speed/SPEED_DIVISOR+trigoVec(p1->dir,6,vec2(0,0));
           i=99;
         }
       }
     }
   }
-}
+  
+/*
+  //for colision test
+  if (ab.pressed(A_BUTTON)){
+    if (ab.everyXFrames(2)){
+      if (++p1->dir>15)
+        p1->dir=0;
+    }
+  }
+  if (ab.pressed(B_BUTTON)){
+    if (ab.everyXFrames(2)){
+      if (--p1->dir>127)
+        p1->dir=15;
+    }
+  }
+  if (ab.pressed(UP_BUTTON))
+    p1->pos.y--;
+  if (ab.pressed(DOWN_BUTTON))
+    p1->pos.y++;
+  if (ab.pressed(LEFT_BUTTON))
+    p1->pos.x--;
+  if (ab.pressed(RIGHT_BUTTON))
+    p1->pos.x++;
+*/
 
+}
 #endif
