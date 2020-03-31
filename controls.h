@@ -59,7 +59,7 @@ void controls(Player* p1){
   }
   
 /*
-  //for colision test
+  //for collision test
   if (ab.pressed(A_BUTTON)){
     if (ab.everyXFrames(2)){
       if (++p1->dir>15)

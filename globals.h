@@ -6,6 +6,8 @@
 
 #include <Arduboy2.h>
 
+#define SPEED_DIVISOR 15
+
 vec2 mapCoord(0,0);
 
 Arduboy2 ab;

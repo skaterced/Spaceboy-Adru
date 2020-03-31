@@ -2,17 +2,18 @@
 #define _PLAYER_
 
 #define SPEED_MAX 50
-#define SPEED_DIVISOR 8
+//#define SPEED_DIVISOR 8
 
 #include "globals.h"
 #include "trigo.h"
 #include "shot.h"
 #include "background.h"
 
-class Player {
+class Player {       
   public:
     vec2 pos;
     vec2 speed;    
+    vec2 reste;
     byte dir;
     int coolDown;
     Shot shots[SHOTS_MAX];
@@ -23,14 +24,17 @@ class Player {
       this->dir=dir;
       this->coolDown=0;
       this->speed=vec2(0,0);
+      reste=vec2(0,0);      
     }
     void Player::draw();
-    void Player::checkColision();
+    void Player::checkcollision();
+    void Player::checkShotscollision();
 };
 void Player::draw(){
   //Background ajust
-  mapCoord-=(this->speed/SPEED_DIVISOR);
-
+  mapCoord-=((this->speed+this->reste)/SPEED_DIVISOR);
+  this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
+  
   if (mapCoord.x>0){  // Map limits
     mapCoord.x=0;
     this->speed.x=0;
@@ -57,21 +61,25 @@ void Player::draw(){
     if (this->shots[i].actif>0){      
       this->shots[i].draw();
     }
-  }
-  
+  }  
   if (this->coolDown>0)
     this->coolDown--;
     
   //debug    
   //ab.setCursor(0,0);
-  //ab.print(magn(this->speed));
-    
+  //ab.print(magn(this->speed));    
 }
-void Player::checkColision(){
-  vec2 temp=MetColision(this->pos);
+void Player::checkcollision(){
+  vec2 temp=Metcollision(this->pos,6,1,1);
   if (temp!=vec2(0,0)){
     ab.drawCircle(this->pos.x,this->pos.y,20);
     this->speed=temp;
+  }
+}
+void Player::checkShotscollision(){
+  vec2 temp=Metcollision(this->pos,0,0,2);
+  if (temp!=vec2(0,0)){
+   //sfiherauea 
   }
 }
 

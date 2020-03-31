@@ -50,7 +50,7 @@ void loop() {
   drawBackground(mapCoord.x,mapCoord.y, 3309);
   //drawMeteor(vec2(100,80),false);
   ship.draw();
-  ship.checkColision();
+  ship.checkcollision();
   
   ab.display();
   

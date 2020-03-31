@@ -25,7 +25,7 @@ void putMeteor(int nb){
     nb=NBMAX_METEOR;
   for (int i=0; i<nb; i++){
     met[i].actif=true;
-    met[i].pos.x=80;  //ok, maybe not rand... 
+    met[i].pos.x=120;  //ok, maybe not rand... 
     met[i].pos.y=50;
     met[i].life=100;
     //met[i].speed=vec2(1,0);
@@ -69,15 +69,19 @@ void drawBackground(int x, int y, int RandSeed){
     }
 }
 
-vec2 MetColision(vec2 shipPos){
+vec2 Metcollision(vec2 objPos, int radius, int force, int dmg){ //Circular collision check. objPos must be previously centered. 
   vec2 temp;
   for (int i=0; i<NBMAX_METEOR; i++){
     if (met[i].actif){
       temp=met[i].pos+mapCoord+vec2(6,6);
-      if (magn(shipPos-temp)<12){
+      if ((magn(objPos-temp)!=-1)&&(magn(objPos-temp)<(radius+6))){
       //if ((temp.x-7<shipPos.x&&shipPos.x<temp.x+19)&&(temp.y-7<shipPos.y&&shipPos.y<temp.y+19)){ // 22 = 12(image width/heigth)+10(ship radius)
         //ab.drawCircle(shipPos.x,shipPos.y,20);
-        return shipPos-temp;
+        met[i].life-=dmg; //todo check if alive and draw lifeBar
+        if (force>0){
+          met[i].speed-=temp*force;
+        }
+        return objPos-temp;
       }
     }
   }

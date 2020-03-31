@@ -60,7 +60,18 @@ vec2 operator/(vec2 lhs, const int &rhs)
     lhs.y /= rhs;
     return lhs;
 }
-
+vec2 operator*(vec2 lhs, const int &rhs)
+{
+    lhs.x *= rhs;
+    lhs.y *= rhs;
+    return lhs;
+}
+vec2 operator%(vec2 lhs, const int &rhs)
+{
+    lhs.x % rhs;
+    lhs.y % rhs;
+    return lhs;
+}
 vec2 operator<<(vec2 lhs, const int &rhs)
 {
     lhs.x <<= rhs;
@@ -76,7 +87,10 @@ vec2 operator>>(vec2 lhs, const int &rhs)
 
 
 int magn(vec2 a){
-  return sqrt((double)a.x*(double)a.x+(double)a.y*(double)a.y);
+  if (abs(a.x)>120||abs(a.y)>120)
+    return -1;
+  //return sqrt((double)a.x*(double)a.x+(double)a.y*(double)a.y);
+  return sqrt(a.x*a.x+a.y*a.y);
 }
 
 #endif
