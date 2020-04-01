@@ -34,11 +34,12 @@ void loop() {
   ab.pollButtons();
   ab.clear();
 
-  controls(&ship);
+  
   //drawStars(mapCoord.x,mapCoord.y, 3309);
   drawBackground(mapCoord.x,mapCoord.y, 3309);
   //drawMeteor(vec2(100,80),false);
   ship.draw();
+  controls(&ship);
   ship.checkcollision();
   ship.checkShotscollision();
   

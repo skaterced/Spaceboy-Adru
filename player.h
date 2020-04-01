@@ -38,20 +38,24 @@ void Player::draw(){
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
   
   if (mapCoord.x>0){  // Map limits
+    pos.x-=mapCoord.x;
     mapCoord.x=0;
-    this->speed.x=0;
+    //this->speed.x=0;
   }
   if (mapCoord.y>0){
+    pos.y-=mapCoord.y;
     mapCoord.y=0;
-    this->speed.y=0;
+    //this->speed.y=0;
   }
   if (mapCoord.x<-(SECTOR_COLUMNS-1)*IMAGE_WIDTH){
+    pos.x+=mapCoord.x-(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
     mapCoord.x=-(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
-    this->speed.x=0;
+    //this->speed.x=0;
   }
   if (mapCoord.y<-(SECTOR_LINES-1)*IMAGE_HEIGHT){
+    pos.y+=mapCoord.y-(SECTOR_LINES-1)*IMAGE_HEIGHT;
     mapCoord.y=-(SECTOR_LINES-1)*IMAGE_HEIGHT;
-    this->speed.y=0;
+    //this->speed.y=0;
   }
 /*    
   //Ship V1 "Bubble"
@@ -113,7 +117,7 @@ void Player::checkShotscollision(){
 }
 
 void  drawFlames(Player* p1){
-  vec2 temp=trigoVec(invDir(p1->dir),p1->burn? 16:14,p1->pos);
+  vec2 temp=trigoVec(invDir(p1->dir),p1->burn? 14:12,p1->pos);
   drawVecLine(temp, trigoVec(trueDir(p1->dir+1),6,temp));
   drawVecLine(temp, trigoVec(trueDir(p1->dir-1),6,temp));
   if(ab.everyXFrames(3))
