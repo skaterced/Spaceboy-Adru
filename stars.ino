@@ -17,7 +17,7 @@
 //byte frame = 0;
 //char cdir = 'T'; // T, L, R, A
 
-Player ship(64,32,0);
+Player ship(64,32,3);
 
 vec2 pointA(10,20);
 vec2 pointB(30,20);
@@ -51,6 +51,7 @@ void loop() {
   //drawMeteor(vec2(100,80),false);
   ship.draw();
   ship.checkcollision();
+  ship.checkShotscollision();
   
   ab.display();
   

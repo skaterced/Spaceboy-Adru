@@ -14,22 +14,22 @@ class Shot {
     vec2 pos;
     vec2 speed;
     byte dir;
-    int actif;
+    int active;
     Shot() {
       pos=vec2(0,0);
       speed=vec2(0,0);
       dir=0;
-      actif=false;
+      active=false;
     }  
     void Shot::draw();
 };
 void Shot::draw(){
 
   //vec2 temp=trigoVec(this->dir,2,this->pos);
-  drawVecLine(this->pos+mapCoord,trigoVec(this->dir,4,this->pos+mapCoord));
+  drawVecLine(this->pos/*+mapCoord*/,trigoVec(this->dir,4,this->pos/*+mapCoord*/));
   this->pos+=this->speed;  //trigoVec(this->dir,2,vec2(0,0));
-  if (--this->actif<=0)
-    this->actif=0;
+  if (--this->active<=0)
+    this->active=0;
   /*
   ab.display();
   delay(130);

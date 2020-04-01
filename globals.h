@@ -14,3 +14,11 @@ Arduboy2 ab;
 Sprites sprites;
 
 #endif
+
+/*  
+ *   //for debugging purpose.
+ *   
+      ab.setCursor(0,0);
+      ab.println(temp);
+      ab.println(temp2);
+  */

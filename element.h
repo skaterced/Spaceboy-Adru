@@ -13,14 +13,14 @@ class Element {
     vec2 reste;
     byte dir; //utile?
     int life;
-    int actif;
+    int active;
     Element() {
       pos=vec2(0,0);
       speed=vec2(0,0);
       reste=vec2(0,0);
       dir=0;
       int life=100;
-      actif=false;
+      active=false;
     }  
     void Element::draw();
 };
@@ -32,9 +32,8 @@ void Element::draw(){
 class Meteor : public Element {
   public:
     void Meteor::draw() {
-      if (ab.everyXFrames(2))
-        this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
-        this->reste=(this->reste)%SPEED_DIVISOR;
+      this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
+      this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
       sprites.drawExternalMask(pos.x+mapCoord.x, pos.y+mapCoord.y, this->life<50? meteor_dmg:meteor, meteor_mask, 0,0);
     }
 };

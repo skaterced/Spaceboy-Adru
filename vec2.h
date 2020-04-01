@@ -68,8 +68,8 @@ vec2 operator*(vec2 lhs, const int &rhs)
 }
 vec2 operator%(vec2 lhs, const int &rhs)
 {
-    lhs.x % rhs;
-    lhs.y % rhs;
+    lhs.x %= rhs;
+    lhs.y %= rhs;
     return lhs;
 }
 vec2 operator<<(vec2 lhs, const int &rhs)
