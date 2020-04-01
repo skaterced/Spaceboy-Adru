@@ -9,19 +9,11 @@
 #include "element.h"
 
 
-
-//#define CHAR_WIDTH 16
-//define CHAR_HEIGHT 16
-//#define X_MAX (WIDTH - CHAR_WIDTH)
-//#define Y_MAX (HEIGHT - CHAR_HEIGHT)
-//byte frame = 0;
-//char cdir = 'T'; // T, L, R, A
-
 Player ship(64,32,4);
 
-vec2 pointA(10,20);
-vec2 pointB(30,20);
-vec2 pointC(5,7);
+//vec2 pointA(10,20);
+//vec2 pointB(30,20);
+//vec2 pointC(5,7);
 
 void setup()
 {  
@@ -29,7 +21,7 @@ void setup()
   ab.setFrameRate(60);
   ab.initRandomSeed();  
   
-  pointB+=vec2(pointC);
+  //pointB+=vec2(pointC);
   //mapCenter();
 
   putMeteor(1);
@@ -41,10 +33,7 @@ void loop() {
   }
   ab.pollButtons();
   ab.clear();
-/*
-  ab.drawLine(pointA.x,pointA.y,pointB.x,pointB.y);
-  drawVecLine(pointA+vec2(0,1),pointB+vec2(0,1));
-  */
+
   controls(&ship);
   //drawStars(mapCoord.x,mapCoord.y, 3309);
   drawBackground(mapCoord.x,mapCoord.y, 3309);
@@ -53,6 +42,11 @@ void loop() {
   ship.checkcollision();
   ship.checkShotscollision();
   
+/*
+  for (int i=0; i<NB_DIR; i++){
+    drawVecLine(pointB,trigoVec(i,20,pointB));
+  }
+  */
   ab.display();
   
 }

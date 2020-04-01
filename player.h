@@ -53,32 +53,33 @@ void Player::draw(){
     mapCoord.y=-(SECTOR_LINES-1)*IMAGE_HEIGHT;
     this->speed.y=0;
   }
-    
+/*    
   //Ship V1 "Bubble"
   ab.fillCircle(pos.x,pos.y,4);
   ab.fillCircle(pos.x+trigo(dir,4,true),pos.y+trigo(dir,4,false),3);
   ab.fillCircle(pos.x+trigo(dir,4,true),pos.y+trigo(dir,4,false),2,0);
   ab.drawPixel(pos.x+trigo(trueDir(dir+1),5,true),pos.y+trigo(trueDir(dir+1),5,false)); //litle reflexion ^^
- 
+ */
   /*
   //Ship V1.5 "Lander"
   ab.fillCircle(pos.x,pos.y,4);
   ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,4,false),3);
   ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,4,false),2,0);
   ab.drawPixel(pos.x+trigo(trueDir(dir+1),6,true),pos.y+trigo(trueDir(dir+1),6,false));
-  vec2  temp=trigoVec(trueDir(dir+5),7,pos);
-  drawVecLine(temp, trigoVec(invDir(dir),5,temp));
-  temp=trigoVec(trueDir(dir-5),7,pos);
-  drawVecLine(temp, trigoVec(invDir(dir),5,temp));
+  vec2  temp=trigoVec(trueDir(dir+6),6,pos);
+  drawVecLine(temp, trigoVec(trueDir(dir+7),3,temp));
+  temp=trigoVec(trueDir(dir-6),6,pos);
+  drawVecLine(temp, trigoVec(trueDir(dir-7),3,temp));
 */
-/*
+
  //Ship V2 "Half Moon"  
   ab.fillCircle(pos.x,pos.y,5);
   ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),3);
   ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),2,0);
   ab.drawPixel(pos.x+trigo(trueDir(dir+1),6,true),pos.y+trigo(trueDir(dir+1),6,false));
   ab.fillCircle(pos.x+trigo(trueDir(dir+8),6,true),pos.y+trigo(trueDir(dir+8),6,false),4,0);
-  */
+  drawVecLine(pos,trigoVec(invDir(dir),4,pos));
+  
   
   //draw shots
   for (int i=0;i<SHOTS_MAX;i++){
@@ -152,3 +153,4 @@ void  drawRetroFlames(Player* p1){
 }
 
 #endif
+

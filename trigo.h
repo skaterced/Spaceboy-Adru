@@ -21,64 +21,66 @@ int invDir(int dir){
 }
 
 int trigo(int dir, int length, bool x){ //x or y
-  int temp;
-  float cos[NB_DIR]={0,0.2,0.5,0.8,0.9,0.8,0.5,0.2,0,-0.2,-0.5,-0.8,-0.9,-0.8,-0.5,-0.2};
+  float temp;
+  /*
+  float cos[NB_DIR]={0,0.36,0.7,0.9,0.9,0.9,0.7,0.3,0,-0.3,-0.7,-0.9,-0.9,-0.9,-0.7,-0.3};
   temp=dir+x?0:12;
   if (temp>NB_DIR)
     temp-=NB_DIR;
-    
-  /*
+*/    
+
   switch (dir){
     case 0:
-      temp= x? 0:-0.9;
+      temp= x? 0:-1;
     break;
     case 1:
-      temp= x? 0.2:-0.8;
+      temp= x? 0.3:-0.9;
     break;
     case 2:
-      temp= x? 0.5:-0.5;
+      temp= x? 0.7:-0.7;
     break;    
     case 3:
-      temp= x? 0.8:-0.2;
+      temp= x? 0.9:-0.3;
     break;
     case 4:
-      temp= x? 0.9:0;
+      temp= x? 1:0;
     break;
     case 5:
-      temp= x? 0.8:0.2;
+      temp= x? 0.9:0.3;
     break;
     case 6:
-      temp= x? 0.5:0.5;
+      temp= x? 0.7:0.7;
     break;     
     case 7:
-      temp= x? 0.2:0.8;
+      temp= x? 0.3:0.9;
     break;
     case 8:
-      temp= x? 0:0.9;
+      temp= x? 0:1;
     break;
     case 9:
-      temp= x? -0.2:0.8;
+      temp= x? -0.3:0.9;
     break;
     case 10:
-      temp= x? -0.5:0.5;
+      temp= x? -0.7:0.7;
     break; 
     case 11:
-      temp= x? -0.8:0.2;
+      temp= x? -0.9:0.3;
     break;
     case 12:
-      temp= x? -0.9:0;
+      temp= x? -1:0;
     break;
     case 13:
-      temp= x? -0.8:-0.2;
+      temp= x? -0.9:-0.3;
     break;
     case 14:
-      temp= x? -0.5:-0.5;
+      temp= x? -0.7:-0.7;
     break;     
     case 15:
-      temp= x? -0.2:-0.8;
+      temp= x? -0.3:-0.9;
     break;    
-  }*/
-  return (int)((float)length*cos[temp]);
+  }
+  return length*temp;
+  //return (int)((float)length*cos[temp]);
 }
 
 vec2 trigoVec(int dir, int length, vec2 pos){ //x or y
@@ -86,6 +88,5 @@ vec2 trigoVec(int dir, int length, vec2 pos){ //x or y
   pos.y+=trigo(dir, length, false);
   return pos;
 }
-
 
 #endif
