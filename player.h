@@ -54,10 +54,32 @@ void Player::draw(){
     this->speed.y=0;
   }
     
+  //Ship V1 "Bubble"
   ab.fillCircle(pos.x,pos.y,4);
   ab.fillCircle(pos.x+trigo(dir,4,true),pos.y+trigo(dir,4,false),3);
   ab.fillCircle(pos.x+trigo(dir,4,true),pos.y+trigo(dir,4,false),2,0);
-    
+  ab.drawPixel(pos.x+trigo(trueDir(dir+1),5,true),pos.y+trigo(trueDir(dir+1),5,false)); //litle reflexion ^^
+ 
+  /*
+  //Ship V1.5 "Lander"
+  ab.fillCircle(pos.x,pos.y,4);
+  ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,4,false),3);
+  ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,4,false),2,0);
+  ab.drawPixel(pos.x+trigo(trueDir(dir+1),6,true),pos.y+trigo(trueDir(dir+1),6,false));
+  vec2  temp=trigoVec(trueDir(dir+5),7,pos);
+  drawVecLine(temp, trigoVec(invDir(dir),5,temp));
+  temp=trigoVec(trueDir(dir-5),7,pos);
+  drawVecLine(temp, trigoVec(invDir(dir),5,temp));
+*/
+/*
+ //Ship V2 "Half Moon"  
+  ab.fillCircle(pos.x,pos.y,5);
+  ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),3);
+  ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),2,0);
+  ab.drawPixel(pos.x+trigo(trueDir(dir+1),6,true),pos.y+trigo(trueDir(dir+1),6,false));
+  ab.fillCircle(pos.x+trigo(trueDir(dir+8),6,true),pos.y+trigo(trueDir(dir+8),6,false),4,0);
+  */
+  
   //draw shots
   for (int i=0;i<SHOTS_MAX;i++){
     if (this->shots[i].active>0){      
@@ -81,7 +103,7 @@ void Player::checkcollision(){
 void Player::checkShotscollision(){
   for (int i=0; i<SHOTS_MAX; i++){
     if (shots[i].active){
-      vec2 temp=Metcollision(this->pos,0,0,2);
+      vec2 temp=Metcollision(shots[i].pos,0,0,2);
       if (temp!=vec2(0,0)){
         shots[i].active=false;
       }

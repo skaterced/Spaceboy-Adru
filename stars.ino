@@ -17,7 +17,7 @@
 //byte frame = 0;
 //char cdir = 'T'; // T, L, R, A
 
-Player ship(64,32,3);
+Player ship(64,32,4);
 
 vec2 pointA(10,20);
 vec2 pointB(30,20);

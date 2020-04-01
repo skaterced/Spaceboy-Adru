@@ -21,7 +21,13 @@ int invDir(int dir){
 }
 
 int trigo(int dir, int length, bool x){ //x or y
-  double temp;
+  int temp;
+  float cos[NB_DIR]={0,0.2,0.5,0.8,0.9,0.8,0.5,0.2,0,-0.2,-0.5,-0.8,-0.9,-0.8,-0.5,-0.2};
+  temp=dir+x?0:12;
+  if (temp>NB_DIR)
+    temp-=NB_DIR;
+    
+  /*
   switch (dir){
     case 0:
       temp= x? 0:-0.9;
@@ -71,8 +77,8 @@ int trigo(int dir, int length, bool x){ //x or y
     case 15:
       temp= x? -0.2:-0.8;
     break;    
-  }
-  return length*temp;
+  }*/
+  return (int)((float)length*cos[temp]);
 }
 
 vec2 trigoVec(int dir, int length, vec2 pos){ //x or y
