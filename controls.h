@@ -42,6 +42,11 @@ void controls(Player* p1){
       }
     }
   }
+  if (ab.pressed(A_BUTTON)&&ab.pressed(B_BUTTON)&&ab.pressed(LEFT_BUTTON)&&ab.pressed(RIGHT_BUTTON)){ //secret warp (
+    p1->pos=vec2(64,32);
+    mapCoord=vec2(0,0);    
+  }
+  
   if (ab.justPressed(A_BUTTON)){    //another weapons allows to hold fire button
     if (0==p1->coolDown){ 
       for (int i=0;i<SHOTS_MAX;i++){        

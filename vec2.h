@@ -85,7 +85,6 @@ vec2 operator>>(vec2 lhs, const int &rhs)
     return lhs;
 }
 
-
 int magn(vec2 a){
   if (abs(a.x)>120||abs(a.y)>120)
     return -1;

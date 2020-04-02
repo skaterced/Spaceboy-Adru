@@ -20,7 +20,7 @@ int invDir(int dir){
   return trueDir(dir);
 }
 
-int trigo(int dir, int length, bool x){ //x or y
+int trigo(int dir, int length, bool x){ // to get the coordinate of a 2nd point with a direction
   float temp;
   /*
   float cos[NB_DIR]={0,0.36,0.7,0.9,0.9,0.9,0.7,0.3,0,-0.3,-0.7,-0.9,-0.9,-0.9,-0.7,-0.3};
@@ -28,7 +28,6 @@ int trigo(int dir, int length, bool x){ //x or y
   if (temp>NB_DIR)
     temp-=NB_DIR;
 */    
-
   switch (dir){
     case 0:
       temp= x? 0:-1;
@@ -87,6 +86,56 @@ vec2 trigoVec(int dir, int length, vec2 pos){ //x or y
   pos.x+=trigo(dir, length, true);
   pos.y+=trigo(dir, length, false);
   return pos;
+}
+
+int trigoInv(vec2 a, vec2 b){ //to get the direction from a to b
+  if (a.x==b.x){ //to avoid /0
+    if (a.y>=b.y)
+      return 0;
+    else
+      return NB_DIR/2;
+  }
+  float temp=(abs(a.y-b.y)/abs(a.x-b.x));
+  if (temp>5){
+    if (a.y>=b.y)
+      return 0;
+    else
+      return 8;
+  }
+  else if (temp>1.25){
+    if (a.y>=b.y){
+      if (a.x>b.x){ return 15;}
+      else{ return 1; }
+    }     
+    else
+      if (a.x>b.x){ return 9;}
+      else{ return 7; }
+  }
+  else if (temp>0.56){
+    if (a.y>=b.y){
+      if (a.x>b.x){ return 14;}
+      else{ return 2; }
+    }     
+    else
+      if (a.x>b.x){ return 10;}
+      else{ return 6; }
+  }
+  else if (temp>0.3){
+    if (a.y>=b.y){
+      if (a.x>b.x){ return 13;}
+      else{ return 3; }
+    }     
+    else
+      if (a.x>b.x){ return 11;}
+      else{ return 5; }
+  }
+  else {
+    if (a.y>=b.y){
+      if (a.x>b.x){ return 12;}
+      else{ return 4; }
+    }     
+  }   
+
 }
 
 #endif

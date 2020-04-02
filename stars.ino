@@ -11,8 +11,8 @@
 
 Player ship(64,32,4);
 
-//vec2 pointA(10,20);
-//vec2 pointB(30,20);
+vec2 pointA(10,20);
+vec2 pointB(30,20);
 //vec2 pointC(5,7);
 
 void setup()
@@ -24,8 +24,12 @@ void setup()
   //pointB+=vec2(pointC);
   mapCenter();
 
-  putMeteor(vec2(300,100));
-  putMeteor(vec2(500,10));
+  putMeteor(vec2(100,300));
+  putMeteor(vec2(10,500));
+  putEnnemis(vec2(50,0),vec2(0,10));
+  putEnnemis(vec2(70,0),vec2(0,10));
+  putEnnemis(vec2(90,0),vec2(0,10));
+  putEnnemis(vec2(100,0),vec2(0,10));
 }
 
 void loop() {
@@ -45,10 +49,11 @@ void loop() {
   ship.checkShotscollision();
   
 /*
-  for (int i=0; i<NB_DIR; i++){
-    drawVecLine(pointB,trigoVec(i,20,pointB));
-  }
+  ab.drawCircle(pointA.x,pointA.y,2);
+  ab.drawCircle(pointB.x,pointB.y,2);
+  drawVecLine(pointA,trigoVec(trigoInv(pointA,pointB),20,pointA));
   */
+  
   ab.display();
   
 }

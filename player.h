@@ -1,7 +1,7 @@
 #ifndef _PLAYER_
 #define _PLAYER_
 
-#define SPEED_MAX 50
+#define SPEED_MAX 100
 //#define SPEED_DIVISOR -> in globals.h
 
 #include "globals.h"
@@ -51,7 +51,7 @@ void Player::draw(){
     }
   }  
   else if (pos.x>64){
-    int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT;
+    int temp = -(SECTOR_COLUMNS-1)*IMAGE_WIDTH+64;
     if (mapCoord.x-(pos.x-64)>temp){
       mapCoord.x-=(pos.x-64);
       pos.x=64;
@@ -64,7 +64,7 @@ void Player::draw(){
   
   if (pos.y<32){
     //int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT);
-    if (mapCoord.x-(pos.y-32)<0){
+    if (mapCoord.y-(pos.y-32)<0){
       mapCoord.y-=(pos.y-32);
       pos.y=32;
     }
@@ -75,7 +75,7 @@ void Player::draw(){
     }
   }  
   else if (pos.y>32){
-    int temp = -(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
+    int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT+32;
     if (mapCoord.y-(pos.y-32)>temp){
       mapCoord.y-=(pos.y-32);
       pos.y=32;
