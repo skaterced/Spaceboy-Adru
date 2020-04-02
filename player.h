@@ -2,7 +2,7 @@
 #define _PLAYER_
 
 #define SPEED_MAX 50
-//#define SPEED_DIVISOR 8
+//#define SPEED_DIVISOR -> in globals.h
 
 #include "globals.h"
 #include "trigo.h"
@@ -33,30 +33,90 @@ class Player {
     void Player::checkShotscollision();
 };
 void Player::draw(){
-  //Background ajust
-  mapCoord-=((this->speed+this->reste)/SPEED_DIVISOR);
+
+  pos+=((this->speed+this->reste)/SPEED_DIVISOR);
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
+        
+  //Background ajust
+  if (pos.x<64){
+    //int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT);
+    if (mapCoord.x-(pos.x-64)<0){
+      mapCoord.x-=(pos.x-64);
+      pos.x=64;
+    }
+    else{      
+      //int temp=mapcoord.x-(pos.x-64);
+      pos.x+=mapCoord.x;
+      mapCoord.x=0;      
+    }
+  }  
+  else if (pos.x>64){
+    int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT;
+    if (mapCoord.x-(pos.x-64)>temp){
+      mapCoord.x-=(pos.x-64);
+      pos.x=64;
+    }
+    else{      
+      pos.x+=mapCoord.x-temp;
+      mapCoord.x=temp;          
+    }      
+  }
   
-  if (mapCoord.x>0){  // Map limits
-    pos.x-=mapCoord.x;
-    mapCoord.x=0;
-    //this->speed.x=0;
+  if (pos.y<32){
+    //int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT);
+    if (mapCoord.x-(pos.y-32)<0){
+      mapCoord.y-=(pos.y-32);
+      pos.y=32;
+    }
+    else{      
+      //int temp=mapcoord.x-(pos.y-32);
+      pos.y+=mapCoord.y;
+      mapCoord.y=0;      
+    }
+  }  
+  else if (pos.y>32){
+    int temp = -(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
+    if (mapCoord.y-(pos.y-32)>temp){
+      mapCoord.y-=(pos.y-32);
+      pos.y=32;
+    }
+    else{      
+      pos.y+=mapCoord.y-temp;
+      mapCoord.y=temp;          
+    }      
+  }  
+
+  
+/* 
+    mapCoord-=((this->speed+this->reste)/SPEED_DIVISOR);
+    this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
+  
+    if (mapCoord.x>0){  // Map limits
+      pos.x-=mapCoord.x;
+      mapCoord.x=0;
+      //this->speed.x=0;
+    }
+    if (mapCoord.y>0){
+      pos.y-=mapCoord.y;
+      mapCoord.y=0;
+      //this->speed.y=0;
+    }
+    if (mapCoord.x<-(SECTOR_COLUMNS-1)*IMAGE_WIDTH){
+      pos.x+=mapCoord.x-(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
+      mapCoord.x=-(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
+      //this->speed.x=0;
+    }
+    if (mapCoord.y<-(SECTOR_LINES-1)*IMAGE_HEIGHT){
+      pos.y+=mapCoord.y-(SECTOR_LINES-1)*IMAGE_HEIGHT;
+      mapCoord.y=-(SECTOR_LINES-1)*IMAGE_HEIGHT;
+      //this->speed.y=0;
+    }
   }
-  if (mapCoord.y>0){
-    pos.y-=mapCoord.y;
-    mapCoord.y=0;
-    //this->speed.y=0;
+  else{
+    
   }
-  if (mapCoord.x<-(SECTOR_COLUMNS-1)*IMAGE_WIDTH){
-    pos.x+=mapCoord.x-(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
-    mapCoord.x=-(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
-    //this->speed.x=0;
-  }
-  if (mapCoord.y<-(SECTOR_LINES-1)*IMAGE_HEIGHT){
-    pos.y+=mapCoord.y-(SECTOR_LINES-1)*IMAGE_HEIGHT;
-    mapCoord.y=-(SECTOR_LINES-1)*IMAGE_HEIGHT;
-    //this->speed.y=0;
-  }
+*/
+  
 /*    
   //Ship V1 "Bubble"
   ab.fillCircle(pos.x,pos.y,4);
@@ -157,4 +217,3 @@ void  drawRetroFlames(Player* p1){
 }
 
 #endif
-

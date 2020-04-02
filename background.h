@@ -24,15 +24,17 @@
 
 Meteor met[NBMAX_METEOR];
 
-void putMeteor(int nb){
-  if (nb>NBMAX_METEOR)
-    nb=NBMAX_METEOR;
-  for (int i=0; i<nb; i++){
-    met[i].active=true;
-    met[i].pos.x=120;  //ok, maybe not rand... 
-    met[i].pos.y=50;
-    met[i].life=100;
-    //met[i].speed=vec2(1,0);
+void putMeteor(vec2 pos){
+
+  for (int i=0; i<NBMAX_METEOR; i++){
+    if (!met[i].active){
+      met[i].active=true;
+      met[i].pos=pos;  //ok, maybe not rand... 
+      //met[i].pos.y=50;
+      met[i].life=100;
+      met[i].speed=vec2(1,0);
+      return 0;
+    }
   }
 }
 

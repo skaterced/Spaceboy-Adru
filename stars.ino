@@ -22,9 +22,10 @@ void setup()
   ab.initRandomSeed();  
   
   //pointB+=vec2(pointC);
-  //mapCenter();
+  mapCenter();
 
-  putMeteor(1);
+  putMeteor(vec2(300,100));
+  putMeteor(vec2(500,10));
 }
 
 void loop() {
