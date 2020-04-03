@@ -95,7 +95,7 @@ int trigoInv(vec2 a, vec2 b){ //to get the direction from a to b
     else
       return NB_DIR/2;
   }
-  float temp=(abs(a.y-b.y)/abs(a.x-b.x));
+  float temp=((float)abs(a.y-b.y)/(float)abs(a.x-b.x));
   if (temp>5){
     if (a.y>=b.y)
       return 0;
@@ -120,7 +120,7 @@ int trigoInv(vec2 a, vec2 b){ //to get the direction from a to b
       if (a.x>b.x){ return 10;}
       else{ return 6; }
   }
-  else if (temp>0.3){
+  else if (temp>0.2){
     if (a.y>=b.y){
       if (a.x>b.x){ return 13;}
       else{ return 3; }

@@ -11,9 +11,9 @@
 
 Player ship(64,32,4);
 
-vec2 pointA(10,20);
-vec2 pointB(30,20);
-//vec2 pointC(5,7);
+vec2 pointA(50,30);
+vec2 pointB(20,40);
+vec2 pointC(15,50);
 
 void setup()
 {  
@@ -32,6 +32,9 @@ void setup()
   putEnnemis(vec2(100,0),vec2(0,10));
 }
 
+byte frame=0;
+vec2 pointD;
+
 void loop() {
   if (!(ab.nextFrame())){
     return;
@@ -39,7 +42,7 @@ void loop() {
   ab.pollButtons();
   ab.clear();
 
-  
+  /*
   //drawStars(mapCoord.x,mapCoord.y, 3309);
   drawBackground(mapCoord.x,mapCoord.y, 3309);
   //drawMeteor(vec2(100,80),false);
@@ -47,12 +50,45 @@ void loop() {
   controls(&ship);
   ship.checkcollision();
   ship.checkShotscollision();
-  
-/*
-  ab.drawCircle(pointA.x,pointA.y,2);
-  ab.drawCircle(pointB.x,pointB.y,2);
-  drawVecLine(pointA,trigoVec(trigoInv(pointA,pointB),20,pointA));
   */
+  
+  
+
+  vec2 moveCurs=vec2(0,0);
+  if (ab.justPressed(LEFT_BUTTON))
+    moveCurs+=vec2(-1,0);
+  if (ab.justPressed(UP_BUTTON))
+    moveCurs+=vec2(0,-1);
+  if (ab.justPressed(RIGHT_BUTTON))
+    moveCurs+=vec2(1,0);
+  if (ab.justPressed(DOWN_BUTTON))
+    moveCurs+=vec2(0,1);
+  if (ab.pressed(A_BUTTON))
+    moveCurs=moveCurs*10;
+  pointB+=moveCurs;        
+
+  //ab.drawCircle(pointA.x,pointA.y,2);
+  ab.drawCircle(pointB.x,pointB.y,2);
+  int temp=trigoInv(pointA,pointB);
+  //drawVecLine(pointA,trigoVec(temp,20,pointA));
+  
+  
+  if (ab.everyXFrames(15)){
+    frame++;   
+  }
+  if (frame>4)
+    frame=0;
+  
+  //ab.fillCircle(pointA.x,pointA.y,5);
+  sprites.drawSelfMasked(pointA.x-8,pointD.y-5,monster,frame);
+  pointD=trigoVec(temp,4,pointA);
+  ab.drawRect(pointD.x,pointD.y,2,2,0);
+  //ab.drawCircle(pointD.x,pointD.y,1);
+  
+  ab.setCursor(0,0);
+  ab.println((float)(abs(pointA.y-pointB.y)/(float)abs(pointA.x-pointB.x)));
+  ab.println(temp);
+  
   
   ab.display();
   
