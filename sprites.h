@@ -22,7 +22,7 @@ const unsigned char PROGMEM meteor_mask[] =
 0x00, 0x03, 0x07, 0x07, 0x0f, 0x0f, 0x0f, 0x0f, 0x07, 0x07, 0x03, 0x00, 
 };
 
-const unsigned char PROGMEM SpaceInvader[] =
+const unsigned char PROGMEM spaceInvader_sprite[] =
 {
 // width, height,
 10, 8,

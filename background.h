@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "sprites.h"
 #include "vec2.h"
+#include "trigo.h"
 #include "element.h"
 
 #define IMAGE_WIDTH 128
@@ -168,4 +169,33 @@ void drawVecLine(vec2 A, vec2 B){
   ab.drawLine(A.x,A.y,B.x,B.y);
 }
 
+void drawGrid (vec2 pos, vec2 dirA, vec2 dirB,int nbA,int nbB){
+
+  vec2 temp=pos+(dirA*(nbA-1));
+
+  for (int i=0; i<nbB; i++){    
+    drawVecLine(pos+(dirB*i), temp+(dirB*i));
+    //tempA+=dirB;
+  }
+  temp=pos+(dirB*(nbB-1));
+  for (int i=0; i<nbA; i++){    
+    drawVecLine(pos+(dirA*i), temp+(dirA*i));
+  }  
+}
+
+void drawCylinder (vec2 A, vec2 B, int R,bool Hz){ //Hz :must be true if the Cylinder is horizontal. If it rotates-> call the function twice.
+  ab.fillCircle(A.x,A.y,R);
+  ab.fillCircle(B.x,B.y,R);
+  vec2 temp;
+  //temp = trigoVec(trigoInv(A,B),R,A);
+  if (Hz){ temp=vec2(1,0); }
+  else { temp=vec2(0,1);}
+  for (int i=0; i<R+1;i++){
+    drawVecLine(A+(temp*i),B+(temp*i));
+    drawVecLine(A-(temp*i),B-(temp*i));
+  }
+}
+  
+
 #endif
+ 

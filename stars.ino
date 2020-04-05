@@ -11,9 +11,9 @@
 
 Player ship(64,32,4);
 
-vec2 pointA(50,30);
+vec2 pointA(50,10);
 vec2 pointB(20,40);
-vec2 pointC(15,50);
+vec2 pointC(25,50);
 
 void setup()
 {  
@@ -80,16 +80,24 @@ void loop() {
     frame=0;
   
   //ab.fillCircle(pointA.x,pointA.y,5);
-  sprites.drawSelfMasked(pointA.x-8,pointD.y-5,monster,frame);
+  sprites.drawSelfMasked(pointA.x-8,pointA.y-5,monster,frame);
   pointD=trigoVec(temp,4,pointA);
-  ab.drawRect(pointD.x,pointD.y,2,2,0);
+  ab.drawRect(pointD.x-1,pointD.y,3,2,0);
+  ab.drawPixel(pointD.x,pointD.y);
   //ab.drawCircle(pointD.x,pointD.y,1);
+
+//drawGrid(pointC,pointB,vec2(-pointB.x,pointB.y),1,1);
+
+drawCylinder(pointC,pointB,10,false);
+ab.fillCircle(pointC.x,pointC.y,9,0);
   
-  ab.setCursor(0,0);
+  /*
+   * ab.setCursor(0,0);
   ab.println((float)(abs(pointA.y-pointB.y)/(float)abs(pointA.x-pointB.x)));
   ab.println(temp);
-  
+  */
   
   ab.display();
   
 }
+

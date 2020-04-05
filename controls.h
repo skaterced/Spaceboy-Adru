@@ -21,24 +21,29 @@ void controls(Player* p1){
     }
   }
   if (ab.pressed(B_BUTTON)||ab.pressed(UP_BUTTON)){
-    drawFlames(p1);
-    if (ab.everyXFrames(2)){
-      p1->speed+=trigoVec(p1->dir,3,vec2(0,0));
-      if (magn(p1->speed)>SPEED_MAX) {
-        p1->speed-=trigoVec(p1->dir,3,vec2(0,0));
+    if (p1->fuel>0){
+      drawFlames(p1);
+      p1->fuel-=1;
+      if (ab.everyXFrames(2)){
+        p1->speed+=trigoVec(p1->dir,3,vec2(0,0));
+        if (magn(p1->speed)>SPEED_MAX) {
+          p1->speed-=trigoVec(p1->dir,3,vec2(0,0));
+        }
       }
     }
   }
   if (ab.pressed(DOWN_BUTTON)){
-    //p1->speed=vec2(0,0);
-    if (magn(p1->speed)<=1) {
-      p1->speed=vec2(0,0);
-    }
-    else {
-      drawRetroFlames(p1);      
-      if (ab.everyXFrames(2)){
-        p1->speed.x-=abs(p1->speed.x)/p1->speed.x;
-        p1->speed.y-=abs(p1->speed.y)/p1->speed.y;
+    if (p1->fuel>0){    
+      p1->fuel-=1;
+      if (magn(p1->speed)<=1) {
+        p1->speed=vec2(0,0);
+      }
+      else {
+        drawRetroFlames(p1);      
+        if (ab.everyXFrames(2)){
+          p1->speed.x-=abs(p1->speed.x)/p1->speed.x;
+          p1->speed.y-=abs(p1->speed.y)/p1->speed.y;
+        }
       }
     }
   }
@@ -64,7 +69,7 @@ void controls(Player* p1){
   }
   
 /*
-  //for collision test
+  //for collision test change control type (left go left instead of rotating)
   if (ab.pressed(A_BUTTON)){
     if (ab.everyXFrames(2)){
       if (++p1->dir>15)

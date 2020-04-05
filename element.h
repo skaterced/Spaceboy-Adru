@@ -40,15 +40,30 @@ class Meteor : public Element {
 };
 
 class Ennemis : public Element {
+};
+
+class SpaceInvader : public Ennemis {  
   public:
     boolean blink ;  //because he's got only 2 frames
-    void Ennemis::draw() {
+    void SpaceInvader::draw() {
       this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
       this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
-      sprites.drawSelfMasked(pos.x+mapCoord.x, pos.y+mapCoord.y, SpaceInvader, blink? 0:1);
+      sprites.drawSelfMasked(pos.x+mapCoord.x, pos.y+mapCoord.y, spaceInvader_sprite, blink? 0:1);
       if (ab.everyXFrames(5))
         blink=!blink;
     }
 };
-
+/*
+class SpaceInvader : public Ennemis {  
+  public:
+    boolean blink ;  //because he's got only 2 frames
+    void SpaceInvader::draw() {
+      this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
+      this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
+      sprites.drawSelfMasked(pos.x+mapCoord.x, pos.y+mapCoord.y, spaceInvader_sprite, blink? 0:1);
+      if (ab.everyXFrames(5))
+        blink=!blink;
+    }
+};
+*/
 #endif

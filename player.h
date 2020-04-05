@@ -9,12 +9,17 @@
 #include "shot.h"
 #include "background.h"
 
+#define TANK_SMALL 1000
+#define TANK_EMERGENCY 100
+
 class Player {       
   public:
     vec2 pos;
     vec2 speed;    
     vec2 reste;
     byte dir;
+    int fuel;
+    int fuelMax;
     int coolDown;
     bool burn;
     Shot shots[SHOTS_MAX];
@@ -25,6 +30,8 @@ class Player {
       this->dir=dir;
       this->coolDown=0;
       this->speed=vec2(0,0);
+      fuelMax=TANK_SMALL;
+      fuel=fuelMax;
       reste=vec2(0,0);     
       burn=false; 
     }
@@ -32,11 +39,26 @@ class Player {
     void Player::checkcollision();
     void Player::checkShotscollision();
 };
-void Player::draw(){
+void Player::draw(){ //--------------------------------------------------------------------DRAW----------------------------------
 
   pos+=((this->speed+this->reste)/SPEED_DIVISOR);
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
-        
+
+  //Fuel jauge
+  //debug
+  ab.setCursor(0,0);
+  
+  ab.println(fuel);
+  int temp2=this->fuel*100;
+  ab.println(temp2);
+  temp2/=fuelMax;
+  vec2 temp=vec2(127,63-temp2/2);
+  drawVecLine(vec2(127,63),temp); //todo: modify drawTrigoVec (vec2, dir, length){...
+  //drawVecLine(vec2(127,63),vec2(126); //todo: modify drawTrigoVec (vec2, dir, length){...
+ab.println(temp2);
+  ab.println(temp.y);
+
+  
   //Background ajust
   if (pos.x<64){
     //int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT);
@@ -44,8 +66,7 @@ void Player::draw(){
       mapCoord.x-=(pos.x-64);
       pos.x=64;
     }
-    else{      
-      //int temp=mapcoord.x-(pos.x-64);
+    else{            
       pos.x+=mapCoord.x;
       mapCoord.x=0;      
     }
