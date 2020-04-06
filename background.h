@@ -6,6 +6,7 @@
 #include "vec2.h"
 #include "trigo.h"
 #include "element.h"
+#include "station.h"
 
 #define IMAGE_WIDTH 128
 #define IMAGE_HEIGHT 64
@@ -22,6 +23,8 @@
 
 Meteor met[NBMAX_METEOR];
 Ennemis enn[NBMAX_ENNEMIS];
+Station home=Station (vec2(300,300));
+bool station_active=false;
 
 void putMeteor(vec2 pos){
 
@@ -36,6 +39,11 @@ void putMeteor(vec2 pos){
     }
   }
 }
+
+void putStation(void){
+  station_active=true;
+}
+
 void putEnnemis(vec2 pos, vec2 speed){
 
   for (int i=0; i<NBMAX_ENNEMIS; i++){
@@ -79,8 +87,14 @@ void drawStars(int randSeed){ //int x, int y, int RandSeed){
 
 void drawRadar(){
   volatile bool blinking;
+  volatile bool slowBlinking;
+  volatile bool fastBlinking;
   if(ab.everyXFrames(5))
     blinking=!blinking;
+  if(ab.everyXFrames(10))
+    slowBlinking=!slowBlinking;
+  if(ab.everyXFrames(3))
+    fastBlinking=!fastBlinking;    
   ab.fillRect (RADAR_POSX,RADAR_POSY,11,9);//(2,54,21,9);
   ab.drawPixel(RADAR_POSX+5,RADAR_POSY+4,0);
   ab.drawLine(RADAR_POSX-1,RADAR_POSY-1,RADAR_POSX-1,RADAR_POSY+1); // corners
@@ -119,13 +133,22 @@ void drawRadar(){
       }
     }
   }
+  if (station_active){
+    temp=(mapCoord.x+home.pos.x-49)/IMAGE_WIDTH; //58: IMAGE_WIDTH/2-station_image_width/2= -64 +15
+    temp2=(mapCoord.y+home.pos.y+3)/IMAGE_HEIGHT; //  - 32  +35
+    if ((temp<6&&temp>-6)&&(temp2<5&&temp2>-5)){
+      ab.drawPixel(RADAR_POSX+temp+5,4+RADAR_POSY+temp2,slowBlinking? 0:1);
+    }
+  }
 }
 
 void drawBackground(int x, int y, int RandSeed){
   drawStars(RandSeed);//x, y, RandSeed);
-  //vec2 UperLeftCorner=vec2(1,1);
-  //ab.everyXFrames(2)
-  //ab.drawRect(UperLeftCorner.x,UperLeftCorner.y,MAP_WIDTH,MAP_HEIGHT);
+
+  if (station_active){
+    home.draw();
+  }
+  
   for (int i=0; i<NBMAX_METEOR; i++){
     if (met[i].active){
       met[i].draw();
@@ -165,37 +188,7 @@ void drawMeteor(vec2 pos, bool dmg){  // to erase...
   sprites.drawExternalMask(pos.x, pos.y, dmg? meteor_dmg:meteor, meteor_mask, 0,0);
 }
 */
-void drawVecLine(vec2 A, vec2 B){
-  ab.drawLine(A.x,A.y,B.x,B.y);
-}
 
-void drawGrid (vec2 pos, vec2 dirA, vec2 dirB,int nbA,int nbB){
-
-  vec2 temp=pos+(dirA*(nbA-1));
-
-  for (int i=0; i<nbB; i++){    
-    drawVecLine(pos+(dirB*i), temp+(dirB*i));
-    //tempA+=dirB;
-  }
-  temp=pos+(dirB*(nbB-1));
-  for (int i=0; i<nbA; i++){    
-    drawVecLine(pos+(dirA*i), temp+(dirA*i));
-  }  
-}
-
-void drawCylinder (vec2 A, vec2 B, int R,bool Hz){ //Hz :must be true if the Cylinder is horizontal. If it rotates-> call the function twice.
-  ab.fillCircle(A.x,A.y,R);
-  ab.fillCircle(B.x,B.y,R);
-  vec2 temp;
-  //temp = trigoVec(trigoInv(A,B),R,A);
-  if (Hz){ temp=vec2(1,0); }
-  else { temp=vec2(0,1);}
-  for (int i=0; i<R+1;i++){
-    drawVecLine(A+(temp*i),B+(temp*i));
-    drawVecLine(A-(temp*i),B-(temp*i));
-  }
-}
-  
 
 #endif
  

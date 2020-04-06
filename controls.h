@@ -33,12 +33,12 @@ void controls(Player* p1){
     }
   }
   if (ab.pressed(DOWN_BUTTON)){
-    if (p1->fuel>0){    
-      p1->fuel-=1;
+    if (p1->fuel>0){          
       if (magn(p1->speed)<=1) {
         p1->speed=vec2(0,0);
       }
       else {
+        p1->fuel-=1;
         drawRetroFlames(p1);      
         if (ab.everyXFrames(2)){
           p1->speed.x-=abs(p1->speed.x)/p1->speed.x;

@@ -22,6 +22,7 @@ int invDir(int dir){
 
 int trigo(int dir, int length, bool x){ // to get the coordinate of a 2nd point with a direction
   float temp;
+  dir=trueDir(dir);
   /*
   float cos[NB_DIR]={0,0.36,0.7,0.9,0.9,0.9,0.7,0.3,0,-0.3,-0.7,-0.9,-0.9,-0.9,-0.7,-0.3};
   temp=dir+x?0:12;
@@ -136,6 +137,37 @@ int trigoInv(vec2 a, vec2 b){ //to get the direction from a to b
     }     
   }   
 
+}
+
+void drawVecLine(vec2 A, vec2 B){
+  ab.drawLine(A.x,A.y,B.x,B.y);
+}
+
+void drawCylinder (vec2 A, vec2 B, int R,bool Hz, bool white){ //Hz :must be true if the Cylinder is horizontal. If it rotates-> call the function twice.
+  ab.fillCircle(A.x,A.y,R, white);
+  ab.fillCircle(B.x,B.y,R, white);
+  vec2 temp;
+  //temp = trigoVec(trigoInv(A,B),R,A);
+  if (Hz){ temp=vec2(0,1); }
+  else { temp=vec2(1,0);}
+  for (int i=0; i<R+1;i++){
+    drawVecLine(A+(temp*i),B+(temp*i));
+    drawVecLine(A-(temp*i),B-(temp*i));
+  }
+}
+
+void drawGrid (vec2 pos, vec2 dirA, vec2 dirB,int nbA,int nbB){
+
+  vec2 temp=pos+(dirA*(nbA-1));
+
+  for (int i=0; i<nbB; i++){    
+    drawVecLine(pos+(dirB*i), temp+(dirB*i));
+    //tempA+=dirB;
+  }
+  temp=pos+(dirB*(nbB-1));
+  for (int i=0; i<nbA; i++){    
+    drawVecLine(pos+(dirA*i), temp+(dirA*i));
+  }  
 }
 
 #endif

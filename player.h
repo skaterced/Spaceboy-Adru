@@ -9,8 +9,8 @@
 #include "shot.h"
 #include "background.h"
 
-#define TANK_SMALL 1000
-#define TANK_EMERGENCY 100
+#define TANK_SMALL 10000
+#define TANK_EMERGENCY 300
 
 class Player {       
   public:
@@ -18,8 +18,8 @@ class Player {
     vec2 speed;    
     vec2 reste;
     byte dir;
-    int fuel;
-    int fuelMax;
+    unsigned int fuel;
+    unsigned int fuelMax;
     int coolDown;
     bool burn;
     Shot shots[SHOTS_MAX];
@@ -45,18 +45,9 @@ void Player::draw(){ //---------------------------------------------------------
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
 
   //Fuel jauge
-  //debug
-  ab.setCursor(0,0);
-  
-  ab.println(fuel);
-  int temp2=this->fuel*100;
-  ab.println(temp2);
-  temp2/=fuelMax;
-  vec2 temp=vec2(127,63-temp2/2);
-  drawVecLine(vec2(127,63),temp); //todo: modify drawTrigoVec (vec2, dir, length){...
+  drawVecLine(vec2(127,63),vec2(127,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
+  ab.drawPixel(127,63-(fuelMax/300));
   //drawVecLine(vec2(127,63),vec2(126); //todo: modify drawTrigoVec (vec2, dir, length){...
-ab.println(temp2);
-  ab.println(temp.y);
 
   
   //Background ajust

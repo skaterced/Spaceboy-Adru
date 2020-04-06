@@ -7,7 +7,7 @@
 #include "shot.h"
 #include "vec2.h"
 #include "element.h"
-
+#include "station.h"
 
 Player ship(64,32,4);
 
@@ -29,7 +29,8 @@ void setup()
   putEnnemis(vec2(50,0),vec2(0,10));
   putEnnemis(vec2(70,0),vec2(0,10));
   putEnnemis(vec2(90,0),vec2(0,10));
-  putEnnemis(vec2(100,0),vec2(0,10));
+  putEnnemis(vec2(120,0),vec2(0,10));
+  putStation();
 }
 
 byte frame=0;
@@ -42,18 +43,19 @@ void loop() {
   ab.pollButtons();
   ab.clear();
 
-  /*
+  
   //drawStars(mapCoord.x,mapCoord.y, 3309);
+  ship.draw();
   drawBackground(mapCoord.x,mapCoord.y, 3309);
   //drawMeteor(vec2(100,80),false);
-  ship.draw();
+  
   controls(&ship);
   ship.checkcollision();
   ship.checkShotscollision();
-  */
   
   
-
+  
+/*
   vec2 moveCurs=vec2(0,0);
   if (ab.justPressed(LEFT_BUTTON))
     moveCurs+=vec2(-1,0);
@@ -77,8 +79,7 @@ void loop() {
     frame++;   
   }
   if (frame>4)
-    frame=0;
-  
+    frame=0;  
   //ab.fillCircle(pointA.x,pointA.y,5);
   sprites.drawSelfMasked(pointA.x-8,pointA.y-5,monster,frame);
   pointD=trigoVec(temp,4,pointA);
@@ -88,16 +89,12 @@ void loop() {
 
 //drawGrid(pointC,pointB,vec2(-pointB.x,pointB.y),1,1);
 
-drawCylinder(pointC,pointB,10,false);
+drawCylinder(pointC,pointB,10,false, true);
 ab.fillCircle(pointC.x,pointC.y,9,0);
-  
-  /*
-   * ab.setCursor(0,0);
-  ab.println((float)(abs(pointA.y-pointB.y)/(float)abs(pointA.x-pointB.x)));
-  ab.println(temp);
   */
+  
+
   
   ab.display();
   
 }
-
