@@ -33,8 +33,9 @@ void setup()
   putStation();
 }
 
-byte frame=0;
-vec2 pointD;
+//byte count=0;
+//byte frame=0;
+//vec2 pointD;
 
 void loop() {
   if (!(ab.nextFrame())){
@@ -45,17 +46,16 @@ void loop() {
 
   
   //drawStars(mapCoord.x,mapCoord.y, 3309);
-  ship.draw();
+  //
   drawBackground(mapCoord.x,mapCoord.y, 3309);
-  //drawMeteor(vec2(100,80),false);
-  
+  ship.draw();  
   controls(&ship);
   ship.checkcollision();
-  ship.checkShotscollision();
-  
-  
+  ship.checkShotscollision();  
   
 /*
+  //Following (except "ab.display()") is for testing   
+ 
   vec2 moveCurs=vec2(0,0);
   if (ab.justPressed(LEFT_BUTTON))
     moveCurs+=vec2(-1,0);
@@ -74,7 +74,7 @@ void loop() {
   int temp=trigoInv(pointA,pointB);
   //drawVecLine(pointA,trigoVec(temp,20,pointA));
   
-  
+
   if (ab.everyXFrames(15)){
     frame++;   
   }
@@ -82,19 +82,30 @@ void loop() {
     frame=0;  
   //ab.fillCircle(pointA.x,pointA.y,5);
   sprites.drawSelfMasked(pointA.x-8,pointA.y-5,monster,frame);
-  pointD=trigoVec(temp,4,pointA);
+//  pointD=trigoVec(temp,4,pointA);
   ab.drawRect(pointD.x-1,pointD.y,3,2,0);
   ab.drawPixel(pointD.x,pointD.y);
   //ab.drawCircle(pointD.x,pointD.y,1);
 
 //drawGrid(pointC,pointB,vec2(-pointB.x,pointB.y),1,1);
 
-drawCylinder(pointC,pointB,10,false, true);
-ab.fillCircle(pointC.x,pointC.y,9,0);
-  */
-  
+//drawCylinder(pointC,pointB,10,false, true);
+//ab.fillCircle(pointC.x,pointC.y,9,0);
 
-  
+int temp;
+  count++;
+  if (count<11){
+    ab.fillCircle(pointB.x,pointB.y,count);
+  }
+  else if (count<21){
+    ab.fillCircle(pointB.x,pointB.y,11);
+    ab.fillCircle(pointB.x,pointB.y,count-11,0);      
+  }
+  if (count>50)
+    count=0;
+
+    
+  */
   ab.display();
   
 }

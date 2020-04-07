@@ -23,11 +23,12 @@
 
 Meteor met[NBMAX_METEOR];
 Ennemis enn[NBMAX_ENNEMIS];
+Explosion xplo[NBMAX_EXPLOSION];
+byte xploIt=0;
 Station home=Station (vec2(300,300));
 bool station_active=false;
 
-void putMeteor(vec2 pos){
-
+void putMeteor(vec2 pos){  
   for (int i=0; i<NBMAX_METEOR; i++){
     if (!met[i].active){
       met[i].active=true;
@@ -42,6 +43,14 @@ void putMeteor(vec2 pos){
 
 void putStation(void){
   station_active=true;
+}
+
+void explode(vec2 pos, byte type){
+  xplo[xploIt].type=type;
+  xplo[xploIt].pos=pos;
+  xplo[xploIt].count=0;
+  if (++xploIt>=NBMAX_EXPLOSION)
+    xploIt=0;
 }
 
 void putEnnemis(vec2 pos, vec2 speed){
@@ -158,28 +167,35 @@ void drawBackground(int x, int y, int RandSeed){
     if (enn[i].active){
       enn[i].draw();
     }
-  }  
+  }
+  for (int i=0;i<NBMAX_EXPLOSION;i++){
+    xplo[i].update();
+  }
 
   drawRadar();
 }
 
 vec2 Metcollision(vec2 objPos, int radius, int force, int dmg){ //Circular collision check. objPos must be previously centered. 
-  vec2 temp;
+  //vec2 temp;
   for (int i=0; i<NBMAX_METEOR; i++){
     if (met[i].active){
-      temp=met[i].pos+mapCoord+vec2(6,6);
-      if ((magn(objPos-temp)!=-1)&&(magn(objPos-temp)<(radius+6))){
+      
+      if ((magn(objPos-met[i].pos+mapCoord)!=-1)&&(magn(objPos-met[i].pos+mapCoord)<(radius+6))){
       //if ((temp.x-7<shipPos.x&&shipPos.x<temp.x+19)&&(temp.y-7<shipPos.y&&shipPos.y<temp.y+19)){ // 22 = 12(image width/heigth)+10(ship radius)
-        met[i].life-=dmg; //todo check if alive and draw lifeBar
-        if (force>0){
-          met[i].speed-=(objPos-temp)*force/10;
+        met[i].life-=dmg; //todo draw lifeBar ?
+        if (met[i].life<=0){
+          met[i].active=false;
+          explode(met[i].pos+mapCoord,EXPLOSION_MEDIUM);
+          //todo: add gem
         }
-        return objPos-temp;
+        if (force>0){
+          met[i].speed-=(objPos-met[i].pos+mapCoord)*force/10;
+        }
+        return objPos-met[i].pos+mapCoord;
       }
     }
   }
-  temp=vec2(0,0);
-  return temp;
+  return vec2(0,0);
 }
 
 

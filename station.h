@@ -48,7 +48,7 @@ void Station::draw(){
     drawVecLine(temp2-vec2(1,1)*(blinking-100)/BLINK_SPEED,temp2+vec2(1,1)*(blinking-100)/BLINK_SPEED);
     drawVecLine(temp2-vec2(1,-1)*(blinking-100)/BLINK_SPEED,temp2+vec2(1,-1)*(blinking-100)/BLINK_SPEED);
   }  
-  if (blinking>100+4*BLINK_SPEED)
+  if (blinking>100+3*BLINK_SPEED)
     blinking=0;
   
   //drawVecLine(temp+vec2(0,32),trigoVec(12,30,temp));
