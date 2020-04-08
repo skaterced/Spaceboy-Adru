@@ -22,7 +22,7 @@ void controls(Player* p1){
   }
   if (ab.pressed(B_BUTTON)||ab.pressed(UP_BUTTON)){
     if (p1->fuel>0){
-      drawFlames(p1);
+      p1->drawFlames();
       p1->fuel-=1;
       if (ab.everyXFrames(2)){
         p1->speed+=trigoVec(p1->dir,3,vec2(0,0));
@@ -39,7 +39,7 @@ void controls(Player* p1){
       }
       else {
         p1->fuel-=1;
-        drawRetroFlames(p1);      
+        p1->drawRetroFlames();      
         if (ab.everyXFrames(2)){
           p1->speed.x-=abs(p1->speed.x)/p1->speed.x;
           p1->speed.y-=abs(p1->speed.y)/p1->speed.y;

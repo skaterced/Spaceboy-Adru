@@ -36,6 +36,8 @@ class Player {
       burn=false; 
     }
     void Player::draw();
+    void Player::drawFlames();
+    void Player::drawRetroFlames();
     void Player::checkcollision();
     void Player::checkShotscollision();
 };
@@ -96,38 +98,7 @@ void Player::draw(){ //---------------------------------------------------------
       pos.y+=mapCoord.y-temp;
       mapCoord.y=temp;          
     }      
-  }  
-
-  
-/* 
-    mapCoord-=((this->speed+this->reste)/SPEED_DIVISOR);
-    this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
-  
-    if (mapCoord.x>0){  // Map limits
-      pos.x-=mapCoord.x;
-      mapCoord.x=0;
-      //this->speed.x=0;
-    }
-    if (mapCoord.y>0){
-      pos.y-=mapCoord.y;
-      mapCoord.y=0;
-      //this->speed.y=0;
-    }
-    if (mapCoord.x<-(SECTOR_COLUMNS-1)*IMAGE_WIDTH){
-      pos.x+=mapCoord.x-(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
-      mapCoord.x=-(SECTOR_COLUMNS-1)*IMAGE_WIDTH;
-      //this->speed.x=0;
-    }
-    if (mapCoord.y<-(SECTOR_LINES-1)*IMAGE_HEIGHT){
-      pos.y+=mapCoord.y-(SECTOR_LINES-1)*IMAGE_HEIGHT;
-      mapCoord.y=-(SECTOR_LINES-1)*IMAGE_HEIGHT;
-      //this->speed.y=0;
-    }
   }
-  else{
-    
-  }
-*/
   
 /*    
   //Ship V1 "Bubble"
@@ -148,12 +119,13 @@ void Player::draw(){ //---------------------------------------------------------
   drawVecLine(temp, trigoVec(trueDir(dir-7),3,temp));
 */
 
- //Ship V2 "Half Moon"  
+ //Ship V2 "Half Moon" 
+  //sprites.drawSelfMasked(pos.x-8,pos.y-8,Ship, dir); //Sprites (unmasked) instead of geometrical drawing uses +222 bytes of progmem (1%). Don't know about speed yet. 
   ab.fillCircle(pos.x,pos.y,5);
   ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),3);
   ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),2,0);
-  ab.drawPixel(pos.x+trigo(trueDir(dir+1),6,true),pos.y+trigo(trueDir(dir+1),6,false));
-  ab.fillCircle(pos.x+trigo(trueDir(dir+8),6,true),pos.y+trigo(trueDir(dir+8),6,false),4,0);
+  ab.drawPixel(pos.x+trigo((dir+1),6,true),pos.y+trigo((dir+1),6,false));
+  ab.fillCircle(pos.x+trigo((dir+8),6,true),pos.y+trigo((dir+8),6,false),4,0);
   drawVecLine(pos,trigoVec(invDir(dir),4,pos));
   
   
@@ -171,7 +143,7 @@ void Player::draw(){ //---------------------------------------------------------
   //ab.print(magn(this->speed));    
 }
 void Player::checkcollision(){
-  vec2 temp=Metcollision(this->pos,6,magn(this->speed)/10,1);
+  vec2 temp=elementCollision(this->pos,6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
     ab.drawCircle(this->pos.x,this->pos.y,20);
     this->speed=temp;
@@ -180,7 +152,7 @@ void Player::checkcollision(){
 void Player::checkShotscollision(){
   for (int i=0; i<SHOTS_MAX; i++){
     if (shots[i].active){
-      vec2 temp=Metcollision(shots[i].pos,0,0,2);
+      vec2 temp=elementCollision(shots[i].pos,0,0,2);
       if (temp!=vec2(0,0)){
         shots[i].active=false;
       }
@@ -188,44 +160,29 @@ void Player::checkShotscollision(){
   }
 }
 
-void  drawFlames(Player* p1){
-  vec2 temp=trigoVec(invDir(p1->dir),p1->burn? 14:12,p1->pos);
-  drawVecLine(temp, trigoVec(trueDir(p1->dir+1),6,temp));
-  drawVecLine(temp, trigoVec(trueDir(p1->dir-1),6,temp));
+void  Player::drawFlames(){  //if both flames at the same time, they aren't animated anymore
+  vec2 temp=trigoVec(invDir(dir),burn? 14:12,pos);
+  drawVecLine(temp, trigoVec((dir+1),6,temp));
+  drawVecLine(temp, trigoVec((dir-1),6,temp));
   if(ab.everyXFrames(3))
-    p1->burn=!p1->burn;
+    burn=!burn;
 }
 
-void  drawRetroFlames(Player* p1){
+void  Player::drawRetroFlames(){
   if(ab.everyXFrames(3))
-    p1->burn=!p1->burn;
-  vec2 temp=trigoVec(trueDir(p1->dir+2),p1->burn? 9:11,p1->pos);
-  //drawVecLine(temp, trigoVec(trueDir(p1->dir+2),p1->burn? 6:4,temp));
-  drawVecLine(temp, trigoVec(trueDir(p1->dir+2),4,temp));
+    burn=!burn;
+  vec2 temp=trigoVec((dir+2),burn? 9:11,pos);
+  //drawVecLine(temp, trigoVec((dir+2),burn? 6:4,temp));
+  drawVecLine(temp, trigoVec((dir+2),4,temp));
   
-  temp=trigoVec(trueDir(p1->dir-2),p1->burn? 9:11,p1->pos);
-  drawVecLine(temp, trigoVec(trueDir(p1->dir-2),4,temp));
+  temp=trigoVec((dir-2),burn? 9:11,pos);
+  drawVecLine(temp, trigoVec((dir-2),4,temp));
   
-  temp=trigoVec(trueDir(p1->dir+6),p1->burn? 9:11,p1->pos);
-  drawVecLine(temp, trigoVec(trueDir(p1->dir+6),4,temp));
+  temp=trigoVec((dir+6),burn? 9:11,pos);
+  drawVecLine(temp, trigoVec((dir+6),4,temp));
   
-  temp=trigoVec(trueDir(p1->dir-6),p1->burn? 9:11,p1->pos);
-  drawVecLine(temp, trigoVec(trueDir(p1->dir-6),4,temp));
-  /*
-  vec2 temp=trigoVec(trueDir(p1->dir+2),burn? 12:10,p1->pos);
-  drawVecLine(temp, trigoVec(trueDir(invDir(p1->dir)+3),4,temp));
-  drawVecLine(temp, trigoVec(trueDir(invDir(p1->dir)+1),4,temp));
-  temp=trigoVec(trueDir(p1->dir-2),burn? 12:10,p1->pos);
-  drawVecLine(temp, trigoVec(trueDir(invDir(p1->dir)-3),4,temp));
-  drawVecLine(temp, trigoVec(trueDir(invDir(p1->dir)-1),4,temp));
-  temp=trigoVec(invDir(trueDir(p1->dir+2)),burn? 12:10,p1->pos);
-  drawVecLine(temp, trigoVec(trueDir(p1->dir+3),4,temp));
-  drawVecLine(temp, trigoVec(trueDir(p1->dir+1),4,temp));
-  temp=trigoVec(invDir(trueDir(p1->dir-2)),burn? 12:10,p1->pos);
-  drawVecLine(temp, trigoVec(trueDir(p1->dir-3),4,temp));
-  drawVecLine(temp, trigoVec(trueDir(p1->dir-1),4,temp));
-  */
-  //burn=!burn;
+  temp=trigoVec((dir-6),burn? 9:11,pos);
+  drawVecLine(temp, trigoVec((dir-6),4,temp));
 }
 
 #endif

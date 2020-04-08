@@ -10,6 +10,8 @@
 #include "station.h"
 
 Player ship(64,32,4);
+Station home=Station (vec2(300,300));
+bool station_active=true; //3%Progmem...
 
 vec2 pointA(50,10);
 vec2 pointB(20,40);
@@ -32,7 +34,7 @@ void setup()
   putEnnemis(vec2(1040,0),vec2(0,10),0);
   putEnnemis(vec2(1060,0),vec2(0,10),0);
   putEnnemis(vec2(800,800),vec2(0,0),2);
-  putStation();
+  //putStation();
 }
 
 //byte count=0;
@@ -40,7 +42,8 @@ void setup()
 //vec2 pointD;
 
 void loop() {
-  if (!(ab.nextFrame())){
+  if (!(ab.nextFrameDEV())){
+  //if (!(ab.nextFrame())){
     return;
   }
   ab.pollButtons();
@@ -51,6 +54,9 @@ void loop() {
   //
   drawBackground(mapCoord.x,mapCoord.y, 3309);
   ship.draw();  
+  if (station_active){
+    home.draw();
+  }  
   controls(&ship);
   ship.checkcollision();
   ship.checkShotscollision();  

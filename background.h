@@ -25,8 +25,10 @@ Meteor met[NBMAX_METEOR];
 Ennemis enn[NBMAX_ENNEMIS];
 Explosion xplo[NBMAX_EXPLOSION];
 byte xploIt=0;
+/*
 Station home=Station (vec2(300,300));
 bool station_active=false;
+ */
 
 void putMeteor(vec2 pos, vec2 speed){  
   for (int i=0; i<NBMAX_METEOR; i++){
@@ -40,18 +42,18 @@ void putMeteor(vec2 pos, vec2 speed){
     }
   }
 }
-
+/*
 void putStation(void){
   station_active=true;
 }
-
+*/
 void putEnnemis(vec2 pos, vec2 speed, byte type){
 
   for (int i=0; i<NBMAX_ENNEMIS; i++){
     if (!enn[i].active){
       enn[i].active=true;
       enn[i].pos=pos;        
-      enn[i].life=100;
+      enn[i].life=METEOR_LIFE;
       enn[i].speed=speed;
       enn[i].type=type;
       i=NBMAX_ENNEMIS;
@@ -154,22 +156,20 @@ void drawRadar(){
       }
     }
   }  
-  if (station_active){
+  /*
+  if (station_active){ //not in radar anymore because it will be in a cut scene
     temp=(mapCoord.x+home.pos.x-49)/IMAGE_WIDTH; //58: IMAGE_WIDTH/2-station_image_width/2= -64 +15
     temp2=(mapCoord.y+home.pos.y+3)/IMAGE_HEIGHT; //  - 32  +35
     if ((temp<6&&temp>-6)&&(temp2<5&&temp2>-5)){
       ab.drawPixel(RADAR_POSX+temp+5,4+RADAR_POSY+temp2,slowBlinking? 0:1);
     }
   }
+  */
 }
 
 void drawBackground(int x, int y, int RandSeed){
   drawStars(RandSeed);//x, y, RandSeed);
-
-  if (station_active){
-    home.draw();
-  }
-  
+ 
   for (int i=0; i<NBMAX_METEOR; i++){
     if (met[i].active){
       met[i].draw();
@@ -187,7 +187,7 @@ void drawBackground(int x, int y, int RandSeed){
   drawRadar();
 }
 
-vec2 Metcollision(vec2 objPos, int radius, int force, int dmg){ //Circular collision check. objPos must be previously centered. 
+vec2 elementCollision(vec2 objPos, int radius, int force, int dmg){ //Circular collision check. objPos must be previously centered. 
   //vec2 temp;
   for (int i=0; i<NBMAX_METEOR; i++){
     if (met[i].active){
@@ -207,6 +207,28 @@ vec2 Metcollision(vec2 objPos, int radius, int force, int dmg){ //Circular colli
       }
     }
   }
+  for (int i=0; i<NBMAX_ENNEMIS; i++){
+    if (enn[i].active){
+      byte temp;
+      if (ENNEMIS_BIGEYEMONSTER==enn[i].type){
+        temp=8;
+      }
+      else
+        temp=5;
+      if ((magn(objPos-enn[i].pos-mapCoord)!=-1)&&(magn(objPos-enn[i].pos-mapCoord)<(radius+temp))){      
+        enn[i].life-=dmg; //todo draw lifeBar ?
+        if (enn[i].life<=0){
+          enn[i].active=false;
+          explode(enn[i].pos, EXPLOSION_MEDIUM);
+          //todo: add gem
+        }
+        if (force>0){
+          enn[i].speed-=(objPos-enn[i].pos-mapCoord)*force/10;
+        }
+        return objPos-enn[i].pos-mapCoord;
+      }
+    }
+  }  
   return vec2(0,0);
 }
 

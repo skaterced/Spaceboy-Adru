@@ -1,3 +1,7 @@
+/* Contains Explosion, Element -> Meteor, Ennemis ->...
+ *  
+ */
+
 #ifndef _ELEMENT_
 #define _ELEMENT_
 
@@ -113,7 +117,7 @@ class Ennemis : public Element {
         case ENNEMIS_SPACEINVADER: default:
           this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
           this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
-          sprites.drawSelfMasked(pos.x+mapCoord.x, pos.y+mapCoord.y, spaceInvader_sprite, frame);
+          sprites.drawSelfMasked(pos.x+mapCoord.x-5, pos.y+mapCoord.y-4, spaceInvader_sprite, frame);
           if (ab.everyXFrames(5))
             frame=frame==0? 1:0;        
         break;      
@@ -126,7 +130,7 @@ class Ennemis : public Element {
               frame=0;  
           }    
           //int temp=trigoInv(pos+mapCoord,vec2(64,32));
-          sprites.drawSelfMasked(pos.x-8+mapCoord.x,pos.y-5+mapCoord.y,monster,frame);
+          sprites.drawSelfMasked(pos.x+mapCoord.x-8,pos.y+mapCoord.y-7,monster,frame);
           vec2 pointD=trigoVec(trigoInv(pos+mapCoord,vec2(64,32)),4,pos)+mapCoord;
           ab.drawRect(pointD.x-1,pointD.y,3,2,0);
           ab.drawPixel(pointD.x,pointD.y);
@@ -136,27 +140,5 @@ class Ennemis : public Element {
   
 };
 
-
-/*
-//
-class SpaceInvader : public Ennemis {  
-  public:
-    boolean blink ;  //because he's got only 2 frames
-    void SpaceInvader::draw() {
-      this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
-      this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
-      sprites.drawSelfMasked(pos.x+mapCoord.x, pos.y+mapCoord.y, spaceInvader_sprite, blink? 0:1);
-      if (ab.everyXFrames(5))
-        blink=!blink;
-    }
-};
-
-class BigEyeMonster : public Ennemis {  
-  public:
-    byte frame ;  //because he's got only 2 frames
-    void BigEyeMonster::draw() {
-    }
-};
-*/
 
 #endif

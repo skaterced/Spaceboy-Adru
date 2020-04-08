@@ -41,6 +41,7 @@ void Station::draw(){
     drawVecLine(temp2-vec2(1,1)*(blinking-100)/BLINK_SPEED,temp2+vec2(1,1)*(blinking-100)/BLINK_SPEED);
     drawVecLine(temp2-vec2(1,-1)*(blinking-100)/BLINK_SPEED,temp2+vec2(1,-1)*(blinking-100)/BLINK_SPEED);
   }
+  drawGrid(temp+vec2(-10,-10),vec2(3,0),vec2(0,3),3,10);
   temp=temp+vec2(0,15);
   temp2=trigoVec(12,30,temp);
   drawVecLine(temp,temp2);
