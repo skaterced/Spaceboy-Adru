@@ -28,14 +28,14 @@ byte xploIt=0;
 Station home=Station (vec2(300,300));
 bool station_active=false;
 
-void putMeteor(vec2 pos){  
+void putMeteor(vec2 pos, vec2 speed){  
   for (int i=0; i<NBMAX_METEOR; i++){
     if (!met[i].active){
       met[i].active=true;
       met[i].pos=pos;  //ok, maybe not rand... 
       //met[i].pos.y=50;
-      met[i].life=100;
-      met[i].speed=vec2(1,0);
+      met[i].life=METEOR_LIFE;
+      met[i].speed=speed;
       return 0;
     }
   }
@@ -45,15 +45,7 @@ void putStation(void){
   station_active=true;
 }
 
-void explode(vec2 pos, byte type){
-  xplo[xploIt].type=type;
-  xplo[xploIt].pos=pos;
-  xplo[xploIt].count=0;
-  if (++xploIt>=NBMAX_EXPLOSION)
-    xploIt=0;
-}
-
-void putEnnemis(vec2 pos, vec2 speed){
+void putEnnemis(vec2 pos, vec2 speed, byte type){
 
   for (int i=0; i<NBMAX_ENNEMIS; i++){
     if (!enn[i].active){
@@ -61,9 +53,18 @@ void putEnnemis(vec2 pos, vec2 speed){
       enn[i].pos=pos;        
       enn[i].life=100;
       enn[i].speed=speed;
-      return 0;
+      enn[i].type=type;
+      i=NBMAX_ENNEMIS;
     }
   }
+}
+
+void explode(vec2 pos, byte type){
+  xplo[xploIt].type=type;
+  xplo[xploIt].pos=pos;
+  xplo[xploIt].count=0;
+  if (++xploIt>=NBMAX_EXPLOSION)
+    xploIt=0;
 }
 
 void mapCenter(){
@@ -114,7 +115,8 @@ void drawRadar(){
   ab.drawLine(RADAR_POSX-1,RADAR_POSY+9,RADAR_POSX+1,RADAR_POSY+9);  
   ab.drawLine(RADAR_POSX+11,RADAR_POSY+9,RADAR_POSX+11,RADAR_POSY+7);
   ab.drawLine(RADAR_POSX+11,RADAR_POSY+9,RADAR_POSX+9,RADAR_POSY+9);
-  
+
+  //SECTOR BORDER
   int temp=(mapCoord.x-64)/IMAGE_WIDTH;
   int temp2=(mapCoord.y-32)/IMAGE_HEIGHT;
   if (temp>-5){
@@ -142,6 +144,16 @@ void drawRadar(){
       }
     }
   }
+  for (int i=0; i<NBMAX_ENNEMIS; i++){
+    if (enn[i].active){
+      temp=(mapCoord.x+enn[i].pos.x-58)/IMAGE_WIDTH; //pos adjust. from meteor but...
+      temp2=(mapCoord.y+enn[i].pos.y-26)/IMAGE_HEIGHT;
+      
+      if ((temp<6&&temp>-6)&&(temp2<5&&temp2>-5)){
+        ab.drawPixel(RADAR_POSX+temp+5,4+RADAR_POSY+temp2,fastBlinking? 0:1);
+      }
+    }
+  }  
   if (station_active){
     temp=(mapCoord.x+home.pos.x-49)/IMAGE_WIDTH; //58: IMAGE_WIDTH/2-station_image_width/2= -64 +15
     temp2=(mapCoord.y+home.pos.y+3)/IMAGE_HEIGHT; //  - 32  +35
@@ -165,7 +177,7 @@ void drawBackground(int x, int y, int RandSeed){
   }
   for (int i=0; i<NBMAX_ENNEMIS; i++){
     if (enn[i].active){
-      enn[i].draw();
+      enn[i].update();
     }
   }
   for (int i=0;i<NBMAX_EXPLOSION;i++){
@@ -180,18 +192,18 @@ vec2 Metcollision(vec2 objPos, int radius, int force, int dmg){ //Circular colli
   for (int i=0; i<NBMAX_METEOR; i++){
     if (met[i].active){
       
-      if ((magn(objPos-met[i].pos+mapCoord)!=-1)&&(magn(objPos-met[i].pos+mapCoord)<(radius+6))){
+      if ((magn(objPos-met[i].pos-mapCoord)!=-1)&&(magn(objPos-met[i].pos-mapCoord)<(radius+6))){
       //if ((temp.x-7<shipPos.x&&shipPos.x<temp.x+19)&&(temp.y-7<shipPos.y&&shipPos.y<temp.y+19)){ // 22 = 12(image width/heigth)+10(ship radius)
         met[i].life-=dmg; //todo draw lifeBar ?
         if (met[i].life<=0){
           met[i].active=false;
-          explode(met[i].pos+mapCoord,EXPLOSION_MEDIUM);
+          explode(met[i].pos,EXPLOSION_MEDIUM);
           //todo: add gem
         }
         if (force>0){
-          met[i].speed-=(objPos-met[i].pos+mapCoord)*force/10;
+          met[i].speed-=(objPos-met[i].pos-mapCoord)*force/10;
         }
-        return objPos-met[i].pos+mapCoord;
+        return objPos-met[i].pos-mapCoord;
       }
     }
   }

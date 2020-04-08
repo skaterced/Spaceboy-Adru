@@ -24,12 +24,14 @@ void setup()
   //pointB+=vec2(pointC);
   mapCenter();
 
-  putMeteor(vec2(100,300));
-  putMeteor(vec2(10,500));
-  putEnnemis(vec2(50,0),vec2(0,10));
-  putEnnemis(vec2(70,0),vec2(0,10));
-  putEnnemis(vec2(90,0),vec2(0,10));
-  putEnnemis(vec2(120,0),vec2(0,10));
+  putMeteor(vec2(100,300), vec2(1,0));
+  putMeteor(vec2(10,500), vec2(1,0));
+  putMeteor(vec2(550,550), vec2(0,0));
+  putEnnemis(vec2(1000,0),vec2(0,10),0);
+  putEnnemis(vec2(1020,0),vec2(0,10),0);
+  putEnnemis(vec2(1040,0),vec2(0,10),0);
+  putEnnemis(vec2(1060,0),vec2(0,10),0);
+  putEnnemis(vec2(800,800),vec2(0,0),2);
   putStation();
 }
 
