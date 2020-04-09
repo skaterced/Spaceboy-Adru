@@ -47,15 +47,13 @@ void putStation(void){
   station_active=true;
 }
 */
+
+//todo change all that -> make Ennemis subClasses and an ennemis constructor
 void putEnnemis(vec2 pos, vec2 speed, byte type){
 
   for (int i=0; i<NBMAX_ENNEMIS; i++){
-    if (!enn[i].active){
-      enn[i].active=true;
-      enn[i].pos=pos;        
-      enn[i].life=METEOR_LIFE;
-      enn[i].speed=speed;
-      enn[i].type=type;
+    if (!enn[i].active){   
+      enn[i].reboot(pos,speed,type);
       i=NBMAX_ENNEMIS;
     }
   }
@@ -187,6 +185,7 @@ void drawBackground(int x, int y, int RandSeed){
   drawRadar();
 }
 
+//todo: add Dmg to both side depending on the speed difference
 vec2 elementCollision(vec2 objPos, int radius, int force, int dmg){ //Circular collision check. objPos must be previously centered. 
   //vec2 temp;
   for (int i=0; i<NBMAX_METEOR; i++){

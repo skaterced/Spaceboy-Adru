@@ -5,7 +5,7 @@
 #include "background.h"
 #include "vec2.h"
 
-#define SHOTS_MAX 3
+#define SHOTS_MAX 4
 #define COOLDOWN 10
 #define SHOT_DURATION 50
 

@@ -8,10 +8,11 @@
 
 #define SPEED_DIVISOR 20
 
-vec2 mapCoord(0,0);
-
 Arduboy2 ab;
 Sprites sprites;
+
+vec2 mapCoord(0,0);
+int score;
 
 #endif
 

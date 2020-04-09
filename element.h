@@ -18,7 +18,9 @@
 #define EXPLOSION_BIG 3
 
 #define ENNEMIS_SPACEINVADER 1
+#define SPACEINVADER_LIFE 5
 #define ENNEMIS_BIGEYEMONSTER 2
+#define BIGEYEMONSTER_LIFE 20
 
 class Explosion {
   public:
@@ -89,7 +91,15 @@ class Element {
       //dir=0;
       int life=METEOR_LIFE; 
       active=false;
-    }  
+    }/*
+    Element (vec2 pos, vec2 speed){
+      pos=pos;
+      speed=speed;
+      reste=vec2(0,0);
+      //dir=0;
+      int life=METEOR_LIFE; 
+      active=false;      
+    }*/
     void Element::draw();
 };
 void Element::draw(){
@@ -112,6 +122,19 @@ class Ennemis : public Element {
   public:
     byte frame;
     byte type;
+    Ennemis():Element(){}
+    Ennemis::reboot(vec2 pos_, vec2 speed_, byte type_){
+      active=true;
+      pos=pos_;
+      speed=speed_;
+      type=type_;
+      if (ENNEMIS_SPACEINVADER==type){
+        life=SPACEINVADER_LIFE;
+      }
+      else if (ENNEMIS_BIGEYEMONSTER==type){
+        life=BIGEYEMONSTER_LIFE;
+      }
+    }
     Ennemis::update(void){
       switch (type){
         case ENNEMIS_SPACEINVADER: default:
@@ -128,16 +151,18 @@ class Ennemis : public Element {
             frame++;   
             if (frame>4)
               frame=0;  
-          }    
-          //int temp=trigoInv(pos+mapCoord,vec2(64,32));
+          }              
           sprites.drawSelfMasked(pos.x+mapCoord.x-8,pos.y+mapCoord.y-7,monster,frame);
-          vec2 pointD=trigoVec(trigoInv(pos+mapCoord,vec2(64,32)),4,pos)+mapCoord;
+          //int temp=trigoInv(pos+mapCoord,vec2(64,32));
+          //vec2 pointD=trigoVec(temp,4,pos)+mapCoord;
+          vec2 pointD=trigoVec(trigoInv(pos+mapCoord,vec2(64,32)),4,pos+vec2(0,-4)+mapCoord);
+          //if (abs(temp-8)<3)
+            //pointD+=vec2(0,-1);
           ab.drawRect(pointD.x-1,pointD.y,3,2,0);
           ab.drawPixel(pointD.x,pointD.y);
         break;
       }
     }
-  
 };
 
 
