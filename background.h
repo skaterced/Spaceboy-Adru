@@ -29,7 +29,12 @@ byte xploIt=0;
 Station home=Station (vec2(300,300));
 bool station_active=false;
  */
-
+bool isOut(vec2 pos){
+  if ((-128>pos.x)||pos.x>MAP_WIDTH||(-64>pos.y)||pos.y>MAP_HEIGHT)
+    return true;
+  else
+    return false;
+}
 void putMeteor(vec2 pos, vec2 speed){  
   for (int i=0; i<NBMAX_METEOR; i++){
     if (!met[i].active){
@@ -48,7 +53,6 @@ void putStation(void){
 }
 */
 
-//todo change all that -> make Ennemis subClasses and an ennemis constructor
 void putEnnemis(vec2 pos, vec2 speed, byte type){
 
   for (int i=0; i<NBMAX_ENNEMIS; i++){
@@ -72,8 +76,7 @@ void mapCenter(){
   mapCoord.y=-(MAP_HEIGHT/2-32);
 }
 
-//void drawStars(int x, int y, int RandSeed){ //camera X,Y
-void drawStars(int randSeed){ //int x, int y, int RandSeed){
+void drawStars(){
   //randomSeed(randSeed);
   byte temp=0;
   for (int i=0; i<SECTOR_COLUMNS; i++){
@@ -165,23 +168,37 @@ void drawRadar(){
   */
 }
 
-void drawBackground(int x, int y, int RandSeed){
-  drawStars(RandSeed);//x, y, RandSeed);
- 
+void drawBackground(int x, int y){//, int RandSeed){
+
+ byte temp=0;
   for (int i=0; i<NBMAX_METEOR; i++){
     if (met[i].active){
-      met[i].draw();
+      if (!isOut(met[i].pos)){
+        met[i].draw();
+        temp++;
+      }
+      else {met[i].active=false;}
+    }
+    if (0==temp){
+      putMeteor(vec2(0,random(1000)), vec2(random(10)+1,random(2)-1));
     }
   }
+  temp=0;
   for (int i=0; i<NBMAX_ENNEMIS; i++){
     if (enn[i].active){
-      enn[i].update();
+      if (!isOut(enn[i].pos)){
+        enn[i].update();
+        temp++;
+      }
+      else {enn[i].active=false;}
     }
   }
+  if (0==temp){
+    putEnnemis(vec2(1280,1280),vec2(0,0),ENNEMIS_FLYINGSAUCER);      
+  }  
   for (int i=0;i<NBMAX_EXPLOSION;i++){
     xplo[i].update();
   }
-
   drawRadar();
 }
 

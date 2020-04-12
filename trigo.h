@@ -131,10 +131,8 @@ int trigoInv(vec2 a, vec2 b){ //to get the direction from a to b
       else{ return 5; }
   }
   else {
-    if (a.y>=b.y){
-      if (a.x>b.x){ return 12;}
-      else{ return 4; }
-    }     
+    if (a.x>b.x){ return 12;}
+    else{ return 4; }     
   }   
 
 }
@@ -146,8 +144,7 @@ void drawVecLine(vec2 A, vec2 B){
 void drawCylinder (vec2 A, vec2 B, int R,bool Hz, bool white){ //Hz :must be true if the Cylinder is horizontal. If it rotates-> call the function twice.
   ab.fillCircle(A.x,A.y,R, white);
   ab.fillCircle(B.x,B.y,R, white);
-  vec2 temp;
-  //temp = trigoVec(trigoInv(A,B),R,A);
+  vec2 temp;  
   if (Hz){ temp=vec2(0,1); }
   else { temp=vec2(1,0);}
   for (int i=0; i<R+1;i++){

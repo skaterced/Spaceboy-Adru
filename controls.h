@@ -9,17 +9,21 @@
 void controls(Player* p1){
 
   if (ab.pressed(RIGHT_BUTTON)){
-    if (ab.everyXFrames(2)){
+    if (p1->turnTimer--<=0){
+      p1->turnTimer=2;
       if (++p1->dir>15)
         p1->dir=0;
     }
   }
-  if (ab.pressed(LEFT_BUTTON)){
-    if (ab.everyXFrames(2)){
+  else if (ab.pressed(LEFT_BUTTON)){
+    if (p1->turnTimer--<=0){
+      p1->turnTimer=2;
       if (--p1->dir>127)
         p1->dir=15;
     }
   }
+  else
+    p1->turnTimer=0;
   if (ab.pressed(B_BUTTON)||ab.pressed(UP_BUTTON)){
     if (p1->fuel>0){
       p1->drawFlames();

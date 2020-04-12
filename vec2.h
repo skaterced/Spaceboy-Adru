@@ -1,9 +1,7 @@
 #ifndef _VEC2_ 
 #define _VEC2_ 
-//from Mystic Balloon from Team ARG
+//taken from Team ARG's Mystic Balloon
 //added a few things...
-
-//#include "globals.h"
 
 struct vec2
 {
@@ -66,6 +64,7 @@ vec2 operator*(vec2 lhs, const int &rhs)
     lhs.y *= rhs;
     return lhs;
 }
+
 vec2 operator%(vec2 lhs, const int &rhs)
 {
     lhs.x %= rhs;

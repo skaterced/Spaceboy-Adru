@@ -21,6 +21,8 @@
 #define SPACEINVADER_LIFE 5
 #define ENNEMIS_BIGEYEMONSTER 2
 #define BIGEYEMONSTER_LIFE 20
+#define ENNEMIS_FLYINGSAUCER 3
+#define FLYINGSAUCER_LIFE 50
 
 class Explosion {
   public:
@@ -100,21 +102,18 @@ class Element {
       int life=METEOR_LIFE; 
       active=false;      
     }*/
-    void Element::draw();
+    //void Element::draw();
 };
-void Element::draw(){
-  //ab.setCursor(pos.x+mapCoord.x,pos.y+mapCoord.y);
-  //ab.print(F("Est-ce que ca marche?"));
-}
 
 class Meteor : public Element {
   public:
     void Meteor::draw() {
       this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
       this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
-      //ab.fillCircle(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6,6,0);
-      sprites.drawExternalMask(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6, this->life<(METEOR_LIFE/2)? meteor_dmg:meteor, meteor_mask, 0,0);
-      //sprites.drawSelfMasked(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6, this->life<50? meteor_dmg:meteor,0);
+      //ab.fillCircle(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6,6,0);      
+      //sprites.drawSelfMasked(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6, this->life<50? meteor_dmg:meteor,0); //uses more memory!?
+      sprites.drawExternalMask(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6, this->life<(METEOR_LIFE/2)? meteor_dmg:meteor, meteor_mask, 0,0); //doesn't work properly but ok...
+      //mask is "leaking" on the left side. No idea why. 
     }
 };
 
@@ -134,8 +133,12 @@ class Ennemis : public Element {
       else if (ENNEMIS_BIGEYEMONSTER==type){
         life=BIGEYEMONSTER_LIFE;
       }
+      else if (ENNEMIS_FLYINGSAUCER==type){
+        life=FLYINGSAUCER_LIFE;
+      }      
     }
     Ennemis::update(void){
+      vec2 pointD;
       switch (type){
         case ENNEMIS_SPACEINVADER: default:
           this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
@@ -144,6 +147,30 @@ class Ennemis : public Element {
           if (ab.everyXFrames(5))
             frame=frame==0? 1:0;        
         break;      
+        case ENNEMIS_FLYINGSAUCER:
+          this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
+          this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
+          if (ab.everyXFrames(10)){
+            frame++;   
+            if (frame>7)
+              frame=0;  
+          }              
+          //sprites.drawSelfMasked(pos.x+mapCoord.x-8,pos.y+mapCoord.y-7,monster,frame);
+          ab.fillCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,6);          
+          ab.fillCircle(pos.x+mapCoord.x,pos.y+mapCoord.y,2,0);
+          ab.drawPixel(pos.x+mapCoord.x+1,pos.y+mapCoord.y-1,3);          
+          pointD=trigoVec(frame,5,this->pos+mapCoord);
+          ab.drawPixel(pointD.x,pointD.y,0);
+          pointD=trigoVec(frame+8,5,this->pos+mapCoord);
+          ab.drawPixel(pointD.x,pointD.y,0);          
+          pointD=trigoVec(trigoInv(this->pos+mapCoord,vec2(64,32)),5,this->pos+mapCoord);
+          if (ab.everyXFrames(2)){
+            if ((magn(vec2(64,32)-pos-mapCoord)==-1)||(magn(vec2(64,32)-pos-mapCoord)>35))
+              this->speed=(pointD-this->pos-mapCoord)*3;
+            else
+              this->speed=vec2(0,0);
+          } 
+        break;
         case ENNEMIS_BIGEYEMONSTER:
           this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
           this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
@@ -155,15 +182,18 @@ class Ennemis : public Element {
           sprites.drawSelfMasked(pos.x+mapCoord.x-8,pos.y+mapCoord.y-7,monster,frame);
           //int temp=trigoInv(pos+mapCoord,vec2(64,32));
           //vec2 pointD=trigoVec(temp,4,pos)+mapCoord;
-          vec2 pointD=trigoVec(trigoInv(pos+mapCoord,vec2(64,32)),4,pos+vec2(0,-4)+mapCoord);
+          pointD=trigoVec(trigoInv(this->pos+mapCoord,vec2(64,32)),4,this->pos+vec2(0,-4)+mapCoord);
           //if (abs(temp-8)<3)
-            //pointD+=vec2(0,-1);
+          //pointD+=vec2(0,-1);
           ab.drawRect(pointD.x-1,pointD.y,3,2,0);
           ab.drawPixel(pointD.x,pointD.y);
-        break;
+          if (ab.everyXFrames(2))
+            this->speed=(pointD-this->pos-mapCoord+vec2(0,5))*3;                    
+        break;        
       }
     }
 };
 
 
 #endif
+

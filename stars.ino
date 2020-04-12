@@ -1,4 +1,17 @@
-
+/* Welcome to my third Arduboy game
+ *  This game was meant to be an exploration game with a galaxy looking general map, a space station where you dock between each mission and plenty of other things...
+ *  I was thinking too big for the Arduboy RAM and now I have to cut in my ideas. I might actually program them, check if they work and then comment it.
+ *  That way, if you edit my code, you could see what the game could have been. We never know, maybe there will be an Arduboy V2 with more RAM...
+ * 
+ * Capacity Countdown:
+ * 15% progmem left but I have to program the following:
+ * ship can die (maybe replace fuel jauge with shield)
+ * Something happen when ship is off the map (game over?) 
+ * FlyingSaucer can shoot (and move less predictibly)
+ * add score
+ * 
+ */
+ 
 #include "globals.h"
 #include "trigo.h"
 #include "controls.h"
@@ -12,14 +25,16 @@
 #define STATE_MENU 1
 #define STATE_CREDIT 2
 #define STATE_GAME 3
+#define STATE_TESTING 9
 
 Player ship(64,32,4);
 Station home=Station (vec2(300,300));
 bool station_active=false; //3%Progmem...
 
 byte state;
+unsigned int timer=0;
 
-vec2 pointA(50,10);
+vec2 pointA(60,30);
 vec2 pointB(20,40);
 vec2 pointC(25,50);
 
@@ -28,12 +43,13 @@ void setup()
   ab.begin();  
   ab.setFrameRate(60);
   state=STATE_MENU;
+  //state=STATE_TESTING;
   ab.initRandomSeed();  
-  
+    
   //pointB+=vec2(pointC);
   mapCenter();
 
-  putMeteor(vec2(100,900), vec2(1,0));
+  
   putMeteor(vec2(10,500), vec2(1,0));
   putMeteor(vec2(550,550), vec2(0,0));
   putEnnemis(vec2(1000,0),vec2(0,5),0);
@@ -46,7 +62,6 @@ void setup()
   putEnnemis(vec2(-40,600),vec2(5,0),0);
   putEnnemis(vec2(-60,600),vec2(5,0),ENNEMIS_BIGEYEMONSTER);
     
-  putEnnemis(vec2(800,800),vec2(0,0),ENNEMIS_BIGEYEMONSTER);
   //putStation();
 }
 
@@ -55,8 +70,9 @@ void setup()
 //vec2 pointD;
 
 void loop() {
-  //if (!(ab.nextFrameDEV())){
-  if (!(ab.nextFrame())){
+  timer++;
+  if (!(ab.nextFrameDEV())){
+  //if (!(ab.nextFrame())){
     return;
   }
   ab.pollButtons();
@@ -68,14 +84,16 @@ void loop() {
       ab.println("Welcome Spaceman");
       ab.println("");
       ab.println("Ready to blast");
-      ab.println("some Alien?");
+      ab.println("some Aliens?");
       ab.println("");
       ab.println("");
       ab.println("A: Start");
       ab.println("B: Credit");
 
-      if (ab.justPressed(A_BUTTON))
-        state=STATE_GAME;
+      if (ab.justPressed(A_BUTTON)){
+        randomSeed(timer*3000);
+        state=STATE_GAME; 
+      }
       if (ab.justPressed(B_BUTTON))
         state=STATE_CREDIT;        
     break;
@@ -95,9 +113,10 @@ void loop() {
     case STATE_GAME:
     
       //drawStars(mapCoord.x,mapCoord.y, 3309);
-      //
-      drawBackground(mapCoord.x,mapCoord.y, 3309);
-      ship.draw();  
+      drawStars();
+      ship.draw();
+      drawBackground(mapCoord.x,mapCoord.y);
+      
       if (station_active){
         home.draw();
       }  
@@ -106,9 +125,9 @@ void loop() {
       ship.checkShotscollision();  
     break;
     
-/* 
-    case TESTING:
-     
+ 
+    case STATE_TESTING:
+    /* 
       vec2 moveCurs=vec2(0,0);
       if (ab.justPressed(LEFT_BUTTON))
         moveCurs+=vec2(-1,0);
@@ -122,10 +141,12 @@ void loop() {
         moveCurs=moveCurs*10;
       pointB+=moveCurs;        
     
-      //ab.drawCircle(pointA.x,pointA.y,2);
+      ab.drawCircle(pointA.x,pointA.y,2);
       ab.drawCircle(pointB.x,pointB.y,2);
       int temp=trigoInv(pointA,pointB);
-      //drawVecLine(pointA,trigoVec(temp,20,pointA));
+      drawVecLine(pointA,trigoVec(temp,20,pointA));
+      ab.println(pointB.x);
+      ab.println(pointB.y);
       
     
       if (ab.everyXFrames(15)){
@@ -156,10 +177,9 @@ void loop() {
       }
       if (count>50)
         count=0;
-    
-    break;
     */
-    
+    break;
+        
   }
   ab.display();  
 }

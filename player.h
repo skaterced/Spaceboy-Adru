@@ -18,6 +18,7 @@ class Player {
     vec2 speed;    
     vec2 reste;
     byte dir;
+    byte turnTimer;
     unsigned int fuel;
     unsigned int fuelMax;
     int coolDown;
@@ -29,6 +30,7 @@ class Player {
       this->pos.y=y;
       this->dir=dir;
       this->coolDown=0;
+      this->turnTimer=0;
       this->speed=vec2(0,0);
       fuelMax=TANK_SMALL;
       fuel=fuelMax;
@@ -47,8 +49,8 @@ void Player::draw(){ //---------------------------------------------------------
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
 
   //Fuel jauge
-  drawVecLine(vec2(127,63),vec2(127,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
-  ab.drawPixel(127,63-(fuelMax/300));
+  drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
+  ab.drawPixel(126,63-(fuelMax/300));
   //drawVecLine(vec2(127,63),vec2(126); //todo: modify drawTrigoVec (vec2, dir, length){...
 
   
