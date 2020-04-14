@@ -49,7 +49,7 @@ void setup()
   //pointB+=vec2(pointC);
   mapCenter();
 
-  
+  /*
   putMeteor(vec2(10,500), vec2(1,0));
   putMeteor(vec2(550,550), vec2(0,0));
   putEnnemis(vec2(1000,0),vec2(0,5),0);
@@ -61,6 +61,8 @@ void setup()
   putEnnemis(vec2(-20,600),vec2(5,0),0);
   putEnnemis(vec2(-40,600),vec2(5,0),0);
   putEnnemis(vec2(-60,600),vec2(5,0),ENNEMIS_BIGEYEMONSTER);
+    */
+  putEnnemis(vec2(600,600),vec2(5,0),ENNEMIS_FLYINGSAUCER);
     
   //putStation();
 }
@@ -115,7 +117,7 @@ void loop() {
       //drawStars(mapCoord.x,mapCoord.y, 3309);
       drawStars();
       ship.draw();
-      drawBackground(mapCoord.x,mapCoord.y);
+      drawBackground();
       
       if (station_active){
         home.draw();

@@ -7,6 +7,7 @@
 #include "trigo.h"
 #include "element.h"
 #include "station.h"
+#include "shot.h"
 
 #define IMAGE_WIDTH 128
 #define IMAGE_HEIGHT 64
@@ -23,6 +24,7 @@
 
 Meteor met[NBMAX_METEOR];
 Ennemis enn[NBMAX_ENNEMIS];
+Shot ennShot;
 Explosion xplo[NBMAX_EXPLOSION];
 byte xploIt=0;
 /*
@@ -85,8 +87,7 @@ void drawStars(){
         temp=0;
       sprites.drawSelfMasked(mapCoord.x+i*IMAGE_WIDTH,mapCoord.y+j*IMAGE_HEIGHT,stars,temp);
     }
-  }
-   
+  }   
 /*  for (int i=0; i<SECTOR_COLUMNS; i++){ 
     for (int j=0; j< SECTOR_LINES; j++){
       byte temp=random(15)+1;
@@ -168,7 +169,7 @@ void drawRadar(){
   */
 }
 
-void drawBackground(int x, int y){//, int RandSeed){
+void drawBackground(){//, int RandSeed){
 
  byte temp=0;
   for (int i=0; i<NBMAX_METEOR; i++){
@@ -187,11 +188,22 @@ void drawBackground(int x, int y){//, int RandSeed){
   for (int i=0; i<NBMAX_ENNEMIS; i++){
     if (enn[i].active){
       if (!isOut(enn[i].pos)){
-        enn[i].update();
+        if(enn[i].update()){
+          if (0==ennShot.active){
+            ennShot.active=SHOT_DURATION;
+            int temp=trigoInv(enn[i].pos+mapCoord,vec2(64,32));// <-aiming the ship (if it's not in the border...)
+            ennShot.pos=trigoVec(temp,10,enn[i].pos+mapCoord);
+            ennShot.dir=temp;            
+            ennShot.speed=trigoVec(temp,6,vec2(0,0));             
+          }
+        }
         temp++;
       }
       else {enn[i].active=false;}
     }
+  }
+  if (ennShot.active){
+    ennShot.draw();
   }
   if (0==temp){
     putEnnemis(vec2(1280,1280),vec2(0,0),ENNEMIS_FLYINGSAUCER);      
@@ -247,13 +259,6 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg){ //Circular c
   }  
   return vec2(0,0);
 }
-
-
-/*
-void drawMeteor(vec2 pos, bool dmg){  // to erase...
-  sprites.drawExternalMask(pos.x, pos.y, dmg? meteor_dmg:meteor, meteor_mask, 0,0);
-}
-*/
 
 
 #endif

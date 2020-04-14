@@ -2,7 +2,7 @@
 #define _SHOT_
 
 #include "globals.h"
-#include "background.h"
+//#include "background.h"
 #include "vec2.h"
 
 #define SHOTS_MAX 4
@@ -30,10 +30,6 @@ void Shot::draw(){
   this->pos+=this->speed;  //trigoVec(this->dir,2,vec2(0,0));
   if (--this->active<=0)
     this->active=0;
-  /*
-  ab.display();
-  delay(130);
-  */
 }
 
 

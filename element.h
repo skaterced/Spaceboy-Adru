@@ -137,7 +137,7 @@ class Ennemis : public Element {
         life=FLYINGSAUCER_LIFE;
       }      
     }
-    Ennemis::update(void){
+    bool Ennemis::update(void){
       vec2 pointD;
       switch (type){
         case ENNEMIS_SPACEINVADER: default:
@@ -167,8 +167,10 @@ class Ennemis : public Element {
           if (ab.everyXFrames(2)){
             if ((magn(vec2(64,32)-pos-mapCoord)==-1)||(magn(vec2(64,32)-pos-mapCoord)>35))
               this->speed=(pointD-this->pos-mapCoord)*3;
-            else
+            else {
               this->speed=vec2(0,0);
+              return true;
+            }
           } 
         break;
         case ENNEMIS_BIGEYEMONSTER:
@@ -191,7 +193,8 @@ class Ennemis : public Element {
             this->speed=(pointD-this->pos-mapCoord+vec2(0,5))*3;                    
         break;        
       }
-    }
+    return false;
+    }    
 };
 
 

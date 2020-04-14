@@ -51,21 +51,22 @@ void controls(Player* p1){
       }
     }
   }
+  /*
   if (ab.pressed(A_BUTTON)&&ab.pressed(B_BUTTON)&&ab.pressed(LEFT_BUTTON)&&ab.pressed(RIGHT_BUTTON)){ //secret warp (
     p1->pos=vec2(64,32);
     mapCoord=vec2(0,0);    
   }
-  
+  */
   if (ab.justPressed(A_BUTTON)){    //another weapons allows to hold fire button
     if (0==p1->coolDown){ 
       for (int i=0;i<SHOTS_MAX;i++){        
         if (0==p1->shots[i].active){          
           p1->shots[i].active=SHOT_DURATION;
-          p1->coolDown=COOLDOWN;
-          //p1->shots[i].pos=p1->pos+trigoVec(p1->dir,10,vec2(0,0));
-          p1->shots[i].pos=p1->pos/*-mapCoord*/+trigoVec(p1->dir,10,vec2(0,0))+p1->speed/SPEED_DIVISOR;
+          p1->coolDown=COOLDOWN;                   
+          p1->shots[i].pos=p1->pos/*-mapCoord*/+trigoVec(p1->dir,10,p1->speed/SPEED_DIVISOR);
           p1->shots[i].dir=p1->dir;
-          p1->shots[i].speed=p1->speed/SPEED_DIVISOR+trigoVec(p1->dir,6,vec2(0,0));
+          //p1->shots[i].speed=p1->speed/SPEED_DIVISOR+trigoVec(p1->dir,6,vec2(0,0));
+          p1->shots[i].speed=trigoVec(p1->dir,6,p1->speed/SPEED_DIVISOR);
           i=99;
         }
       }
