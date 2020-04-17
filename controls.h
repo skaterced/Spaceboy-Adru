@@ -25,9 +25,9 @@ void controls(Player* p1){
   else
     p1->turnTimer=0;
   if (ab.pressed(B_BUTTON)||ab.pressed(UP_BUTTON)){
-    if (p1->fuel>0){
+    if (true){//if (p1->fuel>0){
       p1->drawFlames();
-      p1->fuel-=1;
+      //p1->fuel-=1;
       if (ab.everyXFrames(2)){
         p1->speed+=trigoVec(p1->dir,3,vec2(0,0));
         if (magn(p1->speed)>SPEED_MAX) {
@@ -37,12 +37,12 @@ void controls(Player* p1){
     }
   }
   if (ab.pressed(DOWN_BUTTON)){
-    if (p1->fuel>0){          
+    if (true){//(p1->fuel>0){          
       if (magn(p1->speed)<=1) {
         p1->speed=vec2(0,0);
       }
       else {
-        p1->fuel-=1;
+        //p1->fuel-=1;
         p1->drawRetroFlames();      
         if (ab.everyXFrames(2)){
           p1->speed.x-=abs(p1->speed.x)/p1->speed.x;
@@ -51,12 +51,13 @@ void controls(Player* p1){
       }
     }
   }
-  /*
+  
   if (ab.pressed(A_BUTTON)&&ab.pressed(B_BUTTON)&&ab.pressed(LEFT_BUTTON)&&ab.pressed(RIGHT_BUTTON)){ //secret warp (
     p1->pos=vec2(64,32);
-    mapCoord=vec2(0,0);    
+    mapCenter();
+    //mapCoord=vec2(0,0);    
   }
-  */
+  
   if (ab.justPressed(A_BUTTON)){    //another weapons allows to hold fire button
     if (0==p1->coolDown){ 
       for (int i=0;i<SHOTS_MAX;i++){        

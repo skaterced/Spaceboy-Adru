@@ -129,7 +129,7 @@ void loop() {
     
  
     case STATE_TESTING:
-    /* 
+  /*   
       vec2 moveCurs=vec2(0,0);
       if (ab.justPressed(LEFT_BUTTON))
         moveCurs+=vec2(-1,0);

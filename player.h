@@ -9,8 +9,10 @@
 #include "shot.h"
 #include "background.h"
 
-#define TANK_SMALL 10000
-#define TANK_EMERGENCY 300
+#define ARMOR_MAX 60
+
+//#define TANK_SMALL 10000
+//#define TANK_EMERGENCY 300
 
 class Player {       
   public:
@@ -19,8 +21,9 @@ class Player {
     vec2 reste;
     byte dir;
     byte turnTimer;
-    unsigned int fuel;
-    unsigned int fuelMax;
+    //unsigned int fuel;
+    //unsigned int fuelMax;
+    byte armor;
     int coolDown;
     bool burn;
     Shot shots[SHOTS_MAX];
@@ -32,8 +35,9 @@ class Player {
       this->coolDown=0;
       this->turnTimer=0;
       this->speed=vec2(0,0);
-      fuelMax=TANK_SMALL;
-      fuel=fuelMax;
+      armor=ARMOR_MAX;
+      //fuelMax=TANK_SMALL;
+      //fuel=fuelMax;
       reste=vec2(0,0);     
       burn=false; 
     }
@@ -49,10 +53,12 @@ void Player::draw(){ //---------------------------------------------------------
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
 
   //Fuel jauge
-  drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
-  ab.drawPixel(126,63-(fuelMax/300));
-  //drawVecLine(vec2(127,63),vec2(126); //todo: modify drawTrigoVec (vec2, dir, length){...
-
+  //drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
+  //ab.drawPixel(126,63-(fuelMax/300));  
+  
+  //ARMOR
+  drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
+  ab.drawPixel(126,63-(ARMOR_MAX));    
   
   //Background ajust
   if (pos.x<64){
@@ -102,6 +108,7 @@ void Player::draw(){ //---------------------------------------------------------
     }      
   }
   
+  
 /*    
   //Ship V1 "Bubble"
   ab.fillCircle(pos.x,pos.y,4);
@@ -148,14 +155,20 @@ void Player::checkcollision(){
   vec2 temp=elementCollision(this->pos,6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
     ab.drawCircle(this->pos.x,this->pos.y,20);
-    this->speed=temp;
+    if (temp.x!=99){
+      armor-=magn(this->speed)/10; //todo make dmg proportional to speed diference between the 2 objects
+      this->speed=temp;
+    }
+    else {
+      armor-=temp.y;
+    }
   }
 }
 void Player::checkShotscollision(){
   for (int i=0; i<SHOTS_MAX; i++){
     if (shots[i].active){
       vec2 temp=elementCollision(shots[i].pos,0,0,2);
-      if (temp!=vec2(0,0)){
+      if (temp!=vec2(0,0)&&temp.x!=99){ //not much chance of being hit by own shot (maybe at the beggining)
         shots[i].active=false;
       }
     }

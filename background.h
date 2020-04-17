@@ -41,11 +41,10 @@ void putMeteor(vec2 pos, vec2 speed){
   for (int i=0; i<NBMAX_METEOR; i++){
     if (!met[i].active){
       met[i].active=true;
-      met[i].pos=pos;  //ok, maybe not rand... 
-      //met[i].pos.y=50;
+      met[i].pos=pos;
       met[i].life=METEOR_LIFE;
       met[i].speed=speed;
-      return 0;
+      i=99;
     }
   }
 }
@@ -140,18 +139,18 @@ void drawRadar(){
       
   for (int i=0; i<NBMAX_METEOR; i++){
     if (met[i].active){
-      temp=(mapCoord.x+met[i].pos.x-58)/IMAGE_WIDTH; //58: IMAGE_WIDTH/2-meteor_image_width/2
-      temp2=(mapCoord.y+met[i].pos.y-26)/IMAGE_HEIGHT;
+      temp=(mapCoord.x+met[i].pos.x-29)/IMAGE_WIDTH; //29: IMAGE_WIDTH/4-meteor_image_width/4
+      temp2=(mapCoord.y+met[i].pos.y-13)/IMAGE_HEIGHT;
       
       if ((temp<6&&temp>-6)&&(temp2<5&&temp2>-5)){
-        ab.drawPixel(RADAR_POSX+temp+5,4+RADAR_POSY+temp2,blinking? 0:1);
+        ab.drawPixel(RADAR_POSX+temp+5,4+RADAR_POSY+temp2,slowBlinking? 0:1);
       }
     }
   }
   for (int i=0; i<NBMAX_ENNEMIS; i++){
     if (enn[i].active){
-      temp=(mapCoord.x+enn[i].pos.x-58)/IMAGE_WIDTH; //pos adjust. from meteor but...
-      temp2=(mapCoord.y+enn[i].pos.y-26)/IMAGE_HEIGHT;
+      temp=(mapCoord.x+enn[i].pos.x-29)/IMAGE_WIDTH; //pos adjust. from meteor but...
+      temp2=(mapCoord.y+enn[i].pos.y-13)/IMAGE_HEIGHT;
       
       if ((temp<6&&temp>-6)&&(temp2<5&&temp2>-5)){
         ab.drawPixel(RADAR_POSX+temp+5,4+RADAR_POSY+temp2,fastBlinking? 0:1);
@@ -180,9 +179,9 @@ void drawBackground(){//, int RandSeed){
       }
       else {met[i].active=false;}
     }
-    if (0==temp){
-      putMeteor(vec2(0,random(1000)), vec2(random(10)+1,random(2)-1));
-    }
+  }  
+  if (0==temp){
+    putMeteor(vec2(0,random(1000)), vec2(random(10)+1,random(2)-1));
   }
   temp=0;
   for (int i=0; i<NBMAX_ENNEMIS; i++){
@@ -256,10 +255,18 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg){ //Circular c
         return objPos-enn[i].pos-mapCoord;
       }
     }
-  }  
+  }
+  //todo check ennemi shot
+  if (ennShot.active){
+      if ((magn(objPos-ennShot.pos)!=-1)&&(magn(objPos-ennShot.pos)<(radius+1))){
+        ennShot.active=false;
+        return vec2(99,2); // x 99 means hit by an ennemi shot -> 2 is the dmg inflicted
+      }
+  }
+  
+  
   return vec2(0,0);
 }
 
 
 #endif
- 

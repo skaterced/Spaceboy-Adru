@@ -22,7 +22,7 @@
 #define ENNEMIS_BIGEYEMONSTER 2
 #define BIGEYEMONSTER_LIFE 20
 #define ENNEMIS_FLYINGSAUCER 3
-#define FLYINGSAUCER_LIFE 50
+#define FLYINGSAUCER_LIFE 20
 
 class Explosion {
   public:
@@ -150,7 +150,7 @@ class Ennemis : public Element {
         case ENNEMIS_FLYINGSAUCER:
           this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
           this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
-          if (ab.everyXFrames(10)){
+          if (ab.everyXFrames(5)){
             frame++;   
             if (frame>7)
               frame=0;  
@@ -164,7 +164,7 @@ class Ennemis : public Element {
           pointD=trigoVec(frame+8,5,this->pos+mapCoord);
           ab.drawPixel(pointD.x,pointD.y,0);          
           pointD=trigoVec(trigoInv(this->pos+mapCoord,vec2(64,32)),5,this->pos+mapCoord);
-          if (ab.everyXFrames(2)){
+          if (ab.everyXFrames(80)){
             if ((magn(vec2(64,32)-pos-mapCoord)==-1)||(magn(vec2(64,32)-pos-mapCoord)>35))
               this->speed=(pointD-this->pos-mapCoord)*3;
             else {
@@ -199,4 +199,3 @@ class Ennemis : public Element {
 
 
 #endif
-
