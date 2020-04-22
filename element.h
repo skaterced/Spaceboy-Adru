@@ -12,6 +12,7 @@
 #define METEOR_LIFE 10
 #define NBMAX_ENNEMIS 10
 #define NBMAX_EXPLOSION 5
+#define NBMAX_GEM 3
 
 #define EXPLOSION_SMALL 1
 #define EXPLOSION_MEDIUM 2
@@ -23,6 +24,8 @@
 #define BIGEYEMONSTER_LIFE 20
 #define ENNEMIS_FLYINGSAUCER 3
 #define FLYINGSAUCER_LIFE 20
+#define ENNEMIS_ENNSHIP 4
+#define ENNSHIP_LIFE 20
 
 class Explosion {
   public:
@@ -78,6 +81,26 @@ class Explosion {
     }
 };
 
+class Gem {
+  public:
+    vec2 pos;
+    bool blink;
+    bool active;
+    Gem(){
+      active=false;
+    }
+    void Gem::draw() {
+      if (ab.everyXFrames(3))
+        blink=!blink;
+      if (blink){
+        ab.fillCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,1);      
+      }
+      else {
+        ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,1);      
+      }
+    }
+};
+
 class Element {  
   public:
     vec2 pos;
@@ -93,16 +116,7 @@ class Element {
       //dir=0;
       int life=METEOR_LIFE; 
       active=false;
-    }/*
-    Element (vec2 pos, vec2 speed){
-      pos=pos;
-      speed=speed;
-      reste=vec2(0,0);
-      //dir=0;
-      int life=METEOR_LIFE; 
-      active=false;      
-    }*/
-    //void Element::draw();
+    }
 };
 
 class Meteor : public Element {
@@ -191,7 +205,25 @@ class Ennemis : public Element {
           ab.drawPixel(pointD.x,pointD.y);
           if (ab.everyXFrames(2))
             this->speed=(pointD-this->pos-mapCoord+vec2(0,5))*3;                    
-        break;        
+        break;      
+        case ENNEMIS_ENNSHIP:
+          this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
+          this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
+          /*
+          if (ab.everyXFrames(10)){
+            frame++;   
+            if (frame>4)
+              frame=0;  
+          }              
+          sprites.drawSelfMasked(pos.x+mapCoord.x-8,pos.y+mapCoord.y-7,monster,frame);
+          pointD=trigoVec(trigoInv(this->pos+mapCoord,vec2(64,32)),4,this->pos+vec2(0,-4)+mapCoord);
+          //if (abs(temp-8)<3)
+          //pointD+=vec2(0,-1);
+          ab.drawRect(pointD.x-1,pointD.y,3,2,0);
+          ab.drawPixel(pointD.x,pointD.y);
+          if (ab.everyXFrames(2))
+            this->speed=(pointD-this->pos-mapCoord+vec2(0,5))*3;*/
+        break;      
       }
     return false;
     }    

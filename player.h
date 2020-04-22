@@ -19,6 +19,7 @@ class Player {
     vec2 pos;
     vec2 speed;    
     vec2 reste;
+    int money;
     byte dir;
     byte turnTimer;
     //unsigned int fuel;
@@ -32,6 +33,7 @@ class Player {
       this->pos.x=x;
       this->pos.y=y;
       this->dir=dir;
+      money=0;
       this->coolDown=0;
       this->turnTimer=0;
       this->speed=vec2(0,0);
@@ -136,8 +138,16 @@ void Player::draw(){ //---------------------------------------------------------
   ab.drawPixel(pos.x+trigo((dir+1),6,true),pos.y+trigo((dir+1),6,false));
   ab.fillCircle(pos.x+trigo((dir+8),6,true),pos.y+trigo((dir+8),6,false),4,0);
   drawVecLine(pos,trigoVec(invDir(dir),4,pos));
-  
-  
+
+/*
+ //Ship V3 "Pointy" 
+  drawVecLine(trigoVec(dir+6,5,this->pos),trigoVec(dir,6,this->pos));
+  drawVecLine(trigoVec(dir+6,5,this->pos),trigoVec(dir-6,5,this->pos));
+  drawVecLine(trigoVec(dir-6,5,this->pos),trigoVec(dir,6,this->pos));
+  drawVecLine(trigoVec(dir+5,5,this->pos), trigoVec(dir,4,trigoVec(dir+5,5,this->pos)));
+  drawVecLine(trigoVec(dir-5,5,this->pos), trigoVec(dir,4,trigoVec(dir-5,5,this->pos)));  
+*/
+    
   //draw shots
   for (int i=0;i<SHOTS_MAX;i++){
     if (this->shots[i].active>0){      
@@ -154,13 +164,18 @@ void Player::draw(){ //---------------------------------------------------------
 void Player::checkcollision(){
   vec2 temp=elementCollision(this->pos,6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
-    ab.drawCircle(this->pos.x,this->pos.y,20);
-    if (temp.x!=99){
-      armor-=magn(this->speed)/10; //todo make dmg proportional to speed diference between the 2 objects
-      this->speed=temp;
+    if (98==temp.x){
+      money+=10;
     }
     else {
-      armor-=temp.y;
+      ab.drawCircle(this->pos.x,this->pos.y,20);
+      if (temp.x!=99){
+        armor-=magn(this->speed)/10; //todo make dmg proportional to speed diference between the 2 objects
+        this->speed=temp;
+      }    
+      else {
+        armor-=temp.y;
+      }
     }
   }
 }
@@ -168,7 +183,7 @@ void Player::checkShotscollision(){
   for (int i=0; i<SHOTS_MAX; i++){
     if (shots[i].active){
       vec2 temp=elementCollision(shots[i].pos,0,0,2);
-      if (temp!=vec2(0,0)&&temp.x!=99){ //not much chance of being hit by own shot (maybe at the beggining)
+      if (temp!=vec2(0,0)){
         shots[i].active=false;
       }
     }

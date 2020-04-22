@@ -27,6 +27,7 @@ Ennemis enn[NBMAX_ENNEMIS];
 Shot ennShot;
 Explosion xplo[NBMAX_EXPLOSION];
 byte xploIt=0;
+Gem gems[NBMAX_GEM];
 /*
 Station home=Station (vec2(300,300));
 bool station_active=false;
@@ -72,6 +73,15 @@ void explode(vec2 pos, byte type){
     xploIt=0;
 }
 
+void addGem(vec2 pos){
+  for (int i=0; i<NBMAX_GEM; i++){
+    if (!gems[i].active){
+      gems[i].active=true;
+      gems[i].pos=pos;
+      i=99;
+    }
+  }
+}
 void mapCenter(){
   mapCoord.x=-(MAP_WIDTH/2-64);
   mapCoord.y=-(MAP_HEIGHT/2-32);
@@ -168,7 +178,7 @@ void drawRadar(){
   */
 }
 
-void drawBackground(){//, int RandSeed){
+void drawBackground(){//, int RandSeed){  //-------------------------------------- Draw Background --------------------------
 
  byte temp=0;
   for (int i=0; i<NBMAX_METEOR; i++){
@@ -210,6 +220,10 @@ void drawBackground(){//, int RandSeed){
   for (int i=0;i<NBMAX_EXPLOSION;i++){
     xplo[i].update();
   }
+  for (int i=0;i<NBMAX_GEM;i++){
+    if (gems[i].active)
+      gems[i].draw();
+  }  
   drawRadar();
 }
 
@@ -221,11 +235,11 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg){ //Circular c
       
       if ((magn(objPos-met[i].pos-mapCoord)!=-1)&&(magn(objPos-met[i].pos-mapCoord)<(radius+6))){
       //if ((temp.x-7<shipPos.x&&shipPos.x<temp.x+19)&&(temp.y-7<shipPos.y&&shipPos.y<temp.y+19)){ // 22 = 12(image width/heigth)+10(ship radius)
-        met[i].life-=dmg; //todo draw lifeBar ?
+        met[i].life-=dmg;
         if (met[i].life<=0){
           met[i].active=false;
           explode(met[i].pos,EXPLOSION_MEDIUM);
-          //todo: add gem
+          addGem(met[i].pos); //todo add random ?
         }
         if (force>0){
           met[i].speed-=(objPos-met[i].pos-mapCoord)*force/10;
@@ -243,11 +257,11 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg){ //Circular c
       else
         temp=5;
       if ((magn(objPos-enn[i].pos-mapCoord)!=-1)&&(magn(objPos-enn[i].pos-mapCoord)<(radius+temp))){      
-        enn[i].life-=dmg; //todo draw lifeBar ?
+        enn[i].life-=dmg; 
         if (enn[i].life<=0){
           enn[i].active=false;
           explode(enn[i].pos, EXPLOSION_MEDIUM);
-          //todo: add gem
+          addGem(enn[i].pos); //todo add random ?
         }
         if (force>0){
           enn[i].speed-=(objPos-enn[i].pos-mapCoord)*force/10;
@@ -256,12 +270,19 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg){ //Circular c
       }
     }
   }
-  //todo check ennemi shot
   if (ennShot.active){
       if ((magn(objPos-ennShot.pos)!=-1)&&(magn(objPos-ennShot.pos)<(radius+1))){
         ennShot.active=false;
         return vec2(99,2); // x 99 means hit by an ennemi shot -> 2 is the dmg inflicted
       }
+  }
+  for (int i=0; i<NBMAX_GEM;i++){
+    if (gems[i].active){
+      if ((magn(objPos-gems[i].pos-mapCoord)!=-1)&&(magn(objPos-gems[i].pos-mapCoord)<(radius+2))){
+        gems[i].active=false;
+        return vec2(98,2); // x 98 means coin collected
+      }
+    }
   }
   
   
