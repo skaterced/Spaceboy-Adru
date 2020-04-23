@@ -25,11 +25,13 @@
 #define STATE_MENU 1
 #define STATE_CREDIT 2
 #define STATE_GAME 3
+#define STATE_PAUSE 4
+#define STATE_GAMEOVER 5
 #define STATE_TESTING 9
 
 Player ship(64, 32, 4);
-Station home = Station (vec2(300, 300));
-bool station_active = false; //3%Progmem...
+//Station home = Station (vec2(300, 300));
+//bool station_active = false; //3%Progmem...
 
 byte state;
 unsigned int timer = 0;
@@ -41,7 +43,9 @@ vec2 pointC(25, 50);
 void setup()
 {
   ab.begin();
+  //ab.boot(); //846 bytes (3%) saved by using boot instead of begin (but must implement something else I guess
   ab.setFrameRate(60);
+  //state = STATE_GAME;
   state = STATE_MENU;
   //state=STATE_TESTING;
   ab.initRandomSeed();
@@ -49,20 +53,24 @@ void setup()
   //pointB+=vec2(pointC);
   mapCenter();
 
-  /*
-    putMeteor(vec2(10,500), vec2(1,0));
-    putMeteor(vec2(550,550), vec2(0,0));
+  
+    putMeteor(vec2(10,500), vec2(3,0));
+    putMeteor(vec2(600,800), vec2(1,-2));
+    putMeteor(vec2(10,900), vec2(2,-1));
+    putMeteor(vec2(10,300), vec2(2,2));
+    putMeteor(vec2(550,550), vec2(1,-1));
+    /*
     putEnnemis(vec2(1000,0),vec2(0,5),0);
     putEnnemis(vec2(1020,0),vec2(0,5),0);
     putEnnemis(vec2(1040,0),vec2(0,5),0);
     putEnnemis(vec2(1060,0),vec2(0,5),0);
-
+*/
     putEnnemis(vec2(0,600),vec2(5,0),0);
     putEnnemis(vec2(-20,600),vec2(5,0),0);
     putEnnemis(vec2(-40,600),vec2(5,0),0);
-    putEnnemis(vec2(-60,600),vec2(5,0),ENNEMIS_BIGEYEMONSTER);
-  */
-  putEnnemis(vec2(600, 600), vec2(5, 0), ENNEMIS_FLYINGSAUCER);
+    putEnnemis(vec2(1000,80),vec2(5,0),ENNEMIS_BIGEYEMONSTER);
+  
+  //putEnnemis(vec2(600, 600), vec2(5, 0), ENNEMIS_FLYINGSAUCER);
 
   //putStation();
 }
@@ -83,6 +91,8 @@ void loop() {
 
   switch (state) {
     case STATE_MENU:
+      //sprites.drawSelfMasked(0,0,menus,0);
+    
       ab.println("Welcome Spaceman");
       ab.println("");
       ab.println("Ready to blast");
@@ -112,18 +122,50 @@ void loop() {
       if (ab.justPressed(A_BUTTON) || ab.justPressed(B_BUTTON))
         state = STATE_MENU;
       break;
+    case STATE_PAUSE: case STATE_GAMEOVER:
+      if (STATE_GAMEOVER==state){
+        ab.println("       Game Over");
+        ab.println("");
+      }
+      else {
+        ab.println("      * Pause *");      
+        ab.print("ship left: ");
+        ab.println(ship.lives);
+      }
+      ab.print("score: ");
+      ab.println(ship.money);
+      
+      if (ab.justPressed(B_BUTTON)){
+        state = STATE_GAME;
+      }
+      
+      break;
     case STATE_GAME:
 
+      if (ab.pressed(LEFT_BUTTON)&&ab.pressed(RIGHT_BUTTON)){
+        state = STATE_PAUSE;
+      }
       //drawStars(mapCoord.x,mapCoord.y, 3309);
       drawStars();
       ship.draw();
       drawBackground();
-
+/*
       if (station_active) {
         home.draw();
       }
+*/      
       controls(&ship);
-      ship.checkcollision();
+      if (ship.checkcollision()){
+        if (--ship.lives==0){
+          state=STATE_GAMEOVER;
+        }
+        else {
+          explode(ship.pos-mapCoord, EXPLOSION_BIG);
+          ship.invincible=200;
+          ship.armor=ARMOR_MAX;
+          //mapCenter();        
+        }
+      }
       ship.checkShotscollision();
       break;
 

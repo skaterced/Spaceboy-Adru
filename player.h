@@ -25,6 +25,8 @@ class Player {
     //unsigned int fuel;
     //unsigned int fuelMax;
     byte armor;
+    byte invincible;
+    byte lives;
     int coolDown;
     bool burn;
     Shot shots[SHOTS_MAX];
@@ -34,6 +36,7 @@ class Player {
       this->pos.y=y;
       this->dir=dir;
       money=0;
+      lives=3;
       this->coolDown=0;
       this->turnTimer=0;
       this->speed=vec2(0,0);
@@ -42,15 +45,21 @@ class Player {
       //fuel=fuelMax;
       reste=vec2(0,0);     
       burn=false; 
+      invincible=0;
     }
     void Player::draw();
     void Player::drawFlames();
     void Player::drawRetroFlames();
-    void Player::checkcollision();
+    bool Player::checkcollision(); //return true if armor drops below 0 (but it's unsigned so >200)
     void Player::checkShotscollision();
 };
 void Player::draw(){ //--------------------------------------------------------------------DRAW----------------------------------
 
+  if(ab.everyXFrames(3))
+    burn=!burn;
+  if (invincible>0)
+    invincible--;
+    
   pos+=((this->speed+this->reste)/SPEED_DIVISOR);
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
 
@@ -130,14 +139,16 @@ void Player::draw(){ //---------------------------------------------------------
   drawVecLine(temp, trigoVec(trueDir(dir-7),3,temp));
 */
 
- //Ship V2 "Half Moon" 
-  //sprites.drawSelfMasked(pos.x-8,pos.y-8,Ship, dir); //Sprites (unmasked) instead of geometrical drawing uses +222 bytes of progmem (1%). Don't know about speed yet. 
-  ab.fillCircle(pos.x,pos.y,5);
-  ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),3);
-  ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),2,0);
-  ab.drawPixel(pos.x+trigo((dir+1),6,true),pos.y+trigo((dir+1),6,false));
-  ab.fillCircle(pos.x+trigo((dir+8),6,true),pos.y+trigo((dir+8),6,false),4,0);
-  drawVecLine(pos,trigoVec(invDir(dir),4,pos));
+ //Ship V2 "Half Moon"
+  if ((0==invincible)||(burn)){
+    //sprites.drawSelfMasked(pos.x-8,pos.y-8,Ship, dir); //Sprites (unmasked) instead of geometrical drawing uses +222 bytes of progmem (1%). Don't know about speed yet. 
+    ab.fillCircle(pos.x,pos.y,5);
+    ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),3);
+    ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),2,0);
+    ab.drawPixel(pos.x+trigo((dir+1),6,true),pos.y+trigo((dir+1),6,false));
+    ab.fillCircle(pos.x+trigo((dir+8),6,true),pos.y+trigo((dir+8),6,false),4,0);
+    drawVecLine(pos,trigoVec(invDir(dir),4,pos));
+  }
 
 /*
  //Ship V3 "Pointy" 
@@ -161,7 +172,7 @@ void Player::draw(){ //---------------------------------------------------------
   //ab.setCursor(0,0);
   //ab.print(magn(this->speed));    
 }
-void Player::checkcollision(){
+bool Player::checkcollision(){  //return true if armor drops below 0 (but it's unsigned so >200)
   vec2 temp=elementCollision(this->pos,6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
     if (98==temp.x){
@@ -170,14 +181,20 @@ void Player::checkcollision(){
     else {
       ab.drawCircle(this->pos.x,this->pos.y,20);
       if (temp.x!=99){
-        armor-=magn(this->speed)/10; //todo make dmg proportional to speed diference between the 2 objects
+        if (0==invincible)
+          armor-=magn(this->speed)/10; //todo make dmg proportional to speed diference between the 2 objects
         this->speed=temp;
       }    
-      else {
-        armor-=temp.y;
+      else { //got hit by an ennemi shot
+        if (0==invincible)
+          armor-=temp.y;
+      }
+      if (armor>200){
+        return true;
       }
     }
   }
+  return false;
 }
 void Player::checkShotscollision(){
   for (int i=0; i<SHOTS_MAX; i++){
@@ -194,13 +211,10 @@ void  Player::drawFlames(){  //if both flames at the same time, they aren't anim
   vec2 temp=trigoVec(invDir(dir),burn? 14:12,pos);
   drawVecLine(temp, trigoVec((dir+1),6,temp));
   drawVecLine(temp, trigoVec((dir-1),6,temp));
-  if(ab.everyXFrames(3))
-    burn=!burn;
 }
 
 void  Player::drawRetroFlames(){
-  if(ab.everyXFrames(3))
-    burn=!burn;
+
   vec2 temp=trigoVec((dir+2),burn? 9:11,pos);
   //drawVecLine(temp, trigoVec((dir+2),burn? 6:4,temp));
   drawVecLine(temp, trigoVec((dir+2),4,temp));

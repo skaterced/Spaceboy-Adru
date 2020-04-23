@@ -52,7 +52,7 @@ void controls(Player* p1){
     }
   }
   
-  if (ab.pressed(A_BUTTON)&&ab.pressed(B_BUTTON)&&ab.pressed(LEFT_BUTTON)&&ab.pressed(RIGHT_BUTTON)){ //secret warp (
+  if (ab.pressed(A_BUTTON)&&ab.pressed(B_BUTTON)&&ab.pressed(DOWN_BUTTON)&&ab.pressed(RIGHT_BUTTON)){ //secret warp (
     p1->pos=vec2(64,32);
     mapCenter();
     //mapCoord=vec2(0,0);    

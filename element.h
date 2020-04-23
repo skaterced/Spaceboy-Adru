@@ -11,8 +11,8 @@
 #define NBMAX_METEOR 10
 #define METEOR_LIFE 10
 #define NBMAX_ENNEMIS 10
-#define NBMAX_EXPLOSION 5
-#define NBMAX_GEM 3
+#define NBMAX_EXPLOSION 3
+#define NBMAX_GEM 5
 
 #define EXPLOSION_SMALL 1
 #define EXPLOSION_MEDIUM 2
@@ -85,13 +85,16 @@ class Gem {
   public:
     vec2 pos;
     bool blink;
-    bool active;
+    byte active;
     Gem(){
-      active=false;
+      active=0;
     }
     void Gem::draw() {
-      if (ab.everyXFrames(3))
+      if (ab.everyXFrames(3)){
         blink=!blink;
+        if (active>0)
+          active--;
+      }
       if (blink){
         ab.fillCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,1);      
       }

@@ -9,6 +9,7 @@
 #define SPEED_DIVISOR 20
 
 Arduboy2 ab;
+//Arduboy2Base ab; //2136 bytes(8%) saved by using Base
 Sprites sprites;
 
 vec2 mapCoord(0,0);
