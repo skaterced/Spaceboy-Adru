@@ -1,18 +1,21 @@
 #ifndef _PLAYER_
 #define _PLAYER_
 
-#define SPEED_MAX 100
-//#define SPEED_DIVISOR -> in globals.h
-
 #include "globals.h"
 #include "trigo.h"
 #include "shot.h"
 #include "background.h"
 
-#define ARMOR_MAX 60
+#define SPEED_MAX 100
+//#define SPEED_DIVISOR -> in globals.h
+
+#define ARMOR_MAX 50
+#define ENERGY_MAX 250
 
 //#define TANK_SMALL 10000
 //#define TANK_EMERGENCY 300
+
+#define sectorBorderMargin 300
 
 class Player {       
   public:
@@ -25,11 +28,13 @@ class Player {
     //unsigned int fuel;
     //unsigned int fuelMax;
     byte armor;
+    byte energy;
     byte invincible;
-    byte lives;
-    int coolDown;
+    byte lives;    
     bool burn;
-    Shot shots[SHOTS_MAX];
+    //int coolDown;
+    //Shot shots[SHOTS_MAX];
+    Gun gun;
     //Player() : x(64),y(30),dir(0) {}
     Player(int x, int y, int dir){
       this->pos.x=x;
@@ -37,23 +42,28 @@ class Player {
       this->dir=dir;
       money=0;
       lives=3;
-      this->coolDown=0;
+      //this->coolDown=0;
       this->turnTimer=0;
       this->speed=vec2(0,0);
       armor=ARMOR_MAX;
+      energy=ENERGY_MAX;
       //fuelMax=TANK_SMALL;
       //fuel=fuelMax;
       reste=vec2(0,0);     
       burn=false; 
       invincible=0;
     }
-    void Player::draw();
+    bool Player::draw();
     void Player::drawFlames();
     void Player::drawRetroFlames();
     bool Player::checkcollision(); //return true if armor drops below 0 (but it's unsigned so >200)
     void Player::checkShotscollision();
+    void Player::shoot();   
 };
-void Player::draw(){ //--------------------------------------------------------------------DRAW----------------------------------
+void Player::shoot(){
+  gun.shoot(pos,speed,dir);
+}
+bool Player::draw(){ //(return true if ship dies) --------------------------------------------------------------------DRAW----------------------------------
 
   if(ab.everyXFrames(3))
     burn=!burn;
@@ -69,7 +79,11 @@ void Player::draw(){ //---------------------------------------------------------
   
   //ARMOR
   drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
-  ab.drawPixel(126,63-(ARMOR_MAX));    
+  ab.drawPixel(126,63-(ARMOR_MAX));   
+
+  //Energy
+  drawVecLine(vec2(124,63),vec2(124,63-(energy/5))); 
+  ab.drawPixel(124,63-(ENERGY_MAX/5));      
   
   //Background ajust
   if (pos.x<64){
@@ -118,29 +132,12 @@ void Player::draw(){ //---------------------------------------------------------
       mapCoord.y=temp;          
     }      
   }
-  
-  
-/*    
-  //Ship V1 "Bubble"
-  ab.fillCircle(pos.x,pos.y,4);
-  ab.fillCircle(pos.x+trigo(dir,4,true),pos.y+trigo(dir,4,false),3);
-  ab.fillCircle(pos.x+trigo(dir,4,true),pos.y+trigo(dir,4,false),2,0);
-  ab.drawPixel(pos.x+trigo(trueDir(dir+1),5,true),pos.y+trigo(trueDir(dir+1),5,false)); //litle reflexion ^^
- */
-  /*
-  //Ship V1.5 "Lander"
-  ab.fillCircle(pos.x,pos.y,4);
-  ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,4,false),3);
-  ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,4,false),2,0);
-  ab.drawPixel(pos.x+trigo(trueDir(dir+1),6,true),pos.y+trigo(trueDir(dir+1),6,false));
-  vec2  temp=trigoVec(trueDir(dir+6),6,pos);
-  drawVecLine(temp, trigoVec(trueDir(dir+7),3,temp));
-  temp=trigoVec(trueDir(dir-6),6,pos);
-  drawVecLine(temp, trigoVec(trueDir(dir-7),3,temp));
-*/
-
+  //out of bound
+  if (pos.x<-sectorBorderMargin || pos.x>168+sectorBorderMargin || pos.y<-sectorBorderMargin || pos.y>64+sectorBorderMargin )
+    return true;
+      
  //Ship V2 "Half Moon"
-  if ((0==invincible)||(burn)){
+  if ((invincible<2)||(burn)){
     //sprites.drawSelfMasked(pos.x-8,pos.y-8,Ship, dir); //Sprites (unmasked) instead of geometrical drawing uses +222 bytes of progmem (1%). Don't know about speed yet. 
     ab.fillCircle(pos.x,pos.y,5);
     ab.fillCircle(pos.x+trigo(dir,5,true),pos.y+trigo(dir,5,false),3);
@@ -149,37 +146,20 @@ void Player::draw(){ //---------------------------------------------------------
     ab.fillCircle(pos.x+trigo((dir+8),6,true),pos.y+trigo((dir+8),6,false),4,0);
     drawVecLine(pos,trigoVec(invDir(dir),4,pos));
   }
-
-/*
- //Ship V3 "Pointy" 
-  drawVecLine(trigoVec(dir+6,5,this->pos),trigoVec(dir,6,this->pos));
-  drawVecLine(trigoVec(dir+6,5,this->pos),trigoVec(dir-6,5,this->pos));
-  drawVecLine(trigoVec(dir-6,5,this->pos),trigoVec(dir,6,this->pos));
-  drawVecLine(trigoVec(dir+5,5,this->pos), trigoVec(dir,4,trigoVec(dir+5,5,this->pos)));
-  drawVecLine(trigoVec(dir-5,5,this->pos), trigoVec(dir,4,trigoVec(dir-5,5,this->pos)));  
-*/
-    
+   
   //draw shots
-  for (int i=0;i<SHOTS_MAX;i++){
-    if (this->shots[i].active>0){      
-      this->shots[i].draw();
-    }
-  }  
-  if (this->coolDown>0)
-    this->coolDown--;
-    
-  //debug    
-  //ab.setCursor(0,0);
-  //ab.print(magn(this->speed));    
+  gun.draw();
+
+  return false;
 }
 bool Player::checkcollision(){  //return true if armor drops below 0 (but it's unsigned so >200)
-  vec2 temp=elementCollision(this->pos,6,magn(this->speed)/10,1);
+  vec2 temp=elementCollision(this->pos,invincible==1? 10:6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
     if (98==temp.x){
       money+=10;
     }
     else {
-      ab.drawCircle(this->pos.x,this->pos.y,20);
+      //ab.drawCircle(this->pos.x,this->pos.y,20);
       if (temp.x!=99){
         if (0==invincible)
           armor-=magn(this->speed)/10; //todo make dmg proportional to speed diference between the 2 objects
@@ -196,12 +176,13 @@ bool Player::checkcollision(){  //return true if armor drops below 0 (but it's u
   }
   return false;
 }
-void Player::checkShotscollision(){
+void Player::checkShotscollision(){ //not in shot.h because "background.h" needs "shots.h"
   for (int i=0; i<SHOTS_MAX; i++){
-    if (shots[i].active){
-      vec2 temp=elementCollision(shots[i].pos,0,0,2);
-      if (temp!=vec2(0,0)){
-        shots[i].active=false;
+    if (gun.shots[i].active>0){
+      vec2 temp=elementCollision(gun.shots[i].pos,0,0,gun.dmg);
+      if (temp!=vec2(0,0)){ 
+        gun.shots[i].explode();
+        //gun.shots[i].active=false;
       }
     }
   }

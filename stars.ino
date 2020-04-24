@@ -5,10 +5,28 @@
 
    Capacity Countdown:
    15% progmem left but I have to program the following:
-   ship can die (maybe replace fuel jauge with shield)
-   Something happen when ship is off the map (game over?)
-   FlyingSaucer can shoot (and move less predictibly)
-   add score
+   ship can die (maybe replace fuel jauge with shield)    Check
+   Something happen when ship is off the map (game over?) Check
+   FlyingSaucer can shoot (and move less predictibly)     Check
+   add score                                              Check (but is actually money not the number of things destroyed)
+   ...
+   
+   24% progmem, I changed the way the stars was displayed. But now Glob var uses 75% and uploading problems may occur...
+   I still want to add the following depending on mode: Arcade, Story or Both
+   a nice Title B (but name will maybe differ) "Space Digger" ,... ?
+   EEPROM S
+   Border B (but differently)         Check (for A)
+   Waves  B (but differently)
+   Force Field B                      Check
+      "     "  jauge ? B              Check
+   more Monsters  B (espacially A)
+   more Weapons B (espacially S)
+   score (other than just money) A
+   more Meteor shape and size S
+   Galaxy Map S
+   Home S
+
+   debug: "drooling" meteor mask      Check
 
 */
 
@@ -33,6 +51,7 @@ Player ship(64, 32, 4);
 //Station home = Station (vec2(300, 300));
 //bool station_active = false; //3%Progmem...
 
+//bool dead=false;
 byte state;
 unsigned int timer = 0;
 
@@ -60,17 +79,17 @@ void setup()
     putMeteor(vec2(10,300), vec2(2,2));
     putMeteor(vec2(550,550), vec2(1,-1));
     /*
-    putEnnemis(vec2(1000,0),vec2(0,5),0);
-    putEnnemis(vec2(1020,0),vec2(0,5),0);
-    putEnnemis(vec2(1040,0),vec2(0,5),0);
-    putEnnemis(vec2(1060,0),vec2(0,5),0);
+    putEnnemies(vec2(1000,0),vec2(0,5),0);
+    putEnnemies(vec2(1020,0),vec2(0,5),0);
+    putEnnemies(vec2(1040,0),vec2(0,5),0);
+    putEnnemies(vec2(1060,0),vec2(0,5),0);
 */
-    putEnnemis(vec2(0,600),vec2(5,0),0);
-    putEnnemis(vec2(-20,600),vec2(5,0),0);
-    putEnnemis(vec2(-40,600),vec2(5,0),0);
-    putEnnemis(vec2(1000,80),vec2(5,0),ENNEMIS_BIGEYEMONSTER);
+    putEnnemies(vec2(0,600),vec2(5,0),0);
+    putEnnemies(vec2(-20,600),vec2(5,0),0);
+    putEnnemies(vec2(-40,600),vec2(5,0),0);
+    putEnnemies(vec2(1000,80),vec2(5,0),ENNEMI_BIGEYEMONSTER);
   
-  //putEnnemis(vec2(600, 600), vec2(5, 0), ENNEMIS_FLYINGSAUCER);
+  //putEnnemies(vec2(600, 600), vec2(5, 0), ENNEMI_FLYINGSAUCER);
 
   //putStation();
 }
@@ -89,11 +108,12 @@ void loop() {
   ab.clear();
 
 
-  switch (state) {
+  switch (state) {    
     case STATE_MENU:
+    
       //sprites.drawSelfMasked(0,0,menus,0);
     
-      ab.println("Welcome Spaceman");
+      ab.println(F("Welcome Spaceman"));
       ab.println("");
       ab.println("Ready to blast");
       ab.println("some Aliens?");
@@ -135,19 +155,29 @@ void loop() {
       ab.print("score: ");
       ab.println(ship.money);
       
-      if (ab.justPressed(B_BUTTON)){
+      if (ab.justPressed(DOWN_BUTTON)){
         state = STATE_GAME;
       }
       
       break;
-    case STATE_GAME:
-
+    case STATE_GAME:      
       if (ab.pressed(LEFT_BUTTON)&&ab.pressed(RIGHT_BUTTON)){
         state = STATE_PAUSE;
       }
       //drawStars(mapCoord.x,mapCoord.y, 3309);
       drawStars();
-      ship.draw();
+      if (ship.draw()){ //out of bound
+        if (--ship.lives==0){
+          state=STATE_GAMEOVER;
+        }
+        else {      
+          ship.invincible=200;
+          ship.armor=ARMOR_MAX;
+          ship.energy=ENERGY_MAX;
+          ship.speed=vec2(0,0);
+          mapCenter();
+        }
+      }
       drawBackground();
 /*
       if (station_active) {
@@ -159,11 +189,12 @@ void loop() {
         if (--ship.lives==0){
           state=STATE_GAMEOVER;
         }
-        else {
+        else {          
           explode(ship.pos-mapCoord, EXPLOSION_BIG);
           ship.invincible=200;
           ship.armor=ARMOR_MAX;
-          //mapCenter();        
+          ship.energy=ENERGY_MAX;
+          //mapCenter();       
         }
       }
       ship.checkShotscollision();

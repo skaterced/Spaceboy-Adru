@@ -28,7 +28,7 @@
 const byte stars[STARS_TOT]={59,12,41,5,59,33,38,28,5,2,35,27,14,29,63,14,7,57,28,30,57,5,52,31,6,32,37,22,34,33,24,48,46,27,6,10,45,35,14,4,9,39,49,63,10,25,52,41,10,52,53,23,13,2,40,57,0};//,48,26,43,41,30,3,61};//,0,17,58,28,48,18,6}; //72 -> 21220
 
 Meteor met[NBMAX_METEOR];
-Ennemis enn[NBMAX_ENNEMIS];
+Ennemies enn[NBMAX_ENNEMI];
 Shot ennShot;
 Explosion xplo[NBMAX_EXPLOSION];
 byte xploIt = 0;
@@ -60,12 +60,12 @@ void putMeteor(vec2 pos, vec2 speed) {
   }
 */
 
-void putEnnemis(vec2 pos, vec2 speed, byte type) {
+void putEnnemies(vec2 pos, vec2 speed, byte type) {
 
-  for (int i = 0; i < NBMAX_ENNEMIS; i++) {
+  for (int i = 0; i < NBMAX_ENNEMI; i++) {
     if (!enn[i].active) {
       enn[i].reboot(pos, speed, type);
-      i = NBMAX_ENNEMIS;
+      i = NBMAX_ENNEMI;
     }
   }
 }
@@ -168,7 +168,7 @@ void drawRadar() {
       }
     }
   }
-  for (int i = 0; i < NBMAX_ENNEMIS; i++) {
+  for (int i = 0; i < NBMAX_ENNEMI; i++) {
     if (enn[i].active) {
       temp = (mapCoord.x + enn[i].pos.x - 29) / IMAGE_WIDTH; //pos adjust. from meteor but...
       temp2 = (mapCoord.y + enn[i].pos.y - 13) / IMAGE_HEIGHT;
@@ -207,7 +207,7 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
     putMeteor(vec2(0, random(1000)), vec2(random(10) + 1, random(2) - 1));
   }
   temp = 0;
-  for (int i = 0; i < NBMAX_ENNEMIS; i++) {
+  for (int i = 0; i < NBMAX_ENNEMI; i++) {
     if (enn[i].active) {
       if (!isOut(enn[i].pos)) {
         if (enn[i].update()) {
@@ -226,11 +226,11 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
       }
     }
   }
-  if (ennShot.active) {
+  if (ennShot.active!=0) {
     ennShot.draw();
   }
   if (0 == temp) {
-    putEnnemis(vec2(1280, 1280), vec2(0, 0), ENNEMIS_FLYINGSAUCER);
+    putEnnemies(vec2(1280, 1280), vec2(0, 0), ENNEMI_FLYINGSAUCER);
   }
   for (int i = 0; i < NBMAX_EXPLOSION; i++) {
     xplo[i].update();
@@ -263,10 +263,10 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
       }
     }
   }
-  for (int i = 0; i < NBMAX_ENNEMIS; i++) {
+  for (int i = 0; i < NBMAX_ENNEMI; i++) {
     if (enn[i].active) {
       byte ennRadius;
-      if (ENNEMIS_SPACEINVADER == enn[i].type) {
+      if (ENNEMI_SPACEINVADER == enn[i].type) {
         ennRadius = 5;
       }
       else
@@ -285,22 +285,21 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
       }
     }
   }
-  if (ennShot.active) {
+  if (ennShot.active>0) {
     if ((magn(objPos - ennShot.pos) != -1) && (magn(objPos - ennShot.pos) < (radius + 1))) {
-      ennShot.active = false;
+      ennShot.explode();
+      //ennShot.active = false;
       return vec2(99, 2); // x 99 means hit by an ennemi shot -> y is the dmg inflicted
     }
   }
   for (int i = 0; i < NBMAX_GEM; i++) {
     if (gems[i].active) {
-      if ((magn(objPos - gems[i].pos - mapCoord) != -1) && (magn(objPos - gems[i].pos - mapCoord) < (radius + 2))) {
+      if ((radius!=0)&&(magn(objPos - gems[i].pos - mapCoord) != -1) && (magn(objPos - gems[i].pos - mapCoord) < (radius + 3))) {
         gems[i].active = false;
         return vec2(98, 2); // x 98 means coin collected
       }
     }
   }
-
-
   return vec2(0, 0);
 }
 

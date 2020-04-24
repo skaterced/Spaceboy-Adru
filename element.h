@@ -1,4 +1,4 @@
-/* Contains Explosion, Element -> Meteor, Ennemis ->...
+/* Contains Explosion, Element -> Meteor, Ennemies ->...
  *  
  */
 
@@ -7,10 +7,11 @@
 
 #include "globals.h"
 #include "vec2.h"
+#include "sprites.h"
 
 #define NBMAX_METEOR 10
 #define METEOR_LIFE 10
-#define NBMAX_ENNEMIS 10
+#define NBMAX_ENNEMI 10
 #define NBMAX_EXPLOSION 3
 #define NBMAX_GEM 5
 
@@ -18,13 +19,13 @@
 #define EXPLOSION_MEDIUM 2
 #define EXPLOSION_BIG 3
 
-#define ENNEMIS_SPACEINVADER 1
+#define ENNEMI_SPACEINVADER 1
 #define SPACEINVADER_LIFE 5
-#define ENNEMIS_BIGEYEMONSTER 2
+#define ENNEMI_BIGEYEMONSTER 2
 #define BIGEYEMONSTER_LIFE 20
-#define ENNEMIS_FLYINGSAUCER 3
+#define ENNEMI_FLYINGSAUCER 3
 #define FLYINGSAUCER_LIFE 20
-#define ENNEMIS_ENNSHIP 4
+#define ENNEMI_ENNSHIP 4
 #define ENNSHIP_LIFE 20
 
 class Explosion {
@@ -127,44 +128,44 @@ class Meteor : public Element {
     void Meteor::draw() {
       this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
       this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
-      //ab.fillCircle(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6,6,0);      
-      //sprites.drawSelfMasked(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6, this->life<50? meteor_dmg:meteor,0); //uses more memory!?
-      sprites.drawExternalMask(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6, this->life<(METEOR_LIFE/2)? meteor_dmg:meteor, meteor_mask, 0,0); //doesn't work properly but ok...
+      ab.fillCircle(pos.x+mapCoord.x, pos.y+mapCoord.y,6,0);      
+      sprites.drawSelfMasked(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6,  this->life<(METEOR_LIFE/2)? meteor_dmg:meteor,0); 
+      //sprites.drawExternalMask(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6, this->life<(METEOR_LIFE/2)? meteor_dmg:meteor, meteor_mask, 0,0); //mask is "drooling". Don't know why...
       //mask is "leaking" on the left side. No idea why. 
     }
 };
 
-class Ennemis : public Element {
+class Ennemies : public Element {
   public:
     byte frame;
     byte type;
-    Ennemis():Element(){}
-    Ennemis::reboot(vec2 pos_, vec2 speed_, byte type_){
+    Ennemies():Element(){}
+    Ennemies::reboot(vec2 pos_, vec2 speed_, byte type_){
       active=true;
       pos=pos_;
       speed=speed_;
       type=type_;
-      if (ENNEMIS_SPACEINVADER==type){
+      if (ENNEMI_SPACEINVADER==type){
         life=SPACEINVADER_LIFE;
       }
-      else if (ENNEMIS_BIGEYEMONSTER==type){
+      else if (ENNEMI_BIGEYEMONSTER==type){
         life=BIGEYEMONSTER_LIFE;
       }
-      else if (ENNEMIS_FLYINGSAUCER==type){
+      else if (ENNEMI_FLYINGSAUCER==type){
         life=FLYINGSAUCER_LIFE;
       }      
     }
-    bool Ennemis::update(void){
+    bool Ennemies::update(void){
       vec2 pointD;
       switch (type){
-        case ENNEMIS_SPACEINVADER: default:
+        case ENNEMI_SPACEINVADER: default:
           this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
           this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
           sprites.drawSelfMasked(pos.x+mapCoord.x-5, pos.y+mapCoord.y-4, spaceInvader_sprite, frame);
           if (ab.everyXFrames(5))
             frame=frame==0? 1:0;        
         break;      
-        case ENNEMIS_FLYINGSAUCER:
+        case ENNEMI_FLYINGSAUCER:
           this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
           this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
           if (ab.everyXFrames(5)){
@@ -190,7 +191,7 @@ class Ennemis : public Element {
             }
           } 
         break;
-        case ENNEMIS_BIGEYEMONSTER:
+        case ENNEMI_BIGEYEMONSTER:
           this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
           this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
           if (ab.everyXFrames(10)){
@@ -209,7 +210,7 @@ class Ennemis : public Element {
           if (ab.everyXFrames(2))
             this->speed=(pointD-this->pos-mapCoord+vec2(0,5))*3;                    
         break;      
-        case ENNEMIS_ENNSHIP:
+        case ENNEMI_ENNSHIP:
           this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
           this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
           /*

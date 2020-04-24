@@ -22,9 +22,10 @@ void controls(Player* p1){
         p1->dir=15;
     }
   }
-  else
+  else {
     p1->turnTimer=0;
-  if (ab.pressed(B_BUTTON)||ab.pressed(UP_BUTTON)){
+  }
+  if (ab.pressed(UP_BUTTON)){
     if (true){//if (p1->fuel>0){
       p1->drawFlames();
       //p1->fuel-=1;
@@ -57,19 +58,21 @@ void controls(Player* p1){
     mapCenter();
     //mapCoord=vec2(0,0);    
   }
-  
-  if (ab.justPressed(A_BUTTON)){    //another weapons allows to hold fire button
-    if (0==p1->coolDown){ 
-      for (int i=0;i<SHOTS_MAX;i++){        
-        if (0==p1->shots[i].active){          
-          p1->shots[i].active=SHOT_DURATION;
-          p1->coolDown=COOLDOWN;                   
-          p1->shots[i].pos=p1->pos/*-mapCoord*/+trigoVec(p1->dir,10,p1->speed/SPEED_DIVISOR);
-          p1->shots[i].dir=p1->dir;
-          //p1->shots[i].speed=p1->speed/SPEED_DIVISOR+trigoVec(p1->dir,6,vec2(0,0));
-          p1->shots[i].speed=trigoVec(p1->dir,6,p1->speed/SPEED_DIVISOR);
-          i=99;
-        }
+
+  if (ab.pressed(B_BUTTON)&&(p1->energy>0)){
+    ab.drawCircle(p1->pos.x,p1->pos.y,12);
+    p1->invincible=1;
+    p1->energy--;    
+  }
+  else { //(can shoot with the force field activated)
+    if (p1->gun.canHold){
+      if (ab.pressed(A_BUTTON)){    
+        p1->shoot();
+      }
+    }
+    else {
+      if (ab.justPressed(A_BUTTON)){  
+        p1->shoot();
       }
     }
   }
