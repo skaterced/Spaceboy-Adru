@@ -1,3 +1,3 @@
 # stars 
-My last game for Arduboy
+My latest game for Arduboy
 ** work in progress **
