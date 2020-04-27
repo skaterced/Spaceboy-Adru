@@ -6,7 +6,7 @@
 #include "player.h"
 #include "shot.h"
 
-void controls(Player* p1){
+void controls(Player* p1, bool raceMode){
 
   if (ab.pressed(RIGHT_BUTTON)){
     if (p1->turnTimer--<=0){
@@ -25,7 +25,7 @@ void controls(Player* p1){
   else {
     p1->turnTimer=0;
   }
-  if (ab.pressed(UP_BUTTON)){
+  if (ab.pressed(UP_BUTTON)||(raceMode&&ab.pressed(B_BUTTON))){
     if (true){//if (p1->fuel>0){
       p1->drawFlames();
       //p1->fuel-=1;
@@ -37,7 +37,7 @@ void controls(Player* p1){
       }
     }
   }
-  if (ab.pressed(DOWN_BUTTON)){
+  if (ab.pressed(DOWN_BUTTON)||(raceMode&&ab.pressed(A_BUTTON))){
     if (true){//(p1->fuel>0){          
       if (magn(p1->speed)<=1) {
         p1->speed=vec2(0,0);
@@ -59,20 +59,22 @@ void controls(Player* p1){
     //mapCoord=vec2(0,0);    
   }
 
-  if (ab.pressed(B_BUTTON)&&(p1->energy>0)){
-    ab.drawCircle(p1->pos.x,p1->pos.y,12);
-    p1->invincible=1;
-    p1->energy--;    
-  }
-  else { //(can shoot with the force field activated)
-    if (p1->gun.canHold){
-      if (ab.pressed(A_BUTTON)){    
-        p1->shoot();
-      }
+  if(!raceMode){
+    if (ab.pressed(B_BUTTON)&&(p1->energy>0)){
+      ab.drawCircle(p1->pos.x,p1->pos.y,11);
+      p1->invincible=1;
+      p1->energy--;    
     }
-    else {
-      if (ab.justPressed(A_BUTTON)){  
-        p1->shoot();
+    else { //(can shoot with the force field activated)
+      if (p1->gun.canHold){
+        if (ab.pressed(A_BUTTON)){    
+          p1->shoot();
+        }
+      }
+      else {
+        if (ab.justPressed(A_BUTTON)){  
+          p1->shoot();
+        }
       }
     }
   }

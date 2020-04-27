@@ -25,6 +25,8 @@
    more Meteor shape and size S
    Galaxy Map S
    Home S
+   Races
+   Rescue Mission
 
    debug: "drooling" meteor mask      Check
 
@@ -54,6 +56,7 @@ Player ship(64, 32, 4);
 //bool dead=false;
 byte state;
 unsigned int timer = 0;
+bool race=true;
 
 vec2 pointA(60, 30);
 vec2 pointB(20, 40);
@@ -62,7 +65,7 @@ vec2 pointC(25, 50);
 void setup()
 {
   ab.begin();
-  //ab.boot(); //846 bytes (3%) saved by using boot instead of begin (but must implement something else I guess
+  //ab.boot(); //846 bytes (3%) saved by using boot instead of begin (but must implement an Upload method)
   ab.setFrameRate(60);
   //state = STATE_GAME;
   state = STATE_MENU;
@@ -72,25 +75,24 @@ void setup()
   //pointB+=vec2(pointC);
   mapCenter();
 
-  
+  if (race)
+    sectorInit(0x80);
+  else
+    sectorInit(0);
+ /* 
     putMeteor(vec2(10,500), vec2(3,0));
     putMeteor(vec2(600,800), vec2(1,-2));
     putMeteor(vec2(10,900), vec2(2,-1));
     putMeteor(vec2(10,300), vec2(2,2));
     putMeteor(vec2(550,550), vec2(1,-1));
-    /*
-    putEnnemies(vec2(1000,0),vec2(0,5),0);
-    putEnnemies(vec2(1020,0),vec2(0,5),0);
-    putEnnemies(vec2(1040,0),vec2(0,5),0);
-    putEnnemies(vec2(1060,0),vec2(0,5),0);
-*/
+
     putEnnemies(vec2(0,600),vec2(5,0),0);
     putEnnemies(vec2(-20,600),vec2(5,0),0);
     putEnnemies(vec2(-40,600),vec2(5,0),0);
     putEnnemies(vec2(1000,80),vec2(5,0),ENNEMI_BIGEYEMONSTER);
   
   //putEnnemies(vec2(600, 600), vec2(5, 0), ENNEMI_FLYINGSAUCER);
-
+*/
   //putStation();
 }
 
@@ -155,7 +157,7 @@ void loop() {
       ab.print("score: ");
       ab.println(ship.money);
       
-      if (ab.justPressed(DOWN_BUTTON)){
+      if (ab.justPressed(DOWN_BUTTON)&&(STATE_GAMEOVER!=state)){
         state = STATE_GAME;
       }
       
@@ -184,7 +186,7 @@ void loop() {
         home.draw();
       }
 */      
-      controls(&ship);
+      controls(&ship, race);
       if (ship.checkcollision()){
         if (--ship.lives==0){
           state=STATE_GAMEOVER;

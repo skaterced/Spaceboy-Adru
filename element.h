@@ -9,16 +9,11 @@
 #include "vec2.h"
 #include "sprites.h"
 
-#define NBMAX_METEOR 10
-#define METEOR_LIFE 10
-#define NBMAX_ENNEMI 10
-#define NBMAX_EXPLOSION 3
-#define NBMAX_GEM 5
-
 #define EXPLOSION_SMALL 1
 #define EXPLOSION_MEDIUM 2
 #define EXPLOSION_BIG 3
 
+#define METEOR_LIFE 10
 #define ENNEMI_SPACEINVADER 1
 #define SPACEINVADER_LIFE 5
 #define ENNEMI_BIGEYEMONSTER 2
@@ -38,11 +33,11 @@ class Explosion {
       pos=vec2(0,0);
       count=50; //means inactive
     }
-    Explosion::explode(vec2 pos_, int type_){
+    /*Explosion::explode(vec2 pos_, int type_){
       type=type_;
       pos=pos_;    
       count=0;
-    }
+    }*/
     Explosion::update(){
       if (count<18){
         count++;
@@ -91,7 +86,7 @@ class Gem {
       active=0;
     }
     void Gem::draw() {
-      if (ab.everyXFrames(3)){
+      if (ab.everyXFrames(6)){
         blink=!blink;
         if (active>0)
           active--;
@@ -101,6 +96,37 @@ class Gem {
       }
       else {
         ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,1);      
+      }
+    }
+};
+
+class CheckPoint {
+  public:
+    vec2 pos;
+    byte blink;
+    //byte number; //to get them in the right order ?
+    bool active;
+    bool last; //if this is true, it triggers something when the ship touches it
+    CheckPoint(){
+      pos=vec2(0,0);
+      active=false;
+      blink=0;
+      last=false;
+    }
+    /*CheckPoint(vec2 pos){
+      pos=pos;
+      active=false;
+      blink=0;
+      last=false;
+    }*/
+    void CheckPoint::update() {
+      ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,13);   
+      if (active){   
+        if (ab.everyXFrames(5)){
+          if (++blink>12)
+            blink=0;          
+        }
+        ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,15+blink*5);              
       }
     }
 };
@@ -155,7 +181,7 @@ class Ennemies : public Element {
         life=FLYINGSAUCER_LIFE;
       }      
     }
-    bool Ennemies::update(void){
+    bool Ennemies::update(void){  //return true if Ennemi is shooting
       vec2 pointD;
       switch (type){
         case ENNEMI_SPACEINVADER: default:
