@@ -56,14 +56,15 @@ byte sectorType;
  * I I I I I I L_____ NDY
  * I I I I I L_______ NDY
  * I I I I L_________ NDY
- * I I I L___________ NDY
- * I I L_____________ NDY
- * I L_______________ NDY
- * L_________________ (1) Race Mode 
+ * I I I L___________ 
+ * I I L_____________ \____ Size: 00 9x18, 01 12x20, 10 ?x?, 11 continuous?
+ * I L_______________ 
+ * L_________________ \____ Mode: 00 normal, 01 hard? 10 Race, 11 Rescue, 
  * 
- * size ?
- * Arcade or story mode ?
- * Rescue mission ?
+ * size 
+ * Race
+ * Rescue mission 
+ * 
  * Meteor activated ?
  * Ennemi X activated ?
  * ammount of waves ?
@@ -148,6 +149,7 @@ void sectorInit(byte type){ //, byte difficulty){
   }
   else {
     CP[0].last=true; //so the whole array isn't tested every loop
+    
     putMeteor(vec2(10,500), vec2(3,0));
     putMeteor(vec2(600,800), vec2(1,-2));
     putMeteor(vec2(10,900), vec2(2,-1));

@@ -32,6 +32,7 @@ class Player {
     byte invincible;
     byte lives;    
     bool burn;
+    bool engineV2;
     //int coolDown;
     //Shot shots[SHOTS_MAX];
     Gun gun;
@@ -41,6 +42,7 @@ class Player {
       this->pos.y=y;
       this->dir=dir;
       money=0;
+      engineV2=true;
       lives=3;
       //this->coolDown=0;
       this->turnTimer=0;

@@ -30,9 +30,9 @@ void controls(Player* p1, bool raceMode){
       p1->drawFlames();
       //p1->fuel-=1;
       if (ab.everyXFrames(2)){
-        p1->speed+=trigoVec(p1->dir,3,vec2(0,0));
+        p1->speed+=trigoVec(p1->dir,3+p1->engineV2?4:0,vec2(0,0));
         if (magn(p1->speed)>SPEED_MAX) {
-          p1->speed-=trigoVec(p1->dir,3,vec2(0,0));
+          p1->speed-=trigoVec(p1->dir,3+p1->engineV2?4:0,vec2(0,0));
         }
       }
     }

@@ -11,20 +11,23 @@
    add score                                              Check (but is actually money not the number of things destroyed)
    ...
    
-   24% progmem, I changed the way the stars was displayed. But now Glob var uses 75% and uploading problems may occur...
+   24% Progmem, I changed the way the stars was displayed. But now Glob var uses 75% and uploading problems may occur...
    I still want to add the following depending on mode: Arcade, Story or Both
    a nice Title B (but name will maybe differ) "Space Digger", "Space Minner", "SpaceBoy Adru", ,... ?
    Menus
    EEPROM S
+    why not old school "save" code
    Border B (but differently)         Check (for A)
    Waves  B (but differently)
    Force Field B                      Check
       "     "  jauge ? B              Check
    more Monsters  B (espacially A)
+    "multiplying evil cloud"
    more Weapons B (espacially S)
    score (other than just money) A
    more Meteor shape and size S
    Fuel ? S
+   Increasing thrust B
    Compas S
    Galaxy Map S
    Home S
@@ -35,6 +38,16 @@
    "drooling" meteor mask             Check
    Collisions don't deal enough dmg
 
+   ...
+   
+   22% Progmem 21% globVar
+   Race mode is a success, I'll keep it, either a bonus stage for A or a sector type for S
+   still a lot in my head and less space (haha) but here are some ideas:
+    Story  Map is always generated the same way but its size depends on you antenna or whatever. you can buy new stuff depending on money or what you already have. Basically 3 sort:
+            weapon: +dmg; +speed; bombs
+            devices: Radar; warp?; compas?
+            defense: shield; shieldGenerator; autoShield;
+   Ennemies: An evil multiplying cloud
 */
 
 #include "globals.h"
@@ -122,14 +135,14 @@ void loop() {
     
       ab.println(F("Welcome SpaceBoy"));
       ab.println("");
-      ab.println("Ready to blast");
-      ab.println("some Aliens?");
       ab.println("");
-      ab.println("UP: Start a Race");
-      ab.println("A: Start");
-      ab.println("B: Credit");
+      ab.println("up: Credit");
+      ab.println("left: Quick Race");
+      ab.println("right: Quick Game");
+      ab.println("A: New Game");
+      ab.println("B: Continue");
 
-      if (ab.justPressed(UP_BUTTON)) {
+      if (ab.justPressed(LEFT_BUTTON)) {
         randomSeed(timer * 3000);
         sectorInit(0x80);
         race=true;
@@ -138,9 +151,16 @@ void loop() {
       if (ab.justPressed(A_BUTTON)) {
         randomSeed(timer * 3000);
         sectorInit(0x00);
+        ship.gun.canHold=false;
         state = STATE_GAME;
       }
-      if (ab.justPressed(B_BUTTON))
+      if (ab.justPressed(B_BUTTON)) {
+        randomSeed(timer * 3000);
+        sectorInit(0x00);
+        ship.engineV2=true;
+        state = STATE_GAME;
+      }
+      if (ab.justPressed(UP_BUTTON))
         state = STATE_CREDIT;
       break;
     case STATE_CREDIT:
