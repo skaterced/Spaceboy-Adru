@@ -12,8 +12,12 @@
 #define IMAGE_WIDTH 128
 #define IMAGE_HEIGHT 64
 
-#define SECTOR_COLUMNS 10
+/*
+#define SECTOR_COLUMNS 12
 #define SECTOR_LINES  20
+*/
+byte SECTOR_COLUMNS=12;   //to have several map size
+byte SECTOR_LINES=20;
 
 #define MAP_WIDTH SECTOR_COLUMNS*IMAGE_WIDTH
 #define MAP_HEIGHT SECTOR_LINES*IMAGE_HEIGHT
@@ -47,6 +51,23 @@ CheckPoint CP[NBMAX_CP];
 unsigned int elapsedtime=0;
 
 byte sectorType;
+/* 7 6 5 4 3 2 1 0        NDY : (Not Defined Yet)
+ * I I I I I I I L___ in race Mode: Race finished
+ * I I I I I I L_____ NDY
+ * I I I I I L_______ NDY
+ * I I I I L_________ NDY
+ * I I I L___________ NDY
+ * I I L_____________ NDY
+ * I L_______________ NDY
+ * L_________________ (1) Race Mode 
+ * 
+ * size ?
+ * Arcade or story mode ?
+ * Rescue mission ?
+ * Meteor activated ?
+ * Ennemi X activated ?
+ * ammount of waves ?
+ */
 
 //CP[0].active=true;
 /*
@@ -90,16 +111,40 @@ void sectorInit(byte type){ //, byte difficulty){
   sectorType=type;
   if (0x80==(type&0x80)){
     CP[0].active=true;      
+    //   1 4
+    //   3 2
+    CP[0].pos=vec2(400,150);  
+    CP[1].pos=vec2(1200,1000);
+    CP[2].pos=vec2(400,1000);
+    CP[3].pos=vec2(1200,150);
+    CP[4].pos=vec2(400,150);    //2nd lap
+    CP[5].pos=vec2(1200,1000);
+    CP[6].pos=vec2(400,1000);
+    CP[7].pos=vec2(1200,150);    
+    CP[8].pos=vec2(400,150);    //finish
+    /*
+    // 'Z' shape
     CP[0].pos=vec2(300,150);  
-    CP[1].pos=vec2(900,1000);
+    CP[3].pos=vec2(1200,1000);
     CP[2].pos=vec2(300,1000);
-    CP[3].pos=vec2(900,150);
+    CP[1].pos=vec2(1200,150);
     CP[4].pos=vec2(300,150);    //2nd lap
-    CP[5].pos=vec2(900,1000);
+    CP[7].pos=vec2(1200,1000);
     CP[6].pos=vec2(300,1000);
-    CP[7].pos=vec2(900,150);    
+    CP[5].pos=vec2(1200,150);    
     CP[8].pos=vec2(300,150);    //finish
-    CP[8].last=true;
+    // 'O' shape
+    CP[0].pos=vec2(300,150);  
+    CP[2].pos=vec2(1200,1000);
+    CP[3].pos=vec2(300,1000);
+    CP[1].pos=vec2(1200,150);
+    CP[4].pos=vec2(300,150);    //2nd lap
+    CP[6].pos=vec2(1200,1000);
+    CP[7].pos=vec2(300,1000);
+    CP[5].pos=vec2(1200,150);    
+    CP[8].pos=vec2(300,150);    //finish
+    */
+    CP[8].last=true;    
   }
   else {
     CP[0].last=true; //so the whole array isn't tested every loop
@@ -204,38 +249,42 @@ void drawRadar() {
     temp2 += (SECTOR_LINES - 5);
     ab.fillRect(RADAR_POSX, RADAR_POSY + temp2 + 9, 11, -temp2, 0);
   }
-
-  for (int i = 0; i < NBMAX_METEOR; i++) {
-    if (met[i].active) {
-      temp = (mapCoord.x + met[i].pos.x - 29) / IMAGE_WIDTH; //29: IMAGE_WIDTH/4-meteor_image_width/4
-      temp2 = (mapCoord.y + met[i].pos.y - 13) / IMAGE_HEIGHT;
-
-      if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
-        ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, slowBlinking ? 0 : 1);
-      }
-    }
-  }
-  for (int i = 0; i < NBMAX_ENNEMI; i++) {
-    if (enn[i].active) {
-      temp = (mapCoord.x + enn[i].pos.x - 29) / IMAGE_WIDTH; //pos adjust. from meteor but...
-      temp2 = (mapCoord.y + enn[i].pos.y - 13) / IMAGE_HEIGHT;
-
+  
+  if ((sectorType&0x80)==0x80){  // Race Mode
+    for (int i=0; i<NBMAX_CP;i++){
+      temp = (mapCoord.x + CP[i].pos.x - 29) / IMAGE_WIDTH; //pos adjust. from meteor but...
+      temp2 = (mapCoord.y + CP[i].pos.y - 13) / IMAGE_HEIGHT;
+  
       if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
         ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, fastBlinking ? 0 : 1);
       }
+      if (CP[i].last)
+        i=99;
     }
   }
+  else {
+    for (int i = 0; i < NBMAX_METEOR; i++) {
+      if (met[i].active) {
+        temp = (mapCoord.x + met[i].pos.x - 29) / IMAGE_WIDTH; //29: IMAGE_WIDTH/4-meteor_image_width/4
+        temp2 = (mapCoord.y + met[i].pos.y - 13) / IMAGE_HEIGHT;
   
-  for (int i=0; i<NBMAX_CP;i++){
-    temp = (mapCoord.x + CP[i].pos.x - 29) / IMAGE_WIDTH; //pos adjust. from meteor but...
-    temp2 = (mapCoord.y + CP[i].pos.y - 13) / IMAGE_HEIGHT;
-
-    if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
-      ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, fastBlinking ? 0 : 1);
+        if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
+          ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, slowBlinking ? 0 : 1);
+        }
+      }
     }
-    if (CP[i].last)
-      i=99;
+    for (int i = 0; i < NBMAX_ENNEMI; i++) {
+      if (enn[i].active) {
+        temp = (mapCoord.x + enn[i].pos.x - 29) / IMAGE_WIDTH; //pos adjust. from meteor but...
+        temp2 = (mapCoord.y + enn[i].pos.y - 13) / IMAGE_HEIGHT;
+  
+        if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
+          ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, fastBlinking ? 0 : 1);
+        }
+      }
+    }
   }
+
   /*
     if (station_active){ //not in radar anymore because it will be in a cut scene
     temp=(mapCoord.x+home.pos.x-49)/IMAGE_WIDTH; //58: IMAGE_WIDTH/2-station_image_width/2= -64 +15
@@ -248,71 +297,75 @@ void drawRadar() {
 }
 
 void drawBackground() { //, int RandSeed){  //-------------------------------------- Draw Background --------------------------
-
-  ab.print(elapsedtime);
-  if (!CP[0].active&&(sectorType&0x81)!=0x81)
-    elapsedtime++;
-  byte temp = 0;
-  for (int i = 0; i < NBMAX_METEOR; i++) {
-    if (met[i].active) {
-      if (!isOut(met[i].pos)) {
-        met[i].draw();
-        temp++;
-      }
-      else {
-        met[i].active = false;
-      }
-    }
-  }
-  if (0 == temp) {
-    //putMeteor(vec2(0, random(1000)), vec2(random(10) + 1, random(2) - 1));
-  }
-  temp = 0;
-  for (int i = 0; i < NBMAX_ENNEMI; i++) {
-    if (enn[i].active) {
-      if (!isOut(enn[i].pos)) {
-        if (enn[i].update()) {
-          if (0 == ennShot.active) {
-            ennShot.active = SHOT_DURATION;
-            int temp = trigoInv(enn[i].pos + mapCoord, vec2(64, 32)); // <-aiming the ship (if it's not in the border...)
-            ennShot.pos = trigoVec(temp, 10, enn[i].pos + mapCoord);
-            ennShot.dir = temp;
-            ennShot.speed = trigoVec(temp, 6, vec2(0, 0));
-          }
-        }
-        temp++;
-      }
-      else {
-        enn[i].active = false;
-      }
-    }
-  }
-  if (ennShot.active!=0) {
-    ennShot.draw();
-  }
-  if (0 == temp) {
-    //putEnnemies(vec2(1280, 1280), vec2(0, 0), ENNEMI_FLYINGSAUCER);
-  }
-  for (int i = 0; i < NBMAX_EXPLOSION; i++) {
-    xplo[i].update();
-  }
-  for (int i = 0; i < NBMAX_GEM; i++) {
-    if (gems[i].active)
-      gems[i].draw();
-  }
   
-  for (int i=0; i<NBMAX_CP;i++){
-    CP[i].update();
-    if (CP[i].last)
-      i=99;
+  if ((sectorType&0x80)==0x80){  // Race Mode
+    ab.print(elapsedtime);
+    if (!CP[0].active&&(sectorType&0x81)!=0x81)
+      elapsedtime++;
+    
+    for (int i=0; i<NBMAX_CP;i++){
+      CP[i].update();
+      if (CP[i].last)
+        i=99;
+    }
+  }
+  else {
+    byte temp = 0;
+    for (int i = 0; i < NBMAX_METEOR; i++) {
+      if (met[i].active) {
+        if (!isOut(met[i].pos)) {
+          met[i].draw();
+          temp++;
+        }
+        else {
+          met[i].active = false;
+        }
+      }
+    }
+    if (0 == temp) {
+      //putMeteor(vec2(0, random(1000)), vec2(random(10) + 1, random(2) - 1));
+    }
+    temp = 0;
+    for (int i = 0; i < NBMAX_ENNEMI; i++) {
+      if (enn[i].active) {
+        if (!isOut(enn[i].pos)) {
+          if (enn[i].update()) {
+            if (0 == ennShot.active) {
+              ennShot.active = SHOT_DURATION;
+              int temp = trigoInv(enn[i].pos + mapCoord, vec2(64, 32)); // <-aiming the ship (if it's not in the border...)
+              ennShot.pos = trigoVec(temp, 10, enn[i].pos + mapCoord);
+              ennShot.dir = temp;
+              ennShot.speed = trigoVec(temp, 6, vec2(0, 0));
+            }
+          }
+          temp++;
+        }
+        else {
+          enn[i].active = false;
+        }
+      }
+    }
+    if (ennShot.active!=0) {
+      ennShot.draw();
+    }
+    if (0 == temp) {
+      //putEnnemies(vec2(1280, 1280), vec2(0, 0), ENNEMI_FLYINGSAUCER);
+    }
+    for (int i = 0; i < NBMAX_EXPLOSION; i++) {
+      xplo[i].update();
+    }
+    for (int i = 0; i < NBMAX_GEM; i++) {
+      if (gems[i].active)
+        gems[i].draw();
+    }
   }
   
   drawRadar();
-
 }
 
+
 //todo: add Dmg to both side depending on the speed difference
-vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular collision check. objPos must be previously centered.
+vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular collision check. objPos must be previously centered. //-------- Collision ----------------------------------------------------------
   //vec2 temp;
   for (int i = 0; i < NBMAX_METEOR; i++) {
     if (met[i].active) {
@@ -369,22 +422,23 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
       }
     }
   }
-  for (int i=0; i<NBMAX_CP;i++){
-    if(CP[i].active){
-      if ((radius!=0)&&(magn(objPos - CP[i].pos - mapCoord) != -1) && (magn(objPos - CP[i].pos - mapCoord) < (radius + 12))) {
-        CP[i].active=false;
-        if (CP[i].last){
-          //race ends...
-          sectorType|=0x01;
-        }
-        else {
-          CP[i+1].active=true;        
-          i=99;
+  if ((sectorType&0x80)==0x80){  // Race Mode
+    for (int i=0; i<NBMAX_CP;i++){
+      if(CP[i].active){
+        if ((radius!=0)&&(magn(objPos - CP[i].pos - mapCoord) != -1) && (magn(objPos - CP[i].pos - mapCoord) < (radius + 12))) {
+          CP[i].active=false;
+          if (CP[i].last){
+            //race ends...
+            sectorType|=0x01;
+          }
+          else {
+            CP[i+1].active=true;        
+            i=99;
+          }
         }
       }
     }
   }
-  
   return vec2(0, 0);
 }
 

@@ -13,7 +13,8 @@
    
    24% progmem, I changed the way the stars was displayed. But now Glob var uses 75% and uploading problems may occur...
    I still want to add the following depending on mode: Arcade, Story or Both
-   a nice Title B (but name will maybe differ) "Space Digger" ,... ?
+   a nice Title B (but name will maybe differ) "Space Digger", "Space Minner", "SpaceBoy Adru", ,... ?
+   Menus
    EEPROM S
    Border B (but differently)         Check (for A)
    Waves  B (but differently)
@@ -23,12 +24,16 @@
    more Weapons B (espacially S)
    score (other than just money) A
    more Meteor shape and size S
+   Fuel ? S
+   Compas S
    Galaxy Map S
    Home S
-   Races
+   Races                              Check
    Rescue Mission
 
-   debug: "drooling" meteor mask      Check
+   debug: 
+   "drooling" meteor mask             Check
+   Collisions don't deal enough dmg
 
 */
 
@@ -56,7 +61,7 @@ Player ship(64, 32, 4);
 //bool dead=false;
 byte state;
 unsigned int timer = 0;
-bool race=true;
+bool race=false;
 
 vec2 pointA(60, 30);
 vec2 pointB(20, 40);
@@ -74,12 +79,12 @@ void setup()
 
   //pointB+=vec2(pointC);
   mapCenter();
-
+/*
   if (race)
     sectorInit(0x80);
   else
     sectorInit(0);
- /* 
+ 
     putMeteor(vec2(10,500), vec2(3,0));
     putMeteor(vec2(600,800), vec2(1,-2));
     putMeteor(vec2(10,900), vec2(2,-1));
@@ -115,17 +120,24 @@ void loop() {
     
       //sprites.drawSelfMasked(0,0,menus,0);
     
-      ab.println(F("Welcome Spaceman"));
+      ab.println(F("Welcome SpaceBoy"));
       ab.println("");
       ab.println("Ready to blast");
       ab.println("some Aliens?");
       ab.println("");
-      ab.println("");
+      ab.println("UP: Start a Race");
       ab.println("A: Start");
       ab.println("B: Credit");
 
+      if (ab.justPressed(UP_BUTTON)) {
+        randomSeed(timer * 3000);
+        sectorInit(0x80);
+        race=true;
+        state = STATE_GAME;
+      }
       if (ab.justPressed(A_BUTTON)) {
         randomSeed(timer * 3000);
+        sectorInit(0x00);
         state = STATE_GAME;
       }
       if (ab.justPressed(B_BUTTON))
@@ -177,6 +189,7 @@ void loop() {
           ship.armor=ARMOR_MAX;
           ship.energy=ENERGY_MAX;
           ship.speed=vec2(0,0);
+          ship.pos=vec2(64,32);
           mapCenter();
         }
       }
