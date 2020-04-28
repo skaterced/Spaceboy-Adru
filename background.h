@@ -149,7 +149,7 @@ void sectorInit(byte type){ //, byte difficulty){
   }
   else {
     CP[0].last=true; //so the whole array isn't tested every loop
-    
+/*    
     putMeteor(vec2(10,500), vec2(3,0));
     putMeteor(vec2(600,800), vec2(1,-2));
     putMeteor(vec2(10,900), vec2(2,-1));
@@ -160,8 +160,10 @@ void sectorInit(byte type){ //, byte difficulty){
     putEnnemies(vec2(-20,600),vec2(5,0),0);
     putEnnemies(vec2(-40,600),vec2(5,0),0);
     putEnnemies(vec2(1000,80),vec2(5,0),ENNEMI_BIGEYEMONSTER);
+*/
+    //putEnnemies(vec2(600, 600), vec2(5, 0), ENNEMI_FLYINGSAUCER);
+    putEnnemies(vec2(600, 600), vec2(0, 0), ENNEMI_BLOB);
   }
-  //putEnnemies(vec2(600, 600), vec2(5, 0), ENNEMI_FLYINGSAUCER);
 }
 
 void explode(vec2 pos, byte type) {
@@ -395,17 +397,26 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
       }
       else
         ennRadius = 8;
-      if ((magn(objPos - enn[i].pos - mapCoord) != -1) && (magn(objPos - enn[i].pos - mapCoord) < (radius + ennRadius))) {
-        enn[i].life -= dmg;
-        if (enn[i].life <= 0) {
-          enn[i].active = false;
-          explode(enn[i].pos, EXPLOSION_MEDIUM);
-          addGem(enn[i].pos); //todo add random ?
+      vec2 temp=objPos - enn[i].pos - mapCoord;
+      if ((magn(temp) != -1) && (magn(temp) < (radius + ennRadius))) {
+        //enn[i].hit()
+        
+        if (ENNEMI_BLOB!=enn[i].type){
+          enn[i].life -= dmg;
+          if (enn[i].life <= 0) {
+            enn[i].active = false;
+            explode(enn[i].pos, EXPLOSION_MEDIUM);
+            addGem(enn[i].pos); //todo add random ?
+          }
+          if (force > 0) {
+            enn[i].speed -= (temp) * force / 10;
+          }
+          return temp;
         }
-        if (force > 0) {
-          enn[i].speed -= (objPos - enn[i].pos - mapCoord) * force / 10;
+        else {
+          putEnnemies(trigoVec(trigoInv(enn[i].pos,objPos)-4,8,enn[i].pos),vec2(0,0),ENNEMI_BLOB);
+          enn[i].pos=trigoVec(trigoInv(enn[i].pos,objPos)+4,8,enn[i].pos);
         }
-        return objPos - enn[i].pos - mapCoord;
       }
     }
   }

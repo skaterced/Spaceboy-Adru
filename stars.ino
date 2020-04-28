@@ -76,13 +76,20 @@ byte state;
 unsigned int timer = 0;
 bool race=false;
 
+//variables for test
+Blob testEnnemi=Blob();
+//Ennemies testEnnemi=Ennemies();
 vec2 pointA(60, 30);
 vec2 pointB(20, 40);
 vec2 pointC(25, 50);
+byte count=0;
+byte frame=0;
+vec2 pointD;
 
 void setup()
 {
   ab.begin();
+  //testEnnemi.reboot(pointB, vec2(0,0), 0);
   //ab.boot(); //846 bytes (3%) saved by using boot instead of begin (but must implement an Upload method)
   ab.setFrameRate(60);
   //state = STATE_GAME;
@@ -114,10 +121,6 @@ void setup()
   //putStation();
 }
 
-//byte count=0;
-//byte frame=0;
-//vec2 pointD;
-
 void loop() {
   timer++;
   if (!(ab.nextFrameDEV())) {
@@ -135,10 +138,10 @@ void loop() {
     
       ab.println(F("Welcome SpaceBoy"));
       ab.println("");
-      ab.println("");
       ab.println("up: Credit");
       ab.println("left: Quick Race");
       ab.println("right: Quick Game");
+      ab.println("down: Test");
       ab.println("A: New Game");
       ab.println("B: Continue");
 
@@ -162,6 +165,8 @@ void loop() {
       }
       if (ab.justPressed(UP_BUTTON))
         state = STATE_CREDIT;
+      if (ab.justPressed(DOWN_BUTTON))
+        state = STATE_TESTING;        
       break;
     case STATE_CREDIT:
       ab.println("");
@@ -237,57 +242,64 @@ void loop() {
 
 
     case STATE_TESTING:
-      /*
-          vec2 moveCurs=vec2(0,0);
-          if (ab.justPressed(LEFT_BUTTON))
-            moveCurs+=vec2(-1,0);
-          if (ab.justPressed(UP_BUTTON))
-            moveCurs+=vec2(0,-1);
-          if (ab.justPressed(RIGHT_BUTTON))
-            moveCurs+=vec2(1,0);
-          if (ab.justPressed(DOWN_BUTTON))
-            moveCurs+=vec2(0,1);
-          if (ab.pressed(A_BUTTON))
-            moveCurs=moveCurs*10;
-          pointB+=moveCurs;
 
-          ab.drawCircle(pointA.x,pointA.y,2);
-          ab.drawCircle(pointB.x,pointB.y,2);
-          int temp=trigoInv(pointA,pointB);
-          drawVecLine(pointA,trigoVec(temp,20,pointA));
-          ab.println(pointB.x);
-          ab.println(pointB.y);
+        mapCoord=vec2(0,0);
+    
+        vec2 moveCurs=vec2(0,0);
+        if (ab.justPressed(LEFT_BUTTON))
+          moveCurs+=vec2(-1,0);
+        if (ab.justPressed(UP_BUTTON))
+          moveCurs+=vec2(0,-1);
+        if (ab.justPressed(RIGHT_BUTTON))
+          moveCurs+=vec2(1,0);
+        if (ab.justPressed(DOWN_BUTTON))
+          moveCurs+=vec2(0,1);
+        if (ab.pressed(A_BUTTON))
+          moveCurs=moveCurs*10;
+        pointB+=moveCurs;
+        
+        if (ab.justPressed(B_BUTTON))
+          testEnnemi.grow();
 
+        ab.drawCircle(pointA.x,pointA.y,2);
+        //ab.drawCircle(pointB.x,pointB.y,2);
+        int temp=trigoInv(pointA,pointB);
+        drawVecLine(pointA,trigoVec(temp,20,pointA));
+        ab.println(pointB.x);
+        ab.println(pointB.y);
 
-          if (ab.everyXFrames(15)){
-            frame++;
-          }
-          if (frame>4)
-            frame=0;
-          //ab.fillCircle(pointA.x,pointA.y,5);
-          sprites.drawSelfMasked(pointA.x-8,pointA.y-5,monster,frame);
-        //  pointD=trigoVec(temp,4,pointA);
-          ab.drawRect(pointD.x-1,pointD.y,3,2,0);
-          ab.drawPixel(pointD.x,pointD.y);
-          //ab.drawCircle(pointD.x,pointD.y,1);
+        if (ab.everyXFrames(15)){
+          frame++;
+        }
+        if (frame>4)
+          frame=0;
+        //ab.fillCircle(pointA.x,pointA.y,4);
+        //ab.fillCircle(pointA.x+2,pointA.y+1,2);
+        //ab.fillCircle(pointA.x-1,pointA.y-2,2);
+        //ab.fillCircle(pointA.x-2,pointA.y+3,2);
+        //ab.fillCircle(pointA.x,pointA.y,2);
+        //ab.fillCircle(pointA.x,pointA.y,2);
+        //ab.fillCircle(pointA.x,pointA.y,2);
+       
+       testEnnemi.pos=pointB;
+       testEnnemi.update();
+/*
+      for (int i=0; i<5; i++){
+        ab.fillCircle(pointB.x+2*((frame>>i)&0x07)-8,pointB.y+(((frame>>(i+1))&0x07)-4),2);  
+      }
+      if (ab.everyXFrames(10)){
+        for (int i=0;i<6;i++){
+          frame=random(254);
+        }
+      }
+*/
 
         //drawGrid(pointC,pointB,vec2(-pointB.x,pointB.y),1,1);
 
         //drawCylinder(pointC,pointB,10,false, true);
         //ab.fillCircle(pointC.x,pointC.y,9,0);
 
-        int temp;
-          count++;
-          if (count<11){
-            ab.fillCircle(pointB.x,pointB.y,count);
-          }
-          else if (count<21){
-            ab.fillCircle(pointB.x,pointB.y,11);
-            ab.fillCircle(pointB.x,pointB.y,count-11,0);
-          }
-          if (count>50)
-            count=0;
-      */
+
       break;
 
   }

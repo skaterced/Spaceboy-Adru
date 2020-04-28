@@ -22,6 +22,8 @@
 #define FLYINGSAUCER_LIFE 20
 #define ENNEMI_ENNSHIP 4
 #define ENNSHIP_LIFE 20
+#define ENNEMI_BLOB 5
+#define DEFAULT_ENNEMI_LIFE 20
 
 class Explosion {
   public:
@@ -164,7 +166,8 @@ class Meteor : public Element {
 class Ennemies : public Element {
   public:
     byte frame;
-    byte type;
+    byte type;    
+    //byte randBytes[10];
     Ennemies():Element(){}
     Ennemies::reboot(vec2 pos_, vec2 speed_, byte type_){
       active=true;
@@ -179,7 +182,8 @@ class Ennemies : public Element {
       }
       else if (ENNEMI_FLYINGSAUCER==type){
         life=FLYINGSAUCER_LIFE;
-      }      
+      }
+      else life=DEFAULT_ENNEMI_LIFE;
     }
     bool Ennemies::update(void){  //return true if Ennemi is shooting
       vec2 pointD;
@@ -235,29 +239,66 @@ class Ennemies : public Element {
           ab.drawPixel(pointD.x,pointD.y);
           if (ab.everyXFrames(2))
             this->speed=(pointD-this->pos-mapCoord+vec2(0,5))*3;                    
-        break;      
+        break;
+        case ENNEMI_BLOB:        
+          for (int i=0; i<5; i++){
+            ab.fillCircle(pos.x+mapCoord.x+2*((frame>>i)&0x07)-8,pos.y+mapCoord.y+(((frame>>(i+1))&0x07)-4),2);  
+          }
+          if (ab.everyXFrames(10)){
+            for (int i=0;i<6;i++){
+              frame=random(254);
+            }
+          }
+        break;
         case ENNEMI_ENNSHIP:
           this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
           this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
-          /*
-          if (ab.everyXFrames(10)){
-            frame++;   
-            if (frame>4)
-              frame=0;  
-          }              
-          sprites.drawSelfMasked(pos.x+mapCoord.x-8,pos.y+mapCoord.y-7,monster,frame);
-          pointD=trigoVec(trigoInv(this->pos+mapCoord,vec2(64,32)),4,this->pos+vec2(0,-4)+mapCoord);
-          //if (abs(temp-8)<3)
-          //pointD+=vec2(0,-1);
-          ab.drawRect(pointD.x-1,pointD.y,3,2,0);
-          ab.drawPixel(pointD.x,pointD.y);
-          if (ab.everyXFrames(2))
-            this->speed=(pointD-this->pos-mapCoord+vec2(0,5))*3;*/
+
         break;      
       }
     return false;
     }    
 };
 
+class Blob : public Ennemies {
+  private:
+    //byte randBytes[10];
+  public:
+  Blob(){
+    type=3;
+  }
+    bool Blob::update(){
+      //ab.fillCircle(pos.x,pos.y,4);  
+      /*
+      for (int i=0; i<5; i++){
+        ab.fillCircle(pos.x+2*(randBytes[i]-4),pos.y+(randBytes[i+1]-4),2);  
+      }
+      if (ab.everyXFrames(10)){
+        for (int i=0;i<6;i++){
+          randBytes[i]=random(8);
+        }
+      }
+      */
+      /*
+      for (int i=0; i<5; i++){
+        ab.fillCircle(pos.x+mapCoord.x+2*((frame>>i)&0x07)-8,pos.y+mapCoord.y+(((frame>>(i+1))&0x07)-4),2);          
+      }*/
+      if (ab.everyXFrames(10)){
+        for (int i=0;i<6;i++){
+          frame=random(254);
+        }
+      }
+      ab.fillCircle(pos.x+mapCoord.x+type+2*((frame>>0)&0x0F)%4-8,pos.y+type+mapCoord.y+(((frame>>1)&0x0F)%4-4),type-1);  
+      ab.fillCircle(pos.x+mapCoord.x+type+2*((frame>>1)&0x0F)%4-8,pos.y-type+mapCoord.y+(((frame>>3)&0x0F)%4-4),type-1);  
+      ab.fillCircle(pos.x+mapCoord.x-type+2*((frame>>2)&0x0F)%4-8,pos.y+type+mapCoord.y+(((frame>>4)&0x0F)%4-4),type-1);  
+      ab.fillCircle(pos.x+mapCoord.x-type+2*((frame>>3)&0x0F)%4-8,pos.y-type+mapCoord.y+(((frame>>2)&0x0F)%4-4),type-1);  
+      ab.fillCircle(pos.x+mapCoord.x+2*((frame>>4)&0x0F)%4-8,pos.y+mapCoord.y+(((frame>>5)&0x0F)%4-4),type-1);  
+      return false;
+    }
+    void Blob::grow(){
+      type+=10;
+    }
+    
+};
 
 #endif
