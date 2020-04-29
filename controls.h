@@ -30,24 +30,28 @@ void controls(Player* p1, bool raceMode){
       p1->drawFlames();
       //p1->fuel-=1;
       if (ab.everyXFrames(2)){
-        p1->speed+=trigoVec(p1->dir,3+p1->engineV2?4:0,vec2(0,0));
-        if (magn(p1->speed)>SPEED_MAX) {
-          p1->speed-=trigoVec(p1->dir,3+p1->engineV2?4:0,vec2(0,0));
+        p1->speed+=trigoVec(p1->dir,5+(p1->engineV2?4:0),vec2(0,0));
+        if (magn(p1->speed)>SPEED_MAX+(p1->engineV2?20:0)) {
+          p1->speed-=trigoVec(p1->dir,5+(p1->engineV2?4:0),vec2(0,0));
         }
       }
     }
   }
   if (ab.pressed(DOWN_BUTTON)||(raceMode&&ab.pressed(A_BUTTON))){
     if (true){//(p1->fuel>0){          
-      if (magn(p1->speed)<=1) {
+      if (magn(p1->speed)<=5&&magn(p1->speed)!=-99) {
         p1->speed=vec2(0,0);
       }
       else {
         //p1->fuel-=1;
         p1->drawRetroFlames();      
         if (ab.everyXFrames(2)){
+          p1->speed-=trigoVec(trigoInv(vec2(0,0),p1->speed),5+(p1->engineV2?4:0),vec2(0,0));
+          /*
+           * // ?? How can that have been working?! a divide by 0 may occur
           p1->speed.x-=abs(p1->speed.x)/p1->speed.x;
           p1->speed.y-=abs(p1->speed.y)/p1->speed.y;
+          */
         }
       }
     }

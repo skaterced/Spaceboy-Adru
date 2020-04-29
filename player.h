@@ -6,7 +6,7 @@
 #include "shot.h"
 #include "background.h"
 
-#define SPEED_MAX 100
+#define SPEED_MAX 160
 //#define SPEED_DIVISOR -> in globals.h
 
 #define ARMOR_MAX 50
@@ -42,7 +42,7 @@ class Player {
       this->pos.y=y;
       this->dir=dir;
       money=0;
-      engineV2=true;
+      engineV2=false;
       lives=3;
       //this->coolDown=0;
       this->turnTimer=0;
@@ -75,18 +75,6 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   pos+=((this->speed+this->reste)/SPEED_DIVISOR);
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
 
-  //Fuel jauge
-  //drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
-  //ab.drawPixel(126,63-(fuelMax/300));  
-  
-  //ARMOR
-  drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
-  ab.drawPixel(126,63-(ARMOR_MAX));   
-
-  //Energy
-  drawVecLine(vec2(124,63),vec2(124,63-(energy/5))); 
-  ab.drawPixel(124,63-(ENERGY_MAX/5));      
-  
   //Background ajust
   if (pos.x<64){
     //int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT);
@@ -149,11 +137,25 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     drawVecLine(pos,trigoVec(invDir(dir),4,pos));
   }
    
+  //Fuel jauge
+  //drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
+  //ab.drawPixel(126,63-(fuelMax/300));  
+  
+  //ARMOR
+  drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
+  ab.drawPixel(126,63-(ARMOR_MAX));   
+
+  //Energy
+  drawVecLine(vec2(124,63),vec2(124,63-(energy/5))); 
+  ab.drawPixel(124,63-(ENERGY_MAX/5));      
+     
+   
   //draw shots
   gun.draw();
 
   return false;
 }
+
 bool Player::checkcollision(){  //return true if armor drops below 0 (but it's unsigned so >200)
   vec2 temp=elementCollision(this->pos,invincible==1? 10:6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){

@@ -25,6 +25,13 @@
 #define ENNEMI_BLOB 5
 #define DEFAULT_ENNEMI_LIFE 20
 
+#define CP1 vec2(400,150)
+#define CP2 vec2(1200,150)
+#define CP3 vec2(800,575)
+#define CP4 vec2(400,1000)
+#define CP5 vec2(1200,1000)
+
+
 class Explosion {
   public:
     vec2 pos;
@@ -112,7 +119,7 @@ class CheckPoint {
     CheckPoint(){
       pos=vec2(0,0);
       active=false;
-      blink=0;
+      blink=10;
       last=false;
     }
     /*CheckPoint(vec2 pos){
@@ -122,14 +129,17 @@ class CheckPoint {
       last=false;
     }*/
     void CheckPoint::update() {
+            
       ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,13);   
-      if (active){   
-        if (ab.everyXFrames(5)){
-          if (++blink>12)
-            blink=0;          
-        }
+      if (ab.everyXFrames(5)){
+          if (++blink>22)
+            blink=10;
+      }      
+      if (active){           
         ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,15+blink*5);              
       }
+      if (blink<10)
+        ab.fillCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,13);   //Get filled when you pass the CheckPoint
     }
 };
 

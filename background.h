@@ -110,19 +110,31 @@ void putEnnemies(vec2 pos, vec2 speed, byte type) {
 
 void sectorInit(byte type){ //, byte difficulty){
   sectorType=type;
-  if (0x80==(type&0x80)){
+  if (0x80==(type&0xC0)){
     CP[0].active=true;      
-    //   1 4
-    //   3 2
-    CP[0].pos=vec2(400,150);  
-    CP[1].pos=vec2(1200,1000);
-    CP[2].pos=vec2(400,1000);
-    CP[3].pos=vec2(1200,150);
-    CP[4].pos=vec2(400,150);    //2nd lap
-    CP[5].pos=vec2(1200,1000);
-    CP[6].pos=vec2(400,1000);
-    CP[7].pos=vec2(1200,150);    
-    CP[8].pos=vec2(400,150);    //finish
+    //   1 2
+    //    3
+    //   4 5
+    /*CP[0].pos=CP1;  
+    CP[1].pos=CP5;
+    CP[2].pos=CP4;
+    CP[3].pos=CP2;
+    CP[4].pos=CP1;    //2nd lap
+    CP[5].pos=CP5;
+    CP[6].pos=CP4;
+    CP[7].pos=CP2;
+    CP[8].pos=CP1;    //finish
+**/
+    // 'X' shape, one lap only
+    CP[0].pos=CP1;  
+    CP[1].pos=CP3;
+    CP[2].pos=CP2;
+    CP[3].pos=CP3;
+    CP[4].pos=CP5;
+    CP[5].pos=CP3;
+    CP[6].pos=CP4;
+    CP[7].pos=CP3;
+    CP[8].pos=CP1;    //finish
     /*
     // 'Z' shape
     CP[0].pos=vec2(300,150);  
@@ -254,10 +266,10 @@ void drawRadar() {
     ab.fillRect(RADAR_POSX, RADAR_POSY + temp2 + 9, 11, -temp2, 0);
   }
   
-  if ((sectorType&0x80)==0x80){  // Race Mode
+  if ((sectorType&0xC0)==0x80){  // Check points only during Race Mode
     for (int i=0; i<NBMAX_CP;i++){
-      temp = (mapCoord.x + CP[i].pos.x - 29) / IMAGE_WIDTH; //pos adjust. from meteor but...
-      temp2 = (mapCoord.y + CP[i].pos.y - 13) / IMAGE_HEIGHT;
+      temp = (mapCoord.x + CP[i].pos.x - 32) / IMAGE_WIDTH; 
+      temp2 = (mapCoord.y + CP[i].pos.y - 16) / IMAGE_HEIGHT;
   
       if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
         ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, fastBlinking ? 0 : 1);
@@ -269,8 +281,8 @@ void drawRadar() {
   else {
     for (int i = 0; i < NBMAX_METEOR; i++) {
       if (met[i].active) {
-        temp = (mapCoord.x + met[i].pos.x - 29) / IMAGE_WIDTH; //29: IMAGE_WIDTH/4-meteor_image_width/4
-        temp2 = (mapCoord.y + met[i].pos.y - 13) / IMAGE_HEIGHT;
+        temp = (mapCoord.x + met[i].pos.x - 32) / IMAGE_WIDTH; //29: IMAGE_WIDTH/4-meteor_image_width/4 = 32 - 12/4 
+        temp2 = (mapCoord.y + met[i].pos.y - 16) / IMAGE_HEIGHT; //13: IMAGE_HEIGHT/4-meteor_image_width/4 = 16 - 12/4 
   
         if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
           ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, slowBlinking ? 0 : 1);
@@ -279,8 +291,8 @@ void drawRadar() {
     }
     for (int i = 0; i < NBMAX_ENNEMI; i++) {
       if (enn[i].active) {
-        temp = (mapCoord.x + enn[i].pos.x - 29) / IMAGE_WIDTH; //pos adjust. from meteor but...
-        temp2 = (mapCoord.y + enn[i].pos.y - 13) / IMAGE_HEIGHT;
+        temp = (mapCoord.x + enn[i].pos.x - 29) / IMAGE_WIDTH; //29: IMAGE_WIDTH/4-Ennemi_image_width/4 = 32 - 3  (I know not every Ennemi is 12x12)
+        temp2 = (mapCoord.y + enn[i].pos.y - 13) / IMAGE_HEIGHT; //29: IMAGE_HEIGHT/4-Ennemi_image_height/4 = 16 - 3 
   
         if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
           ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, fastBlinking ? 0 : 1);
@@ -302,7 +314,7 @@ void drawRadar() {
 
 void drawBackground() { //, int RandSeed){  //-------------------------------------- Draw Background --------------------------
   
-  if ((sectorType&0x80)==0x80){  // Race Mode
+  if ((sectorType&0xC0)==0x80){  // Race Mode
     ab.print(elapsedtime);
     if (!CP[0].active&&(sectorType&0x81)!=0x81)
       elapsedtime++;
@@ -374,7 +386,7 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
   for (int i = 0; i < NBMAX_METEOR; i++) {
     if (met[i].active) {
 
-      if ((magn(objPos - met[i].pos - mapCoord) != -1) && (magn(objPos - met[i].pos - mapCoord) < (radius + 6))) {
+      if ((magn(objPos - met[i].pos - mapCoord) != -99) && (magn(objPos - met[i].pos - mapCoord) < (radius + 6))) {
         //if ((temp.x-7<shipPos.x&&shipPos.x<temp.x+19)&&(temp.y-7<shipPos.y&&shipPos.y<temp.y+19)){ // 22 = 12(image width/heigth)+10(ship radius)
         met[i].life -= dmg;
         if (met[i].life <= 0) {
@@ -398,7 +410,7 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
       else
         ennRadius = 8;
       vec2 temp=objPos - enn[i].pos - mapCoord;
-      if ((magn(temp) != -1) && (magn(temp) < (radius + ennRadius))) {
+      if ((magn(temp) != -99) && (magn(temp) < (radius + ennRadius))) {
         //enn[i].hit()
         
         if (ENNEMI_BLOB!=enn[i].type){
@@ -421,7 +433,7 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
     }
   }
   if (ennShot.active>0) {
-    if ((magn(objPos - ennShot.pos) != -1) && (magn(objPos - ennShot.pos) < (radius + 1))) {
+    if ((magn(objPos - ennShot.pos) != -99) && (magn(objPos - ennShot.pos) < (radius + 1))) {
       ennShot.explode();
       //ennShot.active = false;
       return vec2(99, 2); // x 99 means hit by an ennemi shot -> y is the dmg inflicted
@@ -429,23 +441,24 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
   }
   for (int i = 0; i < NBMAX_GEM; i++) {
     if (gems[i].active) {
-      if ((radius!=0)&&(magn(objPos - gems[i].pos - mapCoord) != -1) && (magn(objPos - gems[i].pos - mapCoord) < (radius + 3))) {
+      if ((radius!=0)&&(magn(objPos - gems[i].pos - mapCoord) != -99) && (magn(objPos - gems[i].pos - mapCoord) < (radius + 3))) {
         gems[i].active = false;
         return vec2(98, 2); // x 98 means coin collected
       }
     }
   }
-  if ((sectorType&0x80)==0x80){  // Race Mode
+  if ((sectorType&0xC0)==0x80){  // Race Mode
     for (int i=0; i<NBMAX_CP;i++){
       if(CP[i].active){
-        if ((radius!=0)&&(magn(objPos - CP[i].pos - mapCoord) != -1) && (magn(objPos - CP[i].pos - mapCoord) < (radius + 12))) {
+        if ((radius!=0)&&(magn(objPos - CP[i].pos - mapCoord) != -99) && (magn(objPos - CP[i].pos - mapCoord) < (radius + 12))) {
           CP[i].active=false;
+          CP[i].blink=0; //light it up for a while
           if (CP[i].last){
             //race ends...
             sectorType|=0x01;
           }
           else {
-            CP[i+1].active=true;        
+            CP[i+1].active=true; 
             i=99;
           }
         }

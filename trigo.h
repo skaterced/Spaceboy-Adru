@@ -134,7 +134,8 @@ int trigoInv(vec2 a, vec2 b){ //to get the direction from a to b
     if (a.x>b.x){ return 12;}
     else{ return 4; }     
   }   
-
+  //all possibilities really?
+  //return 0;
 }
 
 void drawVecLine(vec2 A, vec2 B){

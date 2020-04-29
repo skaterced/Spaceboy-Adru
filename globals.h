@@ -6,7 +6,7 @@
 
 #include <Arduboy2.h>
 
-#define SPEED_DIVISOR 20
+#define SPEED_DIVISOR 40
 
 Arduboy2 ab;
 //Arduboy2Base ab; //2136 bytes(8%) saved by using Base... But then I have to "draw" a menu or rewrite a print system

@@ -41,11 +41,11 @@
    ...
    
    22% Progmem 21% globVar
-   Race mode is a success, I'll keep it, either a bonus stage for A or a sector type for S
-   still a lot in my head and less space (haha) but here are some ideas:
+   Race mode is a success, I'll keep it, either as a bonus stage for A or a sector type for S
+   still a lot in my head and less space but here are some ideas:
     Story  Map is always generated the same way but its size depends on you antenna or whatever. you can buy new stuff depending on money or what you already have. Basically 3 sort:
             weapon: +dmg; +speed; bombs
-            devices: Radar; warp?; compas?
+            devices: Radar; Better Engine? warp?; compas?
             defense: shield; shieldGenerator; autoShield;
    Ennemies: An evil multiplying cloud
 */
@@ -88,9 +88,9 @@ vec2 pointD;
 
 void setup()
 {
-  ab.begin();
-  //testEnnemi.reboot(pointB, vec2(0,0), 0);
+  ab.begin();  
   //ab.boot(); //846 bytes (3%) saved by using boot instead of begin (but must implement an Upload method)
+  //testEnnemi.reboot(pointB, vec2(0,0), 0);
   ab.setFrameRate(60);
   //state = STATE_GAME;
   state = STATE_MENU;
@@ -123,8 +123,8 @@ void setup()
 
 void loop() {
   timer++;
-  if (!(ab.nextFrameDEV())) {
-    //if (!(ab.nextFrame())){
+  if (!(ab.nextFrameDEV())) { //32B
+  //if (!(ab.nextFrame())){
     return;
   }
   ab.pollButtons();
@@ -135,7 +135,7 @@ void loop() {
     case STATE_MENU:
     
       //sprites.drawSelfMasked(0,0,menus,0);
-    
+/*    
       ab.println(F("Welcome SpaceBoy"));
       ab.println("");
       ab.println("up: Credit");
@@ -144,13 +144,32 @@ void loop() {
       ab.println("down: Test");
       ab.println("A: New Game");
       ab.println("B: Continue");
+*/
+      ab.println(F("Welcome SpaceBoy"));
+      ab.println("");
+      ab.print((char)24);
+      ab.println(": Credit");
+      ab.print((char)26);
+      ab.println(": Quick Race");
+      ab.print((char)27);
+      ab.println(": Quick Game");
+      ab.print((char)25);
+      ab.println(": Test");
+      ab.println("A: New Game");
+      ab.println("B: Continue");
+
 
       if (ab.justPressed(LEFT_BUTTON)) {
-        randomSeed(timer * 3000);
         sectorInit(0x80);
         race=true;
         state = STATE_GAME;
       }
+      if (ab.justPressed(RIGHT_BUTTON)) { //race with EngineV2 for now
+        ship.engineV2=true;
+        sectorInit(0x80);
+        race=true;
+        state = STATE_GAME;
+      }      
       if (ab.justPressed(A_BUTTON)) {
         randomSeed(timer * 3000);
         sectorInit(0x00);
