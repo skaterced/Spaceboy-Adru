@@ -11,8 +11,7 @@ left+right   Pause game (down to resume)
 
 secret Warp: A+B+right+down
 
-In race mode you have to get through the check points in the following order: (only one circuit yet)
-1 4
-3 2
+In race mode you have to get through 9 check points in the following order: (only one circuit yet)
+up left, down right, down left, up right, and so on.
 
 ** work in progress **
