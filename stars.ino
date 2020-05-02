@@ -78,7 +78,8 @@ bool race=false;
 
 //variables for test
 Blob testEnnemi=Blob();
-//Ennemies testEnnemi=Ennemies();
+Ennemies testEnnemies[3];
+Element * testPtrEl;
 vec2 pointA(60, 30);
 vec2 pointB(20, 40);
 vec2 pointC(25, 50);
@@ -98,7 +99,6 @@ void setup()
   ab.initRandomSeed();
 
   //pointB+=vec2(pointC);
-  mapCenter();
 /*
   if (race)
     sectorInit(0x80);
@@ -123,8 +123,8 @@ void setup()
 
 void loop() {
   timer++;
-  if (!(ab.nextFrameDEV())) { //32B
-  //if (!(ab.nextFrame())){
+  //if (!(ab.nextFrameDEV())) { //32B
+  if (!(ab.nextFrame())){
     return;
   }
   ab.pollButtons();
@@ -149,10 +149,10 @@ void loop() {
       ab.println("");
       ab.print((char)24);
       ab.println(": Credit");
-      ab.print((char)26);
-      ab.println(": Quick Race");
       ab.print((char)27);
-      ab.println(": Quick Game");
+      ab.println(": Race 'O'");
+      ab.print((char)26);
+      ab.println(": fast Race 'O'");
       ab.print((char)25);
       ab.println(": Test");
       ab.println("A: New Game");
@@ -160,26 +160,31 @@ void loop() {
 
 
       if (ab.justPressed(LEFT_BUTTON)) {
-        sectorInit(0x80);
+        mapCenter(false);
+        sectorInit(0x80,0);
         race=true;
         state = STATE_GAME;
       }
       if (ab.justPressed(RIGHT_BUTTON)) { //race with EngineV2 for now
         ship.engineV2=true;
-        sectorInit(0x80);
+        mapCenter(false);
+        sectorInit(0x80,0);
         race=true;
         state = STATE_GAME;
       }      
       if (ab.justPressed(A_BUTTON)) {
         randomSeed(timer * 3000);
-        sectorInit(0x00);
+        mapCenter(true);
+        sectorInit(0x00,0);
         ship.gun.canHold=false;
         state = STATE_GAME;
       }
       if (ab.justPressed(B_BUTTON)) {
         randomSeed(timer * 3000);
-        sectorInit(0x00);
+        mapCenter(true);
+        sectorInit(0x30,0);
         ship.engineV2=true;
+        ship.gun.multi=true;
         state = STATE_GAME;
       }
       if (ab.justPressed(UP_BUTTON))
@@ -225,6 +230,8 @@ void loop() {
       //drawStars(mapCoord.x,mapCoord.y, 3309);
       drawStars();
       if (ship.draw()){ //out of bound
+        state = STATE_MENU;
+        /*
         if (--ship.lives==0){
           state=STATE_GAMEOVER;
         }
@@ -234,8 +241,9 @@ void loop() {
           ship.energy=ENERGY_MAX;
           ship.speed=vec2(0,0);
           ship.pos=vec2(64,32);
-          mapCenter();
+          mapCenter(true);
         }
+        */
       }
       drawBackground();
 /*
@@ -253,7 +261,7 @@ void loop() {
           ship.invincible=200;
           ship.armor=ARMOR_MAX;
           ship.energy=ENERGY_MAX;
-          //mapCenter();       
+          //mapCenter(true);       
         }
       }
       ship.checkShotscollision();
@@ -277,9 +285,11 @@ void loop() {
           moveCurs=moveCurs*10;
         pointB+=moveCurs;
         
-        if (ab.justPressed(B_BUTTON))
-          testEnnemi.grow();
-
+        if (ab.justPressed(B_BUTTON)){
+//          testEnnemi.grow();
+          testEnnemies[0].reboot(pointB,vec2(0,0),1);
+          testPtrEl=&testEnnemi;
+        }
         ab.drawCircle(pointA.x,pointA.y,2);
         //ab.drawCircle(pointB.x,pointB.y,2);
         int temp=trigoInv(pointA,pointB);
@@ -300,8 +310,9 @@ void loop() {
         //ab.fillCircle(pointA.x,pointA.y,2);
         //ab.fillCircle(pointA.x,pointA.y,2);
        
-       testEnnemi.pos=pointB;
-       testEnnemi.update();
+       testEnnemi.pos=pointA;
+       testPtrEl->update();
+       //testEnnemies[0].update();
 /*
       for (int i=0; i<5; i++){
         ab.fillCircle(pointB.x+2*((frame>>i)&0x07)-8,pointB.y+(((frame>>(i+1))&0x07)-4),2);  

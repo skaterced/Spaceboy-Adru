@@ -59,7 +59,7 @@ void controls(Player* p1, bool raceMode){
   
   if (ab.pressed(A_BUTTON)&&ab.pressed(B_BUTTON)&&ab.pressed(DOWN_BUTTON)&&ab.pressed(RIGHT_BUTTON)){ //secret warp (
     p1->pos=vec2(64,32);
-    mapCenter();
+    mapCenter(true);
     //mapCoord=vec2(0,0);    
   }
 

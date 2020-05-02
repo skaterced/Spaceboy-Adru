@@ -8,9 +8,9 @@
 #define LINE_LENGTH 10
 
 int trueDir(int dir){
-  if (0>dir)
+  while (0>dir)   // while instead of if -> 32bytes less and an even better "result" (hum... maybe the compilator is out of the plaque)
     dir+=NB_DIR;
-  if (dir>=NB_DIR)
+  while (dir>=NB_DIR)
     dir-=NB_DIR;
   return dir;
 }

@@ -33,6 +33,10 @@ class Player {
     byte lives;    
     bool burn;
     bool engineV2;
+    /*
+     * //TODO: create "State" byte including 
+     *    display jauge? lives, burn,...
+      */
     //int coolDown;
     //Shot shots[SHOTS_MAX];
     Gun gun;
@@ -77,7 +81,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
 
   //Background ajust
   if (pos.x<64){
-    //int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT);
+    //int temp = -(sectorLines-1)*IMAGE_HEIGHT);
     if (mapCoord.x-(pos.x-64)<0){
       mapCoord.x-=(pos.x-64);
       pos.x=64;
@@ -88,7 +92,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     }
   }  
   else if (pos.x>64){
-    int temp = -(SECTOR_COLUMNS-1)*IMAGE_WIDTH+64;
+    int temp = -(sectorColumns-1)*IMAGE_WIDTH+64;
     if (mapCoord.x-(pos.x-64)>temp){
       mapCoord.x-=(pos.x-64);
       pos.x=64;
@@ -100,7 +104,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   }
   
   if (pos.y<32){
-    //int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT);
+    //int temp = -(sectorLines-1)*IMAGE_HEIGHT);
     if (mapCoord.y-(pos.y-32)<0){
       mapCoord.y-=(pos.y-32);
       pos.y=32;
@@ -112,7 +116,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     }
   }  
   else if (pos.y>32){
-    int temp = -(SECTOR_LINES-1)*IMAGE_HEIGHT+32;
+    int temp = -(sectorLines-1)*IMAGE_HEIGHT+32;
     if (mapCoord.y-(pos.y-32)>temp){
       mapCoord.y-=(pos.y-32);
       pos.y=32;
@@ -167,13 +171,13 @@ bool Player::checkcollision(){  //return true if armor drops below 0 (but it's u
       if (temp.x!=99){
         if (0==invincible)
           armor-=magn(this->speed)/10; //todo make dmg proportional to speed diference between the 2 objects
-        this->speed=temp;
+        this->speed=temp*2;
       }    
       else { //got hit by an ennemi shot
         if (0==invincible)
           armor-=temp.y;
       }
-      if (armor>200){
+      if (armor>ARMOR_MAX){
         return true;
       }
     }

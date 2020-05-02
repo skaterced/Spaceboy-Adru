@@ -20,7 +20,10 @@ int score;
 /*  
  *   //for debugging purpose.
  *   
+      ab.clear();
       ab.setCursor(0,0);
       ab.println(temp);
       ab.println(temp2);
+      ab.display();
+      delay(2000);
   */

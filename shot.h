@@ -1,4 +1,4 @@
-#ifndef _SHOT_
+ #ifndef _SHOT_
 #define _SHOT_
 
 #include "globals.h"
@@ -51,12 +51,14 @@ void Shot::draw(){
 class Gun {
   public :
     bool canHold;
+    bool multi;
     Shot shots[SHOTS_MAX];
     int coolDown;
     byte maxBullets;
     byte dmg;
     Gun(){
       canHold=true;
+      multi=false;
       maxBullets=SHOTS_MAX; //not sure why we need this
       coolDown=0;
       dmg=2;
@@ -71,8 +73,8 @@ class Gun {
               shots[i].pos=pos+trigoVec(dir,10,vec2(0,0));
               shots[i].dir=dir;
               //p1->shots[i].speed=p1->speed/SPEED_DIVISOR+trigoVec(p1->dir,6,vec2(0,0));
-              shots[i].speed=trigoVec(dir-1+temp,6,vec2(0,0));
-              if (++temp>2)
+              shots[i].speed=trigoVec(dir-(multi?1:0)+temp,6,vec2(0,0));
+              if (!multi||(++temp>2))
                 i=99;
             }
         }

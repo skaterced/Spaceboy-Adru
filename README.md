@@ -1,4 +1,4 @@
-# SpaceBoy Ardu
+# SpaceBoy Adru
 You control a spaceship viewed from above. You can destroy asteroids (or maybe Aliens...) to collect minerals and then buy stuff to upgrade your ship. 
 
 Controls:
