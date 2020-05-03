@@ -23,7 +23,7 @@
 #define ENNEMI_ENNSHIP 0x80
 #define ENNSHIP_LIFE 20
 #define ENNEMI_BLOB 0xA0
-#define ENNEMI_EXPLOSIVE_METEOR 0xB0
+#define ENNEMI_EXPLOSIVE_METEOR 0x00
 #define DEFAULT_ENNEMI_LIFE 20
 
 #define CP1 vec2(400,150)
@@ -32,6 +32,8 @@
 #define CP4 vec2(400,1000)
 #define CP5 vec2(1200,1000)
 
+#define NBMAX_WAVE 5
+// WT: Wave Type
 //#define WT_HARD 0x01
 #define WT_RESPAWN 0x02
 #define WT_FROM_LEFT 0x04
@@ -111,7 +113,7 @@ class Gem {
         ab.fillCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,1);      
       }
       else {
-        ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,1);      
+        //ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,1);      
       }
     }
 };
@@ -143,7 +145,7 @@ class CheckPoint {
             blink=10;
       }      
       if (active){           
-        ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,15+blink*5);              
+        ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,15+(blink-10)*5);              
       }
       if (blink<10)
         ab.fillCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,13);   //Get filled when you pass the CheckPoint
@@ -353,12 +355,32 @@ class Blob : public Ennemies {
  * I L_______________\
  * L_________________ \____ Monsters type
  */
-class Wave{
+ 
+class Waves{ 
   public:
     //Ennemi boss;
-    byte type; //CF above
-    Wave(){
+    byte waveType[NBMAX_WAVE];
+    byte it;
+    Waves(){
       //type=type;
+    }
+    byte Waves::actual(){
+      return waveType[it];
+    }
+    bool Waves::next(){
+      if (0==waveType[it]||(it==(NBMAX_WAVE-1)))
+        return false;
+      it++;
+      return true;
+    }
+    void Waves::init(byte toto){
+    //const byte wave1=(ENNEMI_SPACEINVADER|0x3<<WT_FORMATION|WT_FROM_LEFT|WT_RESPAWN);
+      it=0;
+      waveType[0]=(ENNEMI_EXPLOSIVE_METEOR|(1<<WT_FORMATION));
+      waveType[1]=wave1;
+      waveType[2]=(ENNEMI_SPACEINVADER|(3<<WT_FORMATION)|WT_RESPAWN);
+      waveType[3]=(ENNEMI_BIGEYEMONSTER|(1<<WT_FORMATION));
+      waveType[4]=(ENNEMI_FLYINGSAUCER|(1<<WT_FORMATION));
     }
 };
 

@@ -59,13 +59,7 @@
 #include "vec2.h"
 #include "element.h"
 #include "station.h"
-
-#define STATE_MENU 1
-#define STATE_CREDIT 2
-#define STATE_GAME 3
-#define STATE_PAUSE 4
-#define STATE_GAMEOVER 5
-#define STATE_TESTING 9
+#include "menus.h"
 
 Player ship(64, 32, 4);
 //Station home = Station (vec2(300, 300));
@@ -74,7 +68,8 @@ Player ship(64, 32, 4);
 //bool dead=false;
 byte state;
 unsigned int timer = 0;
-bool race=false;
+//bool race=false;
+//byte selector=0;
 
 //variables for test
 Blob testEnnemi=Blob();
@@ -94,30 +89,12 @@ void setup()
   //testEnnemi.reboot(pointB, vec2(0,0), 0);
   ab.setFrameRate(60);
   //state = STATE_GAME;
-  state = STATE_MENU;
+  state = 0; //state = STATE_MENU;
   //state=STATE_TESTING;
   ab.initRandomSeed();
 
   //pointB+=vec2(pointC);
-/*
-  if (race)
-    sectorInit(0x80);
-  else
-    sectorInit(0);
- 
-    putMeteor(vec2(10,500), vec2(3,0));
-    putMeteor(vec2(600,800), vec2(1,-2));
-    putMeteor(vec2(10,900), vec2(2,-1));
-    putMeteor(vec2(10,300), vec2(2,2));
-    putMeteor(vec2(550,550), vec2(1,-1));
 
-    putEnnemies(vec2(0,600),vec2(5,0),0);
-    putEnnemies(vec2(-20,600),vec2(5,0),0);
-    putEnnemies(vec2(-40,600),vec2(5,0),0);
-    putEnnemies(vec2(1000,80),vec2(5,0),ENNEMI_BIGEYEMONSTER);
-  
-  //putEnnemies(vec2(600, 600), vec2(5, 0), ENNEMI_FLYINGSAUCER);
-*/
   //putStation();
 }
 
@@ -131,80 +108,12 @@ void loop() {
   ab.clear();
 
 
-  switch (state) {    
-    case STATE_MENU:
-    
-      //sprites.drawSelfMasked(0,0,menus,0);
-/*    
-      ab.println(F("Welcome SpaceBoy"));
-      ab.println("");
-      ab.println("up: Credit");
-      ab.println("left: Quick Race");
-      ab.println("right: Quick Game");
-      ab.println("down: Test");
-      ab.println("A: New Game");
-      ab.println("B: Continue");
-*/
-      ab.println(F("Welcome SpaceBoy"));
-      ab.println("");
-      ab.print((char)24);
-      ab.println(": Credit");
-      ab.print((char)27);
-      ab.println(": Race 'O'");
-      ab.print((char)26);
-      ab.println(": fast Race 'O'");
-      ab.print((char)25);
-      ab.println(": Test");
-      ab.println("A: New Game");
-      ab.println("B: Continue");
+  switch (state) {
+    default: 
+      state = menu(state, &ship);
+      //if (STATE_GAME==state) randomSeed(timer * 3000);
+    break;      
 
-
-      if (ab.justPressed(LEFT_BUTTON)) {
-        mapCenter(false);
-        sectorInit(0x80,0);
-        race=true;
-        state = STATE_GAME;
-      }
-      if (ab.justPressed(RIGHT_BUTTON)) { //race with EngineV2 for now
-        ship.engineV2=true;
-        mapCenter(false);
-        sectorInit(0x80,0);
-        race=true;
-        state = STATE_GAME;
-      }      
-      if (ab.justPressed(A_BUTTON)) {
-        randomSeed(timer * 3000);
-        mapCenter(true);
-        sectorInit(0x00,0);
-        ship.gun.canHold=false;
-        state = STATE_GAME;
-      }
-      if (ab.justPressed(B_BUTTON)) {
-        randomSeed(timer * 3000);
-        mapCenter(true);
-        sectorInit(0x30,0);
-        ship.engineV2=true;
-        ship.gun.multi=true;
-        state = STATE_GAME;
-      }
-      if (ab.justPressed(UP_BUTTON))
-        state = STATE_CREDIT;
-      if (ab.justPressed(DOWN_BUTTON))
-        state = STATE_TESTING;        
-      break;
-    case STATE_CREDIT:
-      ab.println("");
-      ab.println("Written by");
-      ab.println("   C" "\x82" "dric Martin");
-      ab.println("");
-      ab.println("  April 2020");
-      ab.println("");
-      ab.println("");
-      ab.println("A or B: back");
-
-      if (ab.justPressed(A_BUTTON) || ab.justPressed(B_BUTTON))
-        state = STATE_MENU;
-      break;
     case STATE_PAUSE: case STATE_GAMEOVER:
       if (STATE_GAMEOVER==state){
         ab.println("       Game Over");
@@ -212,7 +121,7 @@ void loop() {
       }
       else {
         ab.println("      * Pause *");      
-        ab.print("ship left: ");
+        ab.print("ship(s) left: ");
         ab.println(ship.lives);
       }
       ab.print("score: ");
@@ -251,7 +160,7 @@ void loop() {
         home.draw();
       }
 */      
-      controls(&ship, race);
+      controls(&ship);
       if (ship.checkcollision()){
         if (--ship.lives==0){
           state=STATE_GAMEOVER;
@@ -269,7 +178,9 @@ void loop() {
 
 
     case STATE_TESTING:
-
+      ship.money+=100;
+      state=0;
+/*
         mapCoord=vec2(0,0);
     
         vec2 moveCurs=vec2(0,0);

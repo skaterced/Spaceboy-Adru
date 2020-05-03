@@ -33,7 +33,6 @@ byte sectorLines=20;
 #define NBMAX_EXPLOSION 3
 #define NBMAX_GEM 7
 #define NBMAX_CP 10
-#define NBMAX_WAVE 5
 
 // TODO: Add a "sectorInit()" 
 
@@ -43,8 +42,8 @@ const byte stars[STARS_TOT]={59,12,41,5,59,33,38,28,5,2,35,27,14,29,63,14,7,57,2
 
 Meteor met[NBMAX_METEOR];
 Ennemies enn[NBMAX_ENNEMI];
-Wave waves[NBMAX_WAVE];  //why not just bytes?
-byte waveIt=0;
+Waves waves;//[NBMAX_WAVE];  //why not just bytes?
+//byte waveIt=0;
 Shot ennShot;
 Explosion xplo[NBMAX_EXPLOSION];
 byte xploIt = 0;
@@ -58,7 +57,7 @@ byte sectorType;
  * I I I I I I I L___ in race Mode: Race finished 
  * I I I I I I L_____ 
  * I I I I I L_______ \____ in race mode: circuit: 0 "O", 1 "inv(Z)", 2 ? 3"X"
- * I I I I L_________ NDY
+ * I I I I L_______________ Meteor respawn between waves
  * I I I L___________ 
  * I I L_____________ \____ Meteor 0-11 a little -> a lot      //(Size: 00 9x18, 01 12x20, 10 ?x?, 11 continuous?)I think I'll forget the different sizes)
  * I L_______________ 
@@ -95,6 +94,13 @@ void putMeteor(vec2 pos, vec2 speed) {
     }
   }
 }
+void putMeteors(){
+    byte temp=(3*((sectorType&0x30)>>4));    
+    bool temp2 = random(100)>50? true:false;
+    while (temp-->0){
+      putMeteor(vec2( (temp2? 0:MAP_WIDTH),random(MAP_HEIGHT)),vec2((random(50)+2)*(temp2? 1:-1),random(20)-10));
+    }    
+}
 /*
   void putStation(void){
   station_active=true;
@@ -110,50 +116,43 @@ void putEnnemies(vec2 pos, vec2 speed, byte type) {
   }
 }
 
-void wavesInit(byte toto){
-//const byte wave1=(ENNEMI_SPACEINVADER|0x3<<WT_FORMATION|WT_FROM_LEFT|WT_RESPAWN);
-  waves[0].type=(ENNEMI_EXPLOSIVE_METEOR);
-  waves[1].type=wave1;
-  waves[2].type=(ENNEMI_SPACEINVADER|(3<<WT_FORMATION)|WT_RESPAWN);
-  waves[3].type=(ENNEMI_BIGEYEMONSTER|(1<<WT_FORMATION));
-  waves[4].type=(ENNEMI_FLYINGSAUCER|(1<<WT_FORMATION));
-}
-void nextWave(){
-  //putMeteor(vec2( (temp2? 0:MAP_WIDTH),random(MAP_HEIGHT)),vec2((random(50)+2)*(temp2? 1:-1),random(20)-10));
-    byte temp=((waves[waveIt].type&0x18)>>3)+1; //formation (number for now)
-    byte temp2=random(MAP_HEIGHT);
-
-    switch (waves[waveIt].type&0xE0){      
-      case ENNEMI_SPACEINVADER:  default:      
-        while (temp-->0){
-          putEnnemies(vec2(-temp*20,temp2),vec2(20,0),ENNEMI_SPACEINVADER);
-        }
-      break;
-      
-      case ENNEMI_BIGEYEMONSTER: 
-
-        putEnnemies(vec2(0,0),vec2(10,10),ENNEMI_BIGEYEMONSTER);
-        if (--temp>0)
-          putEnnemies(vec2(MAP_WIDTH,MAP_HEIGHT),vec2(-10,-10),ENNEMI_BIGEYEMONSTER);
-        if (--temp>0)
-          putEnnemies(vec2(MAP_WIDTH,0),vec2(-10,10),ENNEMI_BIGEYEMONSTER);
-        if (--temp>0)
-          putEnnemies(vec2(0,MAP_HEIGHT),vec2(10,-10),ENNEMI_BIGEYEMONSTER);                
-      break;
-      
-      case ENNEMI_FLYINGSAUCER: 
-        putEnnemies(vec2(0,0),vec2(10,10),ENNEMI_FLYINGSAUCER);
-        if (--temp>0)
-          putEnnemies(vec2(MAP_WIDTH,MAP_HEIGHT),vec2(-10,-10),ENNEMI_FLYINGSAUCER);
-        if (--temp>0)
-          putEnnemies(vec2(MAP_WIDTH,0),vec2(-10,10),ENNEMI_FLYINGSAUCER);
-        if (--temp>0)
-          putEnnemies(vec2(0,MAP_HEIGHT),vec2(10,-10),ENNEMI_FLYINGSAUCER);                
-      break;      
+bool nextWave(){
+  //putMeteor(vec2( (temp2? 0:MAP_WIDTH),random(MAP_HEIGHT)),vec2((random(50)+2)*(temp2? 1:-1),random(20)-10));    
+    if (waves.next()){
+      byte temp=((waves.actual()&0x18)>>3)+1; //formation (number for now)
+      byte temp2=random(MAP_HEIGHT);
+      switch (waves.actual()&0xE0){      
+        case ENNEMI_SPACEINVADER:  default:      
+          while (temp-->0){
+            putEnnemies(vec2(-temp*20,temp2),vec2(20,0),ENNEMI_SPACEINVADER);
+          }
+        break;
+        
+        case ENNEMI_BIGEYEMONSTER: 
+  
+          putEnnemies(vec2(0,0),vec2(10,10),ENNEMI_BIGEYEMONSTER);
+          if (--temp>0)
+            putEnnemies(vec2(MAP_WIDTH,MAP_HEIGHT),vec2(-10,-10),ENNEMI_BIGEYEMONSTER);
+          if (--temp>0)
+            putEnnemies(vec2(MAP_WIDTH,0),vec2(-10,10),ENNEMI_BIGEYEMONSTER);
+          if (--temp>0)
+            putEnnemies(vec2(0,MAP_HEIGHT),vec2(10,-10),ENNEMI_BIGEYEMONSTER);                
+        break;
+        
+        case ENNEMI_FLYINGSAUCER: 
+          putEnnemies(vec2(0,0),vec2(10,10),ENNEMI_FLYINGSAUCER);
+          if (--temp>0)
+            putEnnemies(vec2(MAP_WIDTH,MAP_HEIGHT),vec2(-10,-10),ENNEMI_FLYINGSAUCER);
+          if (--temp>0)
+            putEnnemies(vec2(MAP_WIDTH,0),vec2(-10,10),ENNEMI_FLYINGSAUCER);
+          if (--temp>0)
+            putEnnemies(vec2(0,MAP_HEIGHT),vec2(10,-10),ENNEMI_FLYINGSAUCER);                
+        break;      
+      }
+      return true;
     }
-    waveIt++; // must be careful not to call nextWave if (waveIt>NBMAX_WAVE)
-    //if (++waveIt>NBMAX_WAVE)
-      //waveIt=0;
+    else
+      return false;
 }
 
 void sectorInit(byte type, byte wavesType){ //, byte difficulty){  
@@ -168,16 +167,16 @@ void sectorInit(byte type, byte wavesType){ //, byte difficulty){
       case 0x02: default:
         // 'Z' shape
         CP[0].pos=CP1;  
-        CP[1].pos=CP5;
+        CP[1].pos=CP2;
         CP[2].pos=CP4;
-        CP[3].pos=CP2;
+        CP[3].pos=CP5;
         CP[4].pos=CP1;    //2nd lap
-        CP[5].pos=CP5;
+        CP[5].pos=CP2;
         CP[6].pos=CP4;
-        CP[7].pos=CP2;
+        CP[7].pos=CP5;
         CP[8].pos=CP1;    //finish
       break;
-      case 0x06:
+      case 0x04:
         // 'X' shape, one lap only
         CP[0].pos=CP1;  
         CP[1].pos=CP3;
@@ -189,9 +188,8 @@ void sectorInit(byte type, byte wavesType){ //, byte difficulty){
         CP[7].pos=CP3;
         CP[8].pos=CP1;    //finish
       break;
-      case 0x04:
-
-      break;
+      //case 0x04:
+      //break;
       case 0:
         // 'O' shape
         CP[0].pos=CP1;  
@@ -209,13 +207,9 @@ void sectorInit(byte type, byte wavesType){ //, byte difficulty){
   }
   else {
     CP[0].last=true; //so the whole array isn't tested every loop
-    wavesInit(wavesType); 
+    waves.init(wavesType); 
     nextWave();
-    byte temp=(3*((sectorType&0x30)>>4));    
-    bool temp2 = random(100)>50? true:false;
-    while (temp-->0){
-      putMeteor(vec2( (temp2? 0:MAP_WIDTH),random(MAP_HEIGHT)),vec2((random(50)+2)*(temp2? 1:-1),random(20)-10));
-    }    
+    putMeteors();
   }
 }
 
@@ -398,12 +392,16 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
       }
     }
     if (ennShot.active!=0) {
-      ennShot.draw();
+      ennShot.draw(false);
     }
     if (0 == last) {
       //putEnnemies(vec2(1280, 1280), vec2(0, 0), ENNEMI_FLYINGSAUCER);
-      if (waveIt<=NBMAX_WAVE)
-        nextWave();
+      //if ((waveIt<=NBMAX_WAVE)||waves[waveIt]==0){
+      if(nextWave()){
+        if (0x08==(sectorType&0x08)){
+          putMeteors();
+        }
+      }
       else {
         ab.print("Sector Cleared");
       }

@@ -6,8 +6,8 @@
 #include "player.h"
 #include "shot.h"
 
-void controls(Player* p1, bool raceMode){
-
+void controls(Player* p1){ //, bool raceMode){
+bool raceMode=(0x80==(p1->setup&0x80))?true:false;
   if (ab.pressed(RIGHT_BUTTON)){
     if (p1->turnTimer--<=0){
       p1->turnTimer=2;
@@ -30,9 +30,9 @@ void controls(Player* p1, bool raceMode){
       p1->drawFlames();
       //p1->fuel-=1;
       if (ab.everyXFrames(2)){
-        p1->speed+=trigoVec(p1->dir,5+(p1->engineV2?4:0),vec2(0,0));
-        if (magn(p1->speed)>SPEED_MAX+(p1->engineV2?20:0)) {
-          p1->speed-=trigoVec(p1->dir,5+(p1->engineV2?4:0),vec2(0,0));
+        p1->speed+=trigoVec(p1->dir,5+((0x10==(p1->setup&0x10))?4:0),vec2(0,0));
+        if (magn(p1->speed)>SPEED_MAX+((0x10==(p1->setup&0x10))?20:0)) {
+          p1->speed-=trigoVec(p1->dir,5+((0x10==(p1->setup&0x10))?4:0),vec2(0,0));
         }
       }
     }
@@ -46,7 +46,7 @@ void controls(Player* p1, bool raceMode){
         //p1->fuel-=1;
         p1->drawRetroFlames();      
         if (ab.everyXFrames(2)){
-          p1->speed-=trigoVec(trigoInv(vec2(0,0),p1->speed),5+(p1->engineV2?4:0),vec2(0,0));
+          p1->speed-=trigoVec(trigoInv(vec2(0,0),p1->speed),5+((0x10==(p1->setup&0x10))?4:0),vec2(0,0));
           /*
            * // ?? How can that have been working?! a divide by 0 may occur
           p1->speed.x-=abs(p1->speed.x)/p1->speed.x;

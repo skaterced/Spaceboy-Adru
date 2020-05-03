@@ -25,18 +25,20 @@ class Shot {
       dir=0;
       active=false;
     }  
-    void Shot::draw();
+    void Shot::draw(bool bigB);
     void Shot::explode();
 };
-void Shot::explode(){
+void Shot::explode(){ //only if bigB?
   active=-18;
   boom.count=0;
   boom.pos=pos-mapCoord;
 }
-void Shot::draw(){
-  if (active>0){        
-    drawVecLine(this->pos/*+mapCoord*/,trigoVec(this->dir,4,this->pos/*+mapCoord*/)); //normal piou piou
-    //ab.drawCircle(this->pos.x,pos.y,1); // Bullet
+void Shot::draw(bool bigB){
+  if (active>0){
+    if (bigB)
+      ab.drawCircle(this->pos.x,pos.y,1); // Bullet
+    else      
+      drawVecLine(this->pos/*+mapCoord*/,trigoVec(this->dir,4,this->pos/*+mapCoord*/)); //normal piou piou
     //ab.drawCircle(this->pos.x,pos.y,(active>(SHOT_DURATION-6))?(SHOT_DURATION-active):6); // Ripple
     this->pos+=this->speed;  
     active--;
@@ -52,12 +54,14 @@ class Gun {
   public :
     bool canHold;
     bool multi;
+    bool bigB;
     Shot shots[SHOTS_MAX];
     int coolDown;
     byte maxBullets;
     byte dmg;
     Gun(){
-      canHold=true;
+      bigB=false;
+      canHold=false;
       multi=false;
       maxBullets=SHOTS_MAX; //not sure why we need this
       coolDown=0;
@@ -83,7 +87,7 @@ class Gun {
     void Gun::draw(){
     for (int i=0;i<SHOTS_MAX;i++){
       if (shots[i].active!=0){      
-        shots[i].draw();
+        shots[i].draw(bigB);
       }
     }  
     if (coolDown>0)

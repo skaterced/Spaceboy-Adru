@@ -17,6 +17,18 @@
 
 #define sectorBorderMargin 300
 
+// Player.setup
+/* 7 6 5 4 3 2 1 0        
+ * I I I I I I I L___ big Bullets
+ * I I I I I I L_____ Auto fire
+ * I I I I I L_______ Multi shots
+ * I I I I L_________ Shield Generator?
+ * I I I L___________ EngineV2
+ * I I L_____________ Radar
+ * I L_______________ Auto Repair 
+ * L_________________ Race Mode
+ * */
+
 class Player {       
   public:
     vec2 pos;
@@ -30,9 +42,10 @@ class Player {
     byte armor;
     byte energy;
     byte invincible;
-    byte lives;    
+    byte lives;
     bool burn;
-    bool engineV2;
+    //bool engineV2;
+    byte setup;
     /*
      * //TODO: create "State" byte including 
      *    display jauge? lives, burn,...
@@ -45,8 +58,7 @@ class Player {
       this->pos.x=x;
       this->pos.y=y;
       this->dir=dir;
-      money=0;
-      engineV2=false;
+      money=0;      
       lives=3;
       //this->coolDown=0;
       this->turnTimer=0;
@@ -58,6 +70,7 @@ class Player {
       reste=vec2(0,0);     
       burn=false; 
       invincible=0;
+      //engineV2=false;
     }
     bool Player::draw();
     void Player::drawFlames();
