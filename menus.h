@@ -9,19 +9,17 @@
 
 #define STATE_MENU 1
 #define STATE_RACE_MENU 6
-/*RM
 #define STATE_SHOP 7
 #define STATE_SHOP_REPAIR 8
 #define STATE_SHOP_GUN 9
 #define STATE_SHOP_DEVICES 10
-*/
 #define STATE_CREDIT 2
 #define STATE_GAME 3
 #define STATE_PAUSE 4
 #define STATE_GAMEOVER 5
-//#define STATE_TESTING 69
+#define STATE_TESTING 69
 
-//byte selector; -> in globals
+byte selector;
 
 void shopMsg(int money){
     ab.println(F("   Hi Adru"));
@@ -41,12 +39,12 @@ byte menu(byte state, Player* ship){
     case STATE_MENU:
       ab.println(F("   Welcome SpaceBoy"));
       ab.println("");      
-      ab.println(F("  Race"));
-      ab.println(F("  Shop"));
-      ab.println(F("  New Game"));
-      //ab.println("  Cheat");
-      ab.println(F("  Credit"));
-      //ab.println("  Test");
+      ab.println("  Race");
+      ab.println("  Shop");
+      ab.println("  New Game");
+      ab.println("  Cheat");
+      ab.println("  Credit");      
+      ab.println("  Test");
 
       if (ab.justPressed(UP_BUTTON)) {
         if(0==selector--)
@@ -62,14 +60,7 @@ byte menu(byte state, Player* ship){
         ship->speed=vec2(0,0);
         //race=false;
         switch(selector){
-          default:
-            ab.clear();
-            ab.println("Sorry, not available");
-            ab.println("in Race mode");
-            ab.display();
-            delay(3000);
-          break;
-          /*RM case 2:       // ********************** New Game ******
+          case 2:       // ********************** New Game ******
             //randomSeed(timer * 3000);
             ship->mapCenter(true);
             sectorInit(0x30,0);            
@@ -83,16 +74,16 @@ byte menu(byte state, Player* ship){
             ship->setup|=0x0F;
             ship->gun.canHold=true;
             ship->gun.multi=true;
-            return( STATE_GAME); 
+            return( STATE_GAME);
+          case 4:
+            return( STATE_CREDIT);
+          break;
           case 1:
             return( STATE_SHOP);
             selector=0;
           break;
           case 5:
             return( STATE_TESTING);        
-          break;*/
-          case 4:
-            return( STATE_CREDIT);
           break;
           case 0:
             return( STATE_RACE_MENU);
@@ -101,7 +92,7 @@ byte menu(byte state, Player* ship){
         }
       }
     break;
-    /*RM
+    
     case STATE_SHOP:  //sounds like skate shop... makes me wanna pop some kickflips...
 
       shopMsg(ship->money);
@@ -187,17 +178,17 @@ byte menu(byte state, Player* ship){
           break;
         }
       }
-    break;    */
+    break;    
     
     case STATE_CREDIT:
       ab.println("");
-      ab.println(F("Written by"));
-      ab.println(F("   C" "\x82" "dric Martin"));
+      ab.println("Written by");
+      ab.println("   C" "\x82" "dric Martin");
       ab.println("");
-      ab.println(F("  April 2020"));
+      ab.println("  April 2020");
       ab.println("");
       ab.println("");
-      ab.println(F("A or B: back"));
+      ab.println("A or B: back");
 
       if (ab.justPressed(A_BUTTON) || ab.justPressed(B_BUTTON))
         return( STATE_MENU);
@@ -222,13 +213,9 @@ byte menu(byte state, Player* ship){
         break;        
       }
       ab.println("'");
-      //ab.println("");
+      ab.println("");
       ab.println(0x01==(selector&1)? "Fast":"Normal");
-      ab.print("Best Time : "); //we'll see if there is still memory left to keep Best time
-      if (circuitTime[selector]>0)
-        ab.println(circuitTime[selector]);
-      else
-        ab.println("NA");
+      //ab.println("Best Time : NA"); //we'll see if there is still memory left to keep Best time
       ab.println("");
       ab.println("A: Start");
       ab.println("B: Back");
@@ -242,7 +229,6 @@ byte menu(byte state, Player* ship){
           selector=0;
       }      
       else if (ab.justPressed(A_BUTTON)) {
-        ship->setup&=0xEF;
         ship->setup|=(selector&1)<<4; //normal fast
         ship->setup|=0x80;
         sectorInit((0x80|(selector&0x06)),0);

@@ -14,10 +14,6 @@ Sprites sprites;
 
 vec2 mapCoord(0,0);
 unsigned int elapsedTime=0;
-//RM
-unsigned int circuitTime[6]={0,0,0,0,0,0};
-byte selector=0;
-
 int score;
 
 #endif

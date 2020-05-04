@@ -53,7 +53,7 @@ class Player {
       */
     //int coolDown;
     //Shot shots[SHOTS_MAX];
-    /*RMGun gun;*/
+    Gun gun;
     //Player() : x(64),y(30),dir(0) {}
     Player(int x, int y, int dir){
       this->pos.x=x;
@@ -77,8 +77,8 @@ class Player {
     void Player::drawFlames();
     void Player::drawRetroFlames();
     bool Player::checkcollision(); //return true if armor drops below 0 (but it's unsigned so >200)
-    /*RMvoid Player::checkShotscollision();
-    void Player::shoot();  */
+    void Player::checkShotscollision();
+    void Player::shoot();  
     void Player::mapCenter(bool center);
 };
 
@@ -94,10 +94,10 @@ void Player::mapCenter(bool center) {
     mapCoord=vec2(50,50);
   }
 }
-/*RM
+
 void Player::shoot(){
   gun.shoot(pos,speed,dir);
-}*/
+}
 bool Player::draw(){ //(return true if ship dies) --------------------------------------------------------------------DRAW----------------------------------
 
   if(ab.everyXFrames(3))
@@ -182,7 +182,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   //Fuel jauge
   //drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
   //ab.drawPixel(126,63-(fuelMax/300));  
- /*RM 
+  
   if (0x80!=(setup&0x80)){ //not in Race mode
     //ARMOR
     drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
@@ -195,7 +195,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     //draw shots
     gun.draw();
   }
-RM*/
+
   return false;
 }
 
@@ -228,7 +228,6 @@ bool Player::checkcollision(){  //return true if armor drops below 0 (but it's u
   }
   return false;
 }
-/*RM
 void Player::checkShotscollision(){ //not in shot.h because "background.h" needs "shots.h"
   for (int i=0; i<SHOTS_MAX; i++){
     if (gun.shots[i].active>0){
@@ -240,7 +239,7 @@ void Player::checkShotscollision(){ //not in shot.h because "background.h" needs
     }
   }
 }
-RM*/
+
 void  Player::drawFlames(){  //if both flames at the same time, they aren't animated anymore
   vec2 temp=trigoVec(invDir(dir),burn? 14:12,pos);
   drawVecLine(temp, trigoVec((dir+1),6,temp));

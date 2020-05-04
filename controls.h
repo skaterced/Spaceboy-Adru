@@ -61,7 +61,7 @@ bool raceMode=(0x80==(p1->setup&0x80))?true:false;
     p1->mapCenter(true);
     //mapCoord=vec2(0,0);    
   }
-/*RM
+
   if(!raceMode){
     if (ab.pressed(B_BUTTON)&&(p1->energy>0)){
       ab.drawCircle(p1->pos.x,p1->pos.y,11);
@@ -81,7 +81,6 @@ bool raceMode=(0x80==(p1->setup&0x80))?true:false;
       }
     }
   }
-*/
   
 /*
   //for collision test change control type (left go left instead of rotating)
