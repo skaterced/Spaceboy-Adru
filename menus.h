@@ -242,9 +242,13 @@ byte menu(byte state, Player* ship){
         break;        
       }
       ab.println("'");
-      ab.println("");
+      //ab.println("");
       ab.println(0x01==(selector&1)? "Fast":"Normal");
-      //ab.println("Best Time : NA"); //we'll see if there is still memory left to keep Best time
+      ab.print("Best Time : "); //we'll see if there is still memory left to keep Best time
+      if (circuitTime[selector]!=9999)
+        ab.println(circuitTime[selector]);
+      else
+        ab.println("NA");
       ab.println("");
       ab.println("A: Start");
       ab.println("B: Back");
