@@ -53,7 +53,7 @@ class Player {
       */
     //int coolDown;
     //Shot shots[SHOTS_MAX];
-    Gun gun;
+    /*RMGun gun;*/
     //Player() : x(64),y(30),dir(0) {}
     Player(int x, int y, int dir){
       this->pos.x=x;
@@ -77,8 +77,8 @@ class Player {
     void Player::drawFlames();
     void Player::drawRetroFlames();
     bool Player::checkcollision(); //return true if armor drops below 0 (but it's unsigned so >200)
-    void Player::checkShotscollision();
-    void Player::shoot();  
+    /*RMvoid Player::checkShotscollision();
+    void Player::shoot();  */
     void Player::mapCenter(bool center);
 };
 
@@ -94,10 +94,10 @@ void Player::mapCenter(bool center) {
     mapCoord=vec2(50,50);
   }
 }
-
+/*RM
 void Player::shoot(){
   gun.shoot(pos,speed,dir);
-}
+}*/
 bool Player::draw(){ //(return true if ship dies) --------------------------------------------------------------------DRAW----------------------------------
 
   if(ab.everyXFrames(3))
@@ -108,8 +108,10 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   //compas
   if (target!=vec2(0,0)){
     //ab.println(target.x);
-    byte dirTemp=trigoInv(pos,target+mapCoord);
-    drawVecLine(trigoVec(dirTemp,19,pos),trigoVec(dirTemp,25,pos));
+    //byte dirTemp=trigoInv(pos,target+mapCoord);
+    //drawVecLine(trigoVec(dirTemp,19,pos),trigoVec(dirTemp,25,pos));
+    //drawVecLine(trigoVec(dirTemp,19,pos),target+mapCoord);
+    drawVecLine((pos+(target+mapCoord-pos)/28),(pos+(target+mapCoord-pos)/20));
   }
     
   pos+=((this->speed+this->reste)/SPEED_DIVISOR);
@@ -180,26 +182,27 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   //Fuel jauge
   //drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
   //ab.drawPixel(126,63-(fuelMax/300));  
+ /*RM 
+  if (0x80!=(setup&0x80)){ //not in Race mode
+    //ARMOR
+    drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
+    ab.drawPixel(126,63-(ARMOR_MAX));   
   
-  //ARMOR
-  drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
-  ab.drawPixel(126,63-(ARMOR_MAX));   
-
-  //Energy
-  drawVecLine(vec2(124,63),vec2(124,63-(energy/5))); 
-  ab.drawPixel(124,63-(ENERGY_MAX/5));      
+    //Energy
+    drawVecLine(vec2(124,63),vec2(124,63-(energy/5))); 
+    ab.drawPixel(124,63-(ENERGY_MAX/5));      
      
-   
-  //draw shots
-  gun.draw();
-
+    //draw shots
+    gun.draw();
+  }
+RM*/
   return false;
 }
 
 bool Player::checkcollision(){  //return true if armor drops below 0 (but it's unsigned so >200)
   vec2 temp=elementCollision(this->pos,invincible==1? 10:6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
-    if (0x80!=(setup&0x80)){
+    if (0x80!=(setup&0x80)){ //not in Race mode
       if (98==temp.x){
         money+=10;
       }
@@ -225,6 +228,7 @@ bool Player::checkcollision(){  //return true if armor drops below 0 (but it's u
   }
   return false;
 }
+/*RM
 void Player::checkShotscollision(){ //not in shot.h because "background.h" needs "shots.h"
   for (int i=0; i<SHOTS_MAX; i++){
     if (gun.shots[i].active>0){
@@ -236,7 +240,7 @@ void Player::checkShotscollision(){ //not in shot.h because "background.h" needs
     }
   }
 }
-
+RM*/
 void  Player::drawFlames(){  //if both flames at the same time, they aren't animated anymore
   vec2 temp=trigoVec(invDir(dir),burn? 14:12,pos);
   drawVecLine(temp, trigoVec((dir+1),6,temp));

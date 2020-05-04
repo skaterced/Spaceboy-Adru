@@ -41,10 +41,11 @@ byte sectorLines=20;
 const byte stars[STARS_TOT]={59,12,41,5,59,33,38,28,5,2,35,27,14,29,63,14,7,57,28,30,57,5,52,31,6,32,37,22,34,33,24,48,46,27,6,10,45,35,14,4,9,39,49,63,10,25,52,41,10,52,53,23,13,2,40,57,0};//,48,26,43,41,30,3,61};//,0,17,58,28,48,18,6}; //72 -> 21220
 
 Meteor met[NBMAX_METEOR];
+/*RM(Race Mode)
 Ennemies enn[NBMAX_ENNEMI];
 Waves waves;//[NBMAX_WAVE];  //why not just bytes?
 //byte waveIt=0;
-Shot ennShot;
+Shot ennShot;*/
 Explosion xplo[NBMAX_EXPLOSION];
 byte xploIt = 0;
 Gem gems[NBMAX_GEM];
@@ -110,6 +111,7 @@ void putMeteors(bool randomPlace){
   station_active=true;
   }
 */
+/*RM
 void putEnnemies(vec2 pos, vec2 speed, byte type) {
 
   for (int i = 0; i < NBMAX_ENNEMI; i++) {
@@ -157,13 +159,18 @@ bool nextWave(){
     }
     else
       return false;
-}
+}*/
 
 void sectorInit(byte type, byte wavesType){ //, byte difficulty){  
   sectorType=type;
   
   if (0x80==(type&0xC0)){
-    CP[0].active=true;      
+    elapsedTime=0;
+    CP[0].active=true;
+    for (int i=1; i<NBMAX_CP; i++){
+      CP[i].active=false;
+    }
+         
     //   1 2
     //    3
     //   4 5
@@ -209,11 +216,11 @@ void sectorInit(byte type, byte wavesType){ //, byte difficulty){
     }
     CP[8].last=true;    
   }
-  else {
+  else {/*RM
     CP[0].last=true; //so the whole array isn't tested every loop
     waves.init(wavesType); 
     nextWave();
-    putMeteors(true);
+    putMeteors(true);*/
   }
 }
 
@@ -289,7 +296,7 @@ void drawRadar() {
     ab.fillRect(RADAR_POSX, RADAR_POSY + temp2 + 9, 11, -temp2, 0);
   }
   
-  if ((sectorType&0xC0)==0x80){  // Check points only during Race Mode
+  //if ((sectorType&0xC0)==0x80){  // Check points only during Race Mode
     for (int i=0; i<NBMAX_CP;i++){
       temp = (mapCoord.x + CP[i].pos.x - 32) / IMAGE_WIDTH; 
       temp2 = (mapCoord.y + CP[i].pos.y - 16) / IMAGE_HEIGHT;
@@ -300,7 +307,7 @@ void drawRadar() {
       if (CP[i].last)
         i=99;
     }
-  }
+  /*RM}
   else {
     for (int i = 0; i < NBMAX_METEOR; i++) {
       if (met[i].active) {
@@ -337,7 +344,7 @@ void drawRadar() {
 
 void drawBackground() { //, int RandSeed){  //-------------------------------------- Draw Background --------------------------
   
-  if ((sectorType&0xC0)==0x80){  // Race Mode
+  //if ((sectorType&0xC0)==0x80){  // Race Mode
     ab.print(elapsedTime);
     if (!CP[0].active&&(sectorType&0x81)!=0x81)
       elapsedTime++;
@@ -347,7 +354,7 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
       if (CP[i].last)
         i=99;
     }
-  }
+  /*RM}
   else {
     byte last = 0;
     for (int i = 0; i < NBMAX_METEOR; i++) {
@@ -408,7 +415,7 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
       if (gems[i].active)
         gems[i].draw();
     }
-  }  
+  }*/
   drawRadar();
 
   //ab.println(waves[0].type);
@@ -437,6 +444,7 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
       }
     }
   }
+  /*
   for (int i = 0; i < NBMAX_ENNEMI; i++) {
     if (enn[i].active) {
       byte ennRadius;
@@ -475,6 +483,7 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
       return vec2(99, 2); // x 99 means hit by an ennemi shot -> y is the dmg inflicted
     }
   }
+  */
   for (int i = 0; i < NBMAX_GEM; i++) {
     if (gems[i].active) {
       if ((radius!=0)&&(magn(objPos - gems[i].pos - mapCoord) != -99) && (magn(objPos - gems[i].pos - mapCoord) < (radius + 3))) {
@@ -483,7 +492,7 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
       }
     }
   }
-  if ((sectorType&0xC0)==0x80){  // Race Mode
+  //if ((sectorType&0xC0)==0x80){  // Race Mode
     for (int i=0; i<NBMAX_CP;i++){
       if(CP[i].active){
         if ((radius!=0)&&(magn(objPos - CP[i].pos - mapCoord) != -99) && (magn(objPos - CP[i].pos - mapCoord) < (radius + 12))) {
@@ -491,7 +500,8 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
           CP[i].blink=0; //light it up for a while
           if (CP[i].last){
             //race ends...
-            sectorType|=0x01;           
+            sectorType|=0x01;
+            circuitTime[selector]=elapsedTime;
           }
           else {
             CP[i+1].active=true; 
@@ -501,7 +511,7 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
         }
       }
     }
-  }
+  //}
   return vec2(0, 0);
 }
 

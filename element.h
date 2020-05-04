@@ -185,6 +185,7 @@ class Meteor : public Element {
     }
 };
 
+/*RM
 class Ennemies : public Element {
   public:
     byte frame;
@@ -288,61 +289,8 @@ class Ennemies : public Element {
       }
     return false;
     }    
-};
+};RM*/
 
-class Blob : public Ennemies {
-  private:
-    //byte randBytes[10];
-  public:
-  Blob(){
-    type=3;
-  }
-    bool Blob::update(){
-      //ab.fillCircle(pos.x,pos.y,4);  
-      //ab.fillCircle(pos.x+mapCoord.x+type+2*((frame>>0)&0x0F)%4-8,pos.y+type+mapCoord.y+(((frame>>1)&0x0F)%4-4),type-1);  
-      /*
-       //" Loto Balls"
-       if (ab.everyXFrames(10)){
-        //for (int i=0;i<18;i++){
-          type=random(254);        
-      }
-      if (ab.everyXFrames(3)){
-        if(++frame>15)
-           frame=0;
-      }
-      vec2 temp;
-      temp=pos+mapCoord+trigoVec(-frame,((type>>0)&0x07)+2,vec2(0,0));      
-      ab.fillCircle(temp.x,temp.y,2);
-      temp=pos+mapCoord+trigoVec(frame+4,((type>>1)&0x07)+2,vec2(0,0));      
-      ab.fillCircle(temp.x,temp.y,2);
-      //temp=pos+mapCoord+trigoVec(frame+7,(type>>2)&0x07+3,vec2(0,0));      
-      //ab.fillCircle(temp.x,temp.y,2);
-      temp=pos+mapCoord+trigoVec(frame+11,((type>>3)&0x07)+2,vec2(0,0));      
-      ab.fillCircle(temp.x,temp.y,2);
-      temp=pos+mapCoord+trigoVec(frame+15,((type>>4)&0x07)+2,vec2(0,0));      
-      ab.fillCircle(temp.x,temp.y,2);*/
-
-      if (ab.everyXFrames(3)){
-        frame++;
-      }
-      vec2 temp;
-      temp=pos+mapCoord+trigoVec(-frame,frame%5+2,vec2(0,0));      
-      ab.fillCircle(temp.x,temp.y,2);
-      temp=pos+mapCoord+trigoVec(frame+4,(frame+pos.x)%4+3,vec2(0,0));      
-      ab.fillCircle(temp.x,temp.y,2);
-      //temp=pos+mapCoord+trigoVec(frame%16+7,(type>>2)&0x07+3,vec2(0,0));      
-      //ab.fillCircle(temp.x,temp.y,2);
-      temp=pos+mapCoord+trigoVec(frame+11,-(frame+pos.y)%5+2,vec2(0,0));      
-      ab.fillCircle(temp.x,temp.y,2);
-      temp=pos+mapCoord+trigoVec(frame+15,frame%3,vec2(0,0));      
-      ab.fillCircle(temp.x,temp.y,2);
-      return false;
-    }
-    void Blob::grow(){
-      type+=10;
-    }
-    
-};
 /* 
  * wave type 
  * 7 6 5 4 3 2 1 0        NDY : (Not Defined Yet)
