@@ -34,6 +34,7 @@ class Player {
     vec2 pos;
     vec2 speed;    
     vec2 reste;
+    vec2 target;
     int money;
     byte dir;
     byte turnTimer;
@@ -77,8 +78,23 @@ class Player {
     void Player::drawRetroFlames();
     bool Player::checkcollision(); //return true if armor drops below 0 (but it's unsigned so >200)
     void Player::checkShotscollision();
-    void Player::shoot();   
+    void Player::shoot();  
+    void Player::mapCenter(bool center);
 };
+
+void Player::mapCenter(bool center) {
+  pos=vec2(64,32);
+  speed=vec2(0,0);
+  //elapsedTime=0;
+  if (center){
+    mapCoord.x = -(MAP_WIDTH / 2 - 64);
+    mapCoord.y = -(MAP_HEIGHT / 2 - 32);
+  }
+  else {
+    mapCoord=vec2(50,50);
+  }
+}
+
 void Player::shoot(){
   gun.shoot(pos,speed,dir);
 }
@@ -88,6 +104,13 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     burn=!burn;
   if (invincible>0)
     invincible--;
+
+  //compas
+  if (target!=vec2(0,0)){
+    //ab.println(target.x);
+    byte dirTemp=trigoInv(pos,target+mapCoord);
+    drawVecLine(trigoVec(dirTemp,19,pos),trigoVec(dirTemp,25,pos));
+  }
     
   pos+=((this->speed+this->reste)/SPEED_DIVISOR);
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
@@ -176,23 +199,28 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
 bool Player::checkcollision(){  //return true if armor drops below 0 (but it's unsigned so >200)
   vec2 temp=elementCollision(this->pos,invincible==1? 10:6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
-    if (98==temp.x){
-      money+=10;
+    if (0x80!=(setup&0x80)){
+      if (98==temp.x){
+        money+=10;
+      }
+      else {
+        //ab.drawCircle(this->pos.x,this->pos.y,20);
+        if (temp.x!=99){
+          if (0==invincible)
+            armor-=magn(this->speed)/10; //todo make dmg proportional to speed diference between the 2 objects
+          this->speed=temp*2;
+        }    
+        else { //got hit by an ennemi shot
+          if (0==invincible)
+            armor-=temp.y;
+        }
+        if (armor>ARMOR_MAX){
+          return true;
+        }
+      }
     }
     else {
-      //ab.drawCircle(this->pos.x,this->pos.y,20);
-      if (temp.x!=99){
-        if (0==invincible)
-          armor-=magn(this->speed)/10; //todo make dmg proportional to speed diference between the 2 objects
-        this->speed=temp*2;
-      }    
-      else { //got hit by an ennemi shot
-        if (0==invincible)
-          armor-=temp.y;
-      }
-      if (armor>ARMOR_MAX){
-        return true;
-      }
+      target=temp;
     }
   }
   return false;

@@ -5,6 +5,7 @@
 #include "background.h"
 #include "player.h"
 #include "shot.h"
+#include "element.h"
 
 #define STATE_MENU 1
 #define STATE_RACE_MENU 6
@@ -59,15 +60,15 @@ byte menu(byte state, Player* ship){
         ship->speed=vec2(0,0);
         //race=false;
         switch(selector){
-          case 2:       
+          case 2:       // ********************** New Game ******
             //randomSeed(timer * 3000);
-            mapCenter(true);
-            sectorInit(0x00,0);            
+            ship->mapCenter(true);
+            sectorInit(0x30,0);            
             return( STATE_GAME );
           break;
           case 3:
             //randomSeed(timer * 3000);
-            mapCenter(true);
+            ship->mapCenter(true);
             sectorInit(0x30,0);
             //ship->engineV2=true;
             ship->setup|=0x0F;
@@ -137,20 +138,20 @@ byte menu(byte state, Player* ship){
       ab.println("  Multiple     80");      
       //ab.println("  New Ship");
 
+      ab.fillRect(2,26+8*selector,3,2);
+      
       if (ab.justPressed(UP_BUTTON)) {
         if(0==selector--)
           selector=2;
       }
-      if (ab.justPressed(DOWN_BUTTON)) { //race with EngineV2 for now
+      else if (ab.justPressed(DOWN_BUTTON)) { 
         if(++selector>2)
           selector=0;
-      }      
-      ab.fillRect(2,26+8*selector,3,2);
-
-      if (ab.justPressed(B_BUTTON)) {
+      }            
+      else if (ab.justPressed(B_BUTTON)) {
         return( STATE_SHOP);
       }
-      if (ab.justPressed(A_BUTTON)){
+      else if (ab.justPressed(A_BUTTON)){
         switch(selector){
           
           case 0:
@@ -223,18 +224,20 @@ byte menu(byte state, Player* ship){
         if(0==selector--)
           selector=5;
       }
-      if (ab.justPressed(RIGHT_BUTTON)) { //race with EngineV2 for now
+      else if (ab.justPressed(RIGHT_BUTTON)) {
         if(++selector>5)
           selector=0;
       }      
-      if (ab.justPressed(A_BUTTON)) {
-        ship->setup|=(selector&1)<<4;
-        mapCenter(false);        
-        sectorInit((0x80|(selector&0x06)),0);
+      else if (ab.justPressed(A_BUTTON)) {
+        ship->setup|=(selector&1)<<4; //normal fast
         ship->setup|=0x80;
+        sectorInit((0x80|(selector&0x06)),0);
+        ship->mapCenter(false);
+        elapsedTime=0;        
+        ship->target=CP1;        
         return( STATE_GAME);
       }
-      if (ab.justPressed(B_BUTTON)) {
+      else if (ab.justPressed(B_BUTTON)) {
         return( STATE_MENU);
         selector=0;
       }

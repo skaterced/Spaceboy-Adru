@@ -13,6 +13,7 @@ Arduboy2 ab;
 Sprites sprites;
 
 vec2 mapCoord(0,0);
+unsigned int elapsedTime=0;
 int score;
 
 #endif

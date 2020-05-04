@@ -50,7 +50,7 @@ byte xploIt = 0;
 Gem gems[NBMAX_GEM];
 //CheckPoint CP[3]={vec2(100,100), vec2(700,700), vec2(900,900)};
 CheckPoint CP[NBMAX_CP];
-unsigned int elapsedtime=0;
+//unsigned int elapsedtime=0;
 
 byte sectorType;
 /* 7 6 5 4 3 2 1 0        NDY : (Not Defined Yet)
@@ -94,11 +94,15 @@ void putMeteor(vec2 pos, vec2 speed) {
     }
   }
 }
-void putMeteors(){
+void putMeteors(bool randomPlace){
     byte temp=(3*((sectorType&0x30)>>4));    
     bool temp2 = random(100)>50? true:false;
     while (temp-->0){
-      putMeteor(vec2( (temp2? 0:MAP_WIDTH),random(MAP_HEIGHT)),vec2((random(50)+2)*(temp2? 1:-1),random(20)-10));
+      if (randomPlace){
+        putMeteor(vec2( random(MAP_WIDTH)+30,random(MAP_HEIGHT)),vec2((random(100)-50),random(20)-10));
+      }
+      else 
+        putMeteor(vec2( (temp2? 0:MAP_WIDTH),random(MAP_HEIGHT)),vec2((random(50)+2)*(temp2? 1:-1),random(20)-10));
     }    
 }
 /*
@@ -209,7 +213,7 @@ void sectorInit(byte type, byte wavesType){ //, byte difficulty){
     CP[0].last=true; //so the whole array isn't tested every loop
     waves.init(wavesType); 
     nextWave();
-    putMeteors();
+    putMeteors(true);
   }
 }
 
@@ -228,15 +232,6 @@ void addGem(vec2 pos) {
       gems[i].pos = pos;
       i = 99;
     }
-  }
-}
-void mapCenter(bool center) {
-  if (center){
-    mapCoord.x = -(MAP_WIDTH / 2 - 64);
-    mapCoord.y = -(MAP_HEIGHT / 2 - 32);
-  }
-  else {
-    mapCoord=vec2(50,50);
   }
 }
 
@@ -343,9 +338,9 @@ void drawRadar() {
 void drawBackground() { //, int RandSeed){  //-------------------------------------- Draw Background --------------------------
   
   if ((sectorType&0xC0)==0x80){  // Race Mode
-    ab.print(elapsedtime);
+    ab.print(elapsedTime);
     if (!CP[0].active&&(sectorType&0x81)!=0x81)
-      elapsedtime++;
+      elapsedTime++;
     
     for (int i=0; i<NBMAX_CP;i++){
       CP[i].update();
@@ -399,7 +394,7 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
       //if ((waveIt<=NBMAX_WAVE)||waves[waveIt]==0){
       if(nextWave()){
         if (0x08==(sectorType&0x08)){
-          putMeteors();
+          putMeteors(false);
         }
       }
       else {
@@ -496,10 +491,11 @@ vec2 elementCollision(vec2 objPos, int radius, int force, int dmg) { //Circular 
           CP[i].blink=0; //light it up for a while
           if (CP[i].last){
             //race ends...
-            sectorType|=0x01;
+            sectorType|=0x01;           
           }
           else {
             CP[i+1].active=true; 
+            return (CP[i+1].pos);
             i=99;
           }
         }

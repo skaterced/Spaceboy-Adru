@@ -89,7 +89,7 @@ vec2 trigoVec(int dir, int length, vec2 pos){ //x or y
   return pos;
 }
 
-int trigoInv(vec2 a, vec2 b){ //to get the direction from a to b
+byte trigoInv(vec2 a, vec2 b){ //to get the direction from a to b
   if (a.x==b.x){ //to avoid /0
     if (a.y>=b.y)
       return 0;
