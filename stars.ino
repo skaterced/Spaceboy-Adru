@@ -50,6 +50,8 @@
    Ennemies: An evil multiplying cloud
 */
 
+//change #define RACE_MODE -> in globals.h
+
 #include "globals.h"
 #include "trigo.h"
 #include "controls.h"
@@ -72,6 +74,7 @@ unsigned int timer = 0;
 //byte selector=0;
 
 //variables for test
+/*
 Blob testEnnemi=Blob();
 Ennemies testEnnemies[3];
 Element * testPtrEl;
@@ -81,11 +84,11 @@ vec2 pointC(25, 50);
 byte count=0;
 byte frame=0;
 vec2 pointD;
-
+*/
 void setup()
 {
-  ab.begin();  
-  //ab.boot(); //846 bytes (3%) saved by using boot instead of begin (but must implement an Upload method)
+  //ab.begin();  
+  ab.boot(); //846 bytes (3%) saved by using boot instead of begin (but must implement an Upload method)
   //testEnnemi.reboot(pointB, vec2(0,0), 0);
   ab.setFrameRate(60);
   //state = STATE_GAME;
@@ -111,7 +114,7 @@ void loop() {
   switch (state) {
     default: 
       state = menu(state, &ship);
-      //if (STATE_GAME==state) randomSeed(timer * 3000);
+      if (STATE_GAME==state) randomSeed(timer * 3000);
     break;      
 
     case STATE_PAUSE: case STATE_GAMEOVER:
@@ -161,19 +164,23 @@ void loop() {
       }
 */      
       controls(&ship);
-      if (ship.checkcollision()){
-        if (--ship.lives==0){
-          state=STATE_GAMEOVER;
-        }
-        else {          
-          explode(ship.pos-mapCoord, EXPLOSION_BIG);
-          ship.invincible=200;
-          ship.armor=ARMOR_MAX;
-          ship.energy=ENERGY_MAX;
-          //mapCenter(true);       
-        }
-      }
-      ship.checkShotscollision();
+      #ifdef RACE_MODE
+        ship.checkcollision();
+      #else
+        if (ship.checkcollision()){
+          if (--ship.lives==0){
+            state=STATE_GAMEOVER;
+          }
+          else {          
+            explode(ship.pos-mapCoord, EXPLOSION_BIG);
+            ship.invincible=200;
+            ship.armor=ARMOR_MAX;
+            ship.energy=ENERGY_MAX;
+            //mapCenter(true);       
+          }
+        }      
+        ship.checkShotscollision();
+      #endif
       break;
 
 

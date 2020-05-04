@@ -108,8 +108,10 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   //compas
   if (target!=vec2(0,0)){
     //ab.println(target.x);
-    byte dirTemp=trigoInv(pos,target+mapCoord);
-    drawVecLine(trigoVec(dirTemp,19,pos),trigoVec(dirTemp,25,pos));
+    //byte dirTemp=trigoInv(pos,target+mapCoord);
+    //drawVecLine(trigoVec(dirTemp,19,pos),trigoVec(dirTemp,25,pos));
+    //drawVecLine(trigoVec(dirTemp,19,pos),target+mapCoord);
+    drawVecLine((pos+(target+mapCoord-pos)/28),(pos+(target+mapCoord-pos)/20));
   }
     
   pos+=((this->speed+this->reste)/SPEED_DIVISOR);
@@ -181,17 +183,18 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   //drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
   //ab.drawPixel(126,63-(fuelMax/300));  
   
-  //ARMOR
-  drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
-  ab.drawPixel(126,63-(ARMOR_MAX));   
-
-  //Energy
-  drawVecLine(vec2(124,63),vec2(124,63-(energy/5))); 
-  ab.drawPixel(124,63-(ENERGY_MAX/5));      
+  if (0x80!=(setup&0x80)){ //not in Race mode
+    //ARMOR
+    drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
+    ab.drawPixel(126,63-(ARMOR_MAX));   
+  
+    //Energy
+    drawVecLine(vec2(124,63),vec2(124,63-(energy/5))); 
+    ab.drawPixel(124,63-(ENERGY_MAX/5));      
      
-   
-  //draw shots
-  gun.draw();
+    //draw shots
+    gun.draw();
+  }
 
   return false;
 }
@@ -199,7 +202,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
 bool Player::checkcollision(){  //return true if armor drops below 0 (but it's unsigned so >200)
   vec2 temp=elementCollision(this->pos,invincible==1? 10:6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
-    if (0x80!=(setup&0x80)){
+    if (0x80!=(setup&0x80)){ //not in Race mode
       if (98==temp.x){
         money+=10;
       }

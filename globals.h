@@ -15,6 +15,15 @@ Sprites sprites;
 vec2 mapCoord(0,0);
 unsigned int elapsedTime=0;
 int score;
+byte selector=0;
+
+
+//#define RACE_MODE // 24698, 2349 bytes used before splitting
+//19362, 2047 in race mode or 23392, 2277 in normal mode. I can split more if needed
+
+#ifdef RACE_MODE
+  unsigned int circuitTime[6]={9999,9999,9999,9999,9999,9999};
+#endif
 
 #endif
 

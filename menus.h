@@ -17,9 +17,9 @@
 #define STATE_GAME 3
 #define STATE_PAUSE 4
 #define STATE_GAMEOVER 5
-#define STATE_TESTING 69
+#define STATE_TESTING 99
 
-byte selector;
+//byte selector;
 
 void shopMsg(int money){
     ab.println(F("   Hi Adru"));
@@ -33,7 +33,7 @@ byte menu(byte state, Player* ship){
 
   switch (state){
 
-    case 0: default://init
+    case 0:
       selector=0;
       state=STATE_MENU;
     case STATE_MENU:
@@ -44,14 +44,14 @@ byte menu(byte state, Player* ship){
       ab.println("  New Game");
       ab.println("  Cheat");
       ab.println("  Credit");      
-      ab.println("  Test");
+      //ab.println("  Test");
 
       if (ab.justPressed(UP_BUTTON)) {
         if(0==selector--)
-          selector=5;
+          selector=4;
       }
       if (ab.justPressed(DOWN_BUTTON)) { //race with EngineV2 for now
-        if(++selector>5)
+        if(++selector>4)
           selector=0;
       }      
       ab.fillRect(2,18+8*selector,3,2);
@@ -83,7 +83,7 @@ byte menu(byte state, Player* ship){
             selector=0;
           break;
           case 5:
-            return( STATE_TESTING);        
+            //return( STATE_TESTING);        
           break;
           case 0:
             return( STATE_RACE_MENU);
@@ -92,6 +92,22 @@ byte menu(byte state, Player* ship){
         }
       }
     break;
+
+    case STATE_CREDIT:
+      ab.println("");
+      ab.println("Written by");
+      ab.println("   C" "\x82" "dric Martin");
+      ab.println("");
+      ab.println("  April 2020");
+      ab.println("");
+      ab.println("");
+      ab.println("A or B: back");
+
+      if (ab.justPressed(A_BUTTON) || ab.justPressed(B_BUTTON))
+        return( STATE_MENU);
+    break;    
+
+#ifndef RACE_MODE
     
     case STATE_SHOP:  //sounds like skate shop... makes me wanna pop some kickflips...
 
@@ -163,14 +179,14 @@ byte menu(byte state, Player* ship){
             }
           break;
           case 1:
-            if (ship->money>60&&(0==(ship->setup&0x01))){
+            if (ship->money>60&&(0==(ship->setup&0x02))){
               ship->money-=60;
               ship->setup|=0x02;
               ship->gun.multi=true;
             }      
           break;
           case 2:
-            if (ship->money>80&&(0==(ship->setup&0x01))){
+            if (ship->money>80&&(0==(ship->setup&0x04))){
               ship->money-=80;
               ship->setup|=0x04;
               ship->gun.canHold=true;
@@ -179,21 +195,34 @@ byte menu(byte state, Player* ship){
         }
       }
     break;    
-    
-    case STATE_CREDIT:
+    default:
+      ab.clear();
+      ab.println("Sorry, only available");
+      ab.println("in Race mode");
       ab.println("");
-      ab.println("Written by");
-      ab.println("   C" "\x82" "dric Martin");
-      ab.println("");
-      ab.println("  April 2020");
-      ab.println("");
-      ab.println("");
-      ab.println("A or B: back");
-
-      if (ab.justPressed(A_BUTTON) || ab.justPressed(B_BUTTON))
-        return( STATE_MENU);
+      ab.println("Recompile whith");
+      ab.println("#define RACE_MODE ");
+      ab.println("in globals.h");
+      ab.display();
+      delay(4000);
+      selector=0;
+      state=STATE_MENU;
     break;
-    
+
+#else
+    default:
+      ab.clear();
+      ab.println("Sorry, not available");
+      ab.println("in Race mode");
+      ab.println("");
+      ab.println("Recompile whithout");
+      ab.println("#define RACE_MODE ");
+      ab.println("in globals.h");
+      ab.display();
+      delay(4000);
+      selector=0;
+      state=STATE_MENU;
+    break;
     case STATE_RACE_MENU:
     
       ab.print((char)27);
@@ -233,7 +262,7 @@ byte menu(byte state, Player* ship){
         ship->setup|=0x80;
         sectorInit((0x80|(selector&0x06)),0);
         ship->mapCenter(false);
-        elapsedTime=0;        
+        //elapsedTime=0; //-> in SectorInit 
         ship->target=CP1;        
         return( STATE_GAME);
       }
@@ -243,6 +272,9 @@ byte menu(byte state, Player* ship){
       }
 
     break;
+
+#endif
+    
     }
     return (state);
 }
