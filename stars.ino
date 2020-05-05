@@ -150,10 +150,10 @@ void loop() {
         else {      
           ship.invincible=200;
           ship.armor=ARMOR_MAX;
-          ship.energy=ENERGY_MAX;
+          ship.shield=ENERGY_MAX;
           ship.speed=vec2(0,0);
           ship.pos=vec2(64,32);
-          mapCenter(true);
+          mapCenter(true, vec2(sectorColumns, sectorLines));
         }
         */
       }
@@ -175,8 +175,8 @@ void loop() {
             explode(ship.pos-mapCoord, EXPLOSION_BIG);
             ship.invincible=200;
             ship.armor=ARMOR_MAX;
-            ship.energy=ENERGY_MAX;
-            //mapCenter(true);       
+            ship.shield=SHIELD_MAX;
+            //mapCenter(true, vec2(sectorColumns, sectorLines));       
           }
         }      
         ship.checkShotscollision();

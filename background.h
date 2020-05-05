@@ -16,8 +16,7 @@
 #define sectorColumns 12
 #define sectorLines  20
 */
-byte sectorColumns=12;   //to have several map size
-byte sectorLines=20;
+
 
 #define MAP_WIDTH sectorColumns*IMAGE_WIDTH
 #define MAP_HEIGHT sectorLines*IMAGE_HEIGHT
@@ -54,10 +53,23 @@ Meteor met[NBMAX_METEOR]; //not sure if there will be meteors in Race Mode but w
 #endif
 
 byte sectorType;
-/* 7 6 5 4 3 2 1 0        NDY : (Not Defined Yet)
+
+/* in race mode
+ * 7 6 5 4 3 2 1 0        NDY : (Not Defined Yet)
  * I I I I I I I L___ in race Mode: Race finished 
  * I I I I I I L_____ 
  * I I I I I L_______ \____ in race mode: circuit: 0 "O", 1 "inv(Z)", 2 ? 3"X"
+ * I I I I L_______________ Meteor respawn between waves
+ * I I I L___________ 
+ * I I L_____________ \____ Meteor 0-11 a little -> a lot      //(Size: 00 9x18, 01 12x20, 10 ?x?, 11 continuous?)I think I'll forget the different sizes)
+ * I L_______________ 
+ * L_________________ \____ Mode: 00 normal, 01 hard? 10 Race, 11 Rescue, 
+ *
+ * normal
+ ** 7 6 5 4 3 2 1 0        
+ * I I I I I I I L____ 
+ * I I I I I I L______\_____ size (or just one bit?) 
+ * I I I I I L___________ 
  * I I I I L_______________ Meteor respawn between waves
  * I I I L___________ 
  * I I L_____________ \____ Meteor 0-11 a little -> a lot      //(Size: 00 9x18, 01 12x20, 10 ?x?, 11 continuous?)I think I'll forget the different sizes)
@@ -218,10 +230,20 @@ void putMeteors(bool randomPlace){
       }
       CP[8].last=true;    
     }
-#else
+#else  //not race mode again
+
   void sectorInit(byte type, byte wavesType){ //, byte difficulty){  
     sectorType=type;
-
+    switch (sectorType&0x3){
+      case 0:
+        sectorColumns=8;
+        sectorLines=10;
+      break;
+      case 1: default:
+        sectorColumns=12;
+        sectorLines=20;
+      break;
+    }
     //CP[0].last=true; //so the whole array isn't tested every loop
     waves.init(wavesType); 
     nextWave();
@@ -374,7 +396,8 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
       CP[i].update();
       if (CP[i].last)
         i=99;
-    }  
+    }
+    drawRadar();
   #else      
     last = 0;
     for (int i = 0; i < NBMAX_ENNEMI; i++) {
@@ -418,8 +441,10 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
       if (gems[i].active)
         gems[i].draw();
     }
+    if(true) //todo passer player.setup en argument...
+      drawRadar();
   #endif
-  drawRadar();
+  //drawRadar();
 
   //ab.println(waves[0].type);
 }

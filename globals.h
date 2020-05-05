@@ -17,6 +17,8 @@ unsigned int elapsedTime=0;
 int score;
 byte selector=0;
 
+byte sectorColumns=12;   //to have several map size
+byte sectorLines=20;
 
 /*************************  RACE MODE *************************************
  * in this mode you can't shoot anymore. A and B do the same as up and down.

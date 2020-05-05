@@ -10,7 +10,7 @@
 //#define SPEED_DIVISOR -> in globals.h
 
 #define ARMOR_MAX 50
-#define ENERGY_MAX 250
+#define SHIELD_MAX 250
 
 //#define TANK_SMALL 10000
 //#define TANK_EMERGENCY 300
@@ -24,9 +24,9 @@
  * I I I I I L_______ Multi shots
  * I I I I L_________ Shield Generator?
  * I I I L___________ EngineV2
- * I I L_____________ Radar
- * I L_______________ Auto Repair 
- * L_________________ Race Mode
+ * I I L_____________ shield
+ * I L_______________ Antenna 
+ * L_________________ Radar
  * */
 
 class Player {       
@@ -41,7 +41,7 @@ class Player {
     //unsigned int fuel;
     //unsigned int fuelMax;
     byte armor;
-    byte energy;
+    byte shield;
     byte invincible;
     byte lives;
     bool burn;
@@ -65,7 +65,7 @@ class Player {
       this->turnTimer=0;
       this->speed=vec2(0,0);
       armor=ARMOR_MAX;
-      energy=ENERGY_MAX;
+      shield=0;
       //fuelMax=TANK_SMALL;
       //fuel=fuelMax;
       reste=vec2(0,0);     
@@ -79,16 +79,17 @@ class Player {
     bool Player::checkcollision(); //return true if armor drops below 0 (but it's unsigned so >200)
     void Player::checkShotscollision();
     void Player::shoot();  
-    void Player::mapCenter(bool center);
+    void Player::mapCenter(bool center, vec2 mapSize);
 };
 
-void Player::mapCenter(bool center) {
+void Player::mapCenter(bool center) { //finalement, pas beoin de passer la taille en param, si?
   pos=vec2(64,32);
   speed=vec2(0,0);
   //elapsedTime=0;
   if (center){
-    mapCoord.x = -(MAP_WIDTH / 2 - 64);
-    mapCoord.y = -(MAP_HEIGHT / 2 - 32);
+    //mapCoord.x = -(MAP_WIDTH / 2 - 64);
+    //mapCoord.y = -(MAP_HEIGHT / 2 - 32);
+    mapCoord=(mapSize/2)*(-1);
   }
   else {
     mapCoord=vec2(50,50);
@@ -189,8 +190,8 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     ab.drawPixel(126,63-(ARMOR_MAX));   
   
     //Energy
-    drawVecLine(vec2(124,63),vec2(124,63-(energy/5))); 
-    ab.drawPixel(124,63-(ENERGY_MAX/5));      
+    drawVecLine(vec2(124,63),vec2(124,63-(shield/5))); 
+    ab.drawPixel(124,63-(SHIELD_MAX/5));      
      
     //draw shots
     gun.draw();

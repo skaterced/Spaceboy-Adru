@@ -58,15 +58,15 @@ bool raceMode=(0x80==(p1->setup&0x80))?true:false;
   }
   
   if (ab.pressed(A_BUTTON)&&ab.pressed(B_BUTTON)&&ab.pressed(DOWN_BUTTON)&&ab.pressed(RIGHT_BUTTON)){ //secret warp (
-    p1->mapCenter(true);
+    p1->mapCenter(true, vec2(sectorColumns, sectorLines));
     //mapCoord=vec2(0,0);    
   }
 
   if(!raceMode){
-    if (ab.pressed(B_BUTTON)&&(p1->energy>0)){
+    if (ab.pressed(B_BUTTON)&&(p1->shield>0)){
       ab.drawCircle(p1->pos.x,p1->pos.y,11);
       p1->invincible=1;
-      p1->energy--;    
+      p1->shield--;    
     }
     else { //(can shoot with the force field activated)
       if (p1->gun.canHold){
