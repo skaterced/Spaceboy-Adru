@@ -33,8 +33,6 @@
 #define NBMAX_GEM 7
 #define NBMAX_CP 10
 
-// TODO: Add a "sectorInit()" 
-
 
 //const byte stars[STARS_TOT]={59,12,41,5,59,33,38,28,5,2,35,27,14,29,63,14,7,57,28,30,57,5,52,31,6,32,37,22,34,33,24,48,46,27,6,10,45,35,14,4,9}; //42 -> 21190
 const byte stars[STARS_TOT]={59,12,41,5,59,33,38,28,5,2,35,27,14,29,63,14,7,57,28,30,57,5,52,31,6,32,37,22,34,33,24,48,46,27,6,10,45,35,14,4,9,39,49,63,10,25,52,41,10,52,53,23,13,2,40,57,0};//,48,26,43,41,30,3,61};//,0,17,58,28,48,18,6}; //72 -> 21220
@@ -124,6 +122,11 @@ void putMeteors(bool randomPlace){
   }
 */
 #ifndef RACE_MODE
+  void clearEnnemies (){
+    for (int i = 0; i < NBMAX_ENNEMI; i++) {
+      enn[i].active=false;
+    }
+  }
   void putEnnemies(vec2 pos, vec2 speed, byte type) {
   
     for (int i = 0; i < NBMAX_ENNEMI; i++) {
@@ -245,6 +248,7 @@ void putMeteors(bool randomPlace){
       break;
     }
     //CP[0].last=true; //so the whole array isn't tested every loop
+    clearEnnemies();
     waves.init(wavesType); 
     nextWave();
     putMeteors(true);  
@@ -311,14 +315,14 @@ void drawRadar() {
   if (temp > -5) {
     ab.fillRect(RADAR_POSX, RADAR_POSY, temp + 5, 9, 0);
   }
-  else if (temp < -(sectorColumns - 6)) {
+  if (temp < -(sectorColumns - 6)) {
     temp += (sectorColumns - 6);
     ab.fillRect(RADAR_POSX + temp + 11, RADAR_POSY, -temp, 9, 0);
   }
   if (temp2 > -4) {
     ab.fillRect(RADAR_POSX, RADAR_POSY, 11, temp2 + 4, 0);
   }
-  else if (temp2 < -(sectorLines - 5)) {
+  if (temp2 < -(sectorLines - 5)) {
     temp2 += (sectorLines - 5);
     ab.fillRect(RADAR_POSX, RADAR_POSY + temp2 + 9, 11, -temp2, 0);
   }
@@ -409,12 +413,13 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
               int temp = trigoInv(enn[i].pos + mapCoord, vec2(64, 32)); // <-aiming the ship (if it's not in the border...)
               ennShot.pos = trigoVec(temp, 10, enn[i].pos + mapCoord);
               ennShot.dir = temp;
-              ennShot.speed = trigoVec(temp, 6, vec2(0, 0));
+              ennShot.speed = trigoVec(temp, 6, vec2(0, 0)); //Speed divisor dependant
             }
           }
           last++;
         }
         else {
+          //check respawn bit
           enn[i].active = false;
         }
       }
@@ -441,7 +446,7 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
       if (gems[i].active)
         gems[i].draw();
     }
-    if(true) //todo passer player.setup en argument...
+    if(radar)
       drawRadar();
   #endif
   //drawRadar();

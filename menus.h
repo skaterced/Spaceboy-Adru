@@ -19,7 +19,10 @@
 #define STATE_GAMEOVER 5
 #define STATE_TESTING 99
 
-#define REPAIR_COST 2
+#define REPAIR_COST 1
+#define GUN_BIGB  0X01
+#define GUN_MULTI 0X02
+#define GUN_AUTO  0X04
 #define DVICE_ENGINE 0x10
 #define DVICE_RADAR 0xA0
 #define DVICE_SHIELD 0x20
@@ -67,23 +70,23 @@ byte menu(byte state, Player* ship){
         //race=false;
         switch(selector){
           case 2:       // ********************** New Game *****************************
-            //randomSeed(timer * 3000);
-            ship->mapCenter(true, vec2(sectorColumns, sectorLines));
+            //randomSeed(timer * 3000);            
             if (DVICE_SHIELD==(ship->setup&DVICE_SHIELD))
-              ship->shield=SHIELD_MAX;
-            sectorInit(0x30|DVICE_ANTENNA,0);            //|DVICE_ANTENNA
+              ship->shield=SHIELD_MAX;              
+            sectorInit(0x10|(ship->setup&DVICE_ANTENNA)?1:0,0);  //only two size for now
+            ship->mapCenter(true);//, vec2(sectorColumns, sectorLines));
             return( STATE_GAME );
           break;
           case 3: //cheat
-            //randomSeed(timer * 3000);
-            ship->mapCenter(true, vec2(sectorColumns, sectorLines));
-            sectorInit(0x30,0);
+            //randomSeed(timer * 3000);            
+            //sectorInit(0x30|DVICE_ANTENNA,0);
+            //ship->mapCenter(true);//, vec2(sectorColumns, sectorLines));
             ship->money+=300;
             //ship->engineV2=true;
             //ship->setup|=0x0F;
             //ship->gun.canHold=true;
             //ship->gun.multi=true;
-            return( STATE_GAME);
+            //return( STATE_GAME);
           case 4:
             return( STATE_CREDIT);
           break;
@@ -99,6 +102,7 @@ byte menu(byte state, Player* ship){
             selector=0;
           break;
         }
+        return( STATE_RACE_MENU);
       }
     break;
 
@@ -143,7 +147,11 @@ byte menu(byte state, Player* ship){
         switch(selector){
           
           case 0:
-            return( STATE_SHOP_REPAIR);
+            //return( STATE_SHOP_REPAIR);
+            while ((ship->armor<ARMOR_MAX)&&(ship->money>REPAIR_COST)){
+              ship->money-=REPAIR_COST;
+              ship->armor+=2;
+            }                   
           break;
           case 1:
             return( STATE_SHOP_GUN);        
@@ -154,7 +162,7 @@ byte menu(byte state, Player* ship){
         }
       }
     break;
-    case STATE_SHOP_REPAIR :
+    /*case STATE_SHOP_REPAIR :
 
       shopMsg(ship->money);
       ab.print("  Repair");
@@ -181,7 +189,7 @@ byte menu(byte state, Player* ship){
           ship->armor+=1;
         }
       }
-    break;
+    break;*/
     case STATE_SHOP_GUN :  //sounds like "click clack... BOOOOOOM"
 
       shopMsg(ship->money);
@@ -205,27 +213,27 @@ byte menu(byte state, Player* ship){
       }
       else if (ab.justPressed(A_BUTTON)){
         switch(selector){
-          
+
           case 0:
-            if (ship->money>40&&(0==(ship->setup&0x01))){
+            if (ship->money>40&&(0==(ship->setup&GUN_BIGB))){
               ship->money-=40;
-              ship->setup|=1;
+              ship->setup|=GUN_BIGB;
               ship->gun.bigB=true;
               ship->gun.dmg+=2;
             }
           break;
           case 1:
-            if (ship->money>60&&(0==(ship->setup&0x02))){
+            if (ship->money>60&&(0==(ship->setup&GUN_AUTO))){
               ship->money-=60;
-              ship->setup|=0x02;
-              ship->gun.multi=true;
+              ship->setup|=GUN_AUTO;
+              ship->gun.canHold=true;
             }      
           break;
           case 2:
-            if (ship->money>80&&(0==(ship->setup&0x04))){
+            if (ship->money>80&&(0==(ship->setup&GUN_MULTI))){
               ship->money-=80;
-              ship->setup|=0x04;
-              ship->gun.canHold=true;
+              ship->setup|=GUN_MULTI;              
+              ship->gun.multi=true;
             }
           break;
         }
@@ -239,7 +247,7 @@ byte menu(byte state, Player* ship){
  * L_________________ EngineV2
      */
           shopMsg(ship->money);
-      ab.println("  Radar    40");
+      ab.println("  Radar     20");
       ab.println("  Shield    60");
       ab.println("  Antenna   80");      
       //ab.println("  New Ship");
@@ -261,11 +269,10 @@ byte menu(byte state, Player* ship){
         switch(selector){
           
           case 0:
-            if (ship->money>40&&(0==(ship->setup&DVICE_RADAR))){
-              ship->money-=40;
-              ship->setup|=DVICE_RADAR;
-
-
+            if (ship->money>20&&(false==radar)){
+              ship->money-=20;
+              //ship->setup|=DVICE_RADAR;
+              radar=true;
             }
           break;
           case 1:
@@ -285,33 +292,40 @@ byte menu(byte state, Player* ship){
       }
     break;
     default:
-      ab.clear();
+      
       ab.println("Sorry, only available");
       ab.println("in Race mode");
       ab.println("");
       ab.println("Recompile whith");
       ab.println("#define RACE_MODE ");
-      ab.println("in globals.h");
-      ab.display();
-      delay(4000);
-      selector=0;
-      state=STATE_MENU;
+      ab.println("in globals.h");            
+      /*ab.println("");
+      ab.println("A or B: back");*/
+            
+      if (ab.justPressed(A_BUTTON) || ab.justPressed(B_BUTTON)){
+        return( STATE_MENU);
+        selector=0;
+      }
     break;
 
 #else
     default:
-      ab.clear();
+
       ab.println("Sorry, not available");
       ab.println("in Race mode");
       ab.println("");
       ab.println("Recompile whithout");
       ab.println("#define RACE_MODE ");
-      ab.println("in globals.h");
-      ab.display();
-      delay(4000);
-      selector=0;
-      state=STATE_MENU;
+      ab.println("in globals.h");           
+/*      ab.println("");
+      ab.println("A or B: back");*/ //16 B for both
+      
+      if (ab.justPressed(A_BUTTON) || ab.justPressed(B_BUTTON)){
+        return( STATE_MENU);
+        selector=0;
+      }
     break;
+    
     case STATE_RACE_MENU:
     
       ab.print((char)27);
@@ -354,7 +368,7 @@ byte menu(byte state, Player* ship){
         ship->setup|=(selector&1)<<4; //normal fast
         ship->setup|=0x80;
         sectorInit((0x80|(selector&0x06)),0);
-        ship->mapCenter(false, vec2(sectorColumns, sectorLines));
+        ship->mapCenter(false);//, vec2(sectorColumns, sectorLines));
         //elapsedTime=0; //-> in SectorInit 
         ship->target=CP1;        
         return( STATE_GAME);

@@ -48,6 +48,16 @@
             devices: Radar; Better Engine? warp?; compas?
             defense: shield; shieldGenerator; autoShield;
    Ennemies: An evil multiplying cloud
+
+  16% Progmem 8% globVar
+   Reinit Monster when start          check
+   more waves type
+   EEPROM
+   more monster(s)
+   buyable radar                      check
+   add stuff only if you have Antenna
+
+   
 */
 
 //change #define RACE_MODE -> in globals.h
@@ -87,8 +97,8 @@ vec2 pointD;
 */
 void setup()
 {
-  //ab.begin();  
-  ab.boot(); //846 bytes (3%) saved by using boot instead of begin (but must implement an Upload method)
+  ab.begin();  
+  //ab.boot(); //846 progmem bytes (3%) saved by using boot instead of begin 
   //testEnnemi.reboot(pointB, vec2(0,0), 0);
   ab.setFrameRate(60);
   //state = STATE_GAME;
@@ -153,7 +163,7 @@ void loop() {
           ship.shield=ENERGY_MAX;
           ship.speed=vec2(0,0);
           ship.pos=vec2(64,32);
-          mapCenter(true, vec2(sectorColumns, sectorLines));
+          mapCenter(true);//, vec2(sectorColumns, sectorLines));
         }
         */
       }
@@ -176,7 +186,7 @@ void loop() {
             ship.invincible=200;
             ship.armor=ARMOR_MAX;
             ship.shield=SHIELD_MAX;
-            //mapCenter(true, vec2(sectorColumns, sectorLines));       
+            //mapCenter(true);//, vec2(sectorColumns, sectorLines));       
           }
         }      
         ship.checkShotscollision();

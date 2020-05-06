@@ -14,8 +14,11 @@
 
 //#define TANK_SMALL 10000
 //#define TANK_EMERGENCY 300
-
-#define sectorBorderMargin 300
+#ifdef RACE_MODE
+  #define sectorBorderMargin 300
+#else
+  #define sectorBorderMargin 150
+#endif
 
 // Player.setup
 /* 7 6 5 4 3 2 1 0        
@@ -26,7 +29,7 @@
  * I I I L___________ EngineV2
  * I I L_____________ shield
  * I L_______________ Antenna 
- * L_________________ Radar
+ * L_________________ Radar --> in globals
  * */
 
 class Player {       
@@ -79,7 +82,7 @@ class Player {
     bool Player::checkcollision(); //return true if armor drops below 0 (but it's unsigned so >200)
     void Player::checkShotscollision();
     void Player::shoot();  
-    void Player::mapCenter(bool center, vec2 mapSize);
+    void Player::mapCenter(bool center); //, vec2 mapSize);
 };
 
 void Player::mapCenter(bool center) { //finalement, pas beoin de passer la taille en param, si?
@@ -87,9 +90,9 @@ void Player::mapCenter(bool center) { //finalement, pas beoin de passer la taill
   speed=vec2(0,0);
   //elapsedTime=0;
   if (center){
-    //mapCoord.x = -(MAP_WIDTH / 2 - 64);
-    //mapCoord.y = -(MAP_HEIGHT / 2 - 32);
-    mapCoord=(mapSize/2)*(-1);
+    mapCoord.x = -(MAP_WIDTH / 2 - 64);
+    mapCoord.y = -(MAP_HEIGHT / 2 - 32);
+    //mapCoord=(mapSize/2)*(-1);
   }
   else {
     mapCoord=vec2(50,50);

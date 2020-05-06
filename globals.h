@@ -1,9 +1,7 @@
 #ifndef _GLOBALS_ 
 #define _GLOBALS_ 
 
-//#include "shot.h"
 #include "vec2.h"
-
 #include <Arduboy2.h>
 
 #define SPEED_DIVISOR 40
@@ -13,8 +11,8 @@ Arduboy2 ab;
 Sprites sprites;
 
 vec2 mapCoord(0,0);
-unsigned int elapsedTime=0;
 int score;
+bool radar=0;
 byte selector=0;
 
 byte sectorColumns=12;   //to have several map size
@@ -55,6 +53,7 @@ byte sectorLines=20;
 
 #ifdef RACE_MODE
   unsigned int circuitTime[6]={9999,9999,9999,9999,9999,9999}; //no EEPROM save yet
+  unsigned int elapsedTime=0;
 #endif
 
 #endif
@@ -69,4 +68,3 @@ byte sectorLines=20;
       ab.display();
       delay(2000);
   */
-

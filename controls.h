@@ -58,7 +58,7 @@ bool raceMode=(0x80==(p1->setup&0x80))?true:false;
   }
   
   if (ab.pressed(A_BUTTON)&&ab.pressed(B_BUTTON)&&ab.pressed(DOWN_BUTTON)&&ab.pressed(RIGHT_BUTTON)){ //secret warp (
-    p1->mapCenter(true, vec2(sectorColumns, sectorLines));
+    p1->mapCenter(true);//, vec2(sectorColumns, sectorLines));
     //mapCoord=vec2(0,0);    
   }
 
