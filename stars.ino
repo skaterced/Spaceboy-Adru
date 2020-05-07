@@ -177,6 +177,7 @@ void loop() {
       #ifdef RACE_MODE
         ship.checkcollision();
       #else
+        checkPlayerCollisions(&ship);
         if (ship.checkcollision()){
           if (--ship.lives==0){
             state=STATE_GAMEOVER;
@@ -185,7 +186,8 @@ void loop() {
             explode(ship.pos-mapCoord, EXPLOSION_BIG);
             ship.invincible=200;
             ship.armor=ARMOR_MAX;
-            ship.shield=SHIELD_MAX;
+            if (0x20==(ship.setup&0x20))
+              ship.shield=SHIELD_MAX;
             //mapCenter(true);//, vec2(sectorColumns, sectorLines));       
           }
         }      

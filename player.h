@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "trigo.h"
 #include "shot.h"
-#include "background.h"
+//#include "background.h"
 
 #define SPEED_MAX 160
 //#define SPEED_DIVISOR -> in globals.h
@@ -49,6 +49,7 @@ class Player {
     byte lives;
     bool burn;
     //bool engineV2;
+    byte justCollided;
     byte setup;
     /*
      * //TODO: create "State" byte including 
@@ -74,6 +75,7 @@ class Player {
       reste=vec2(0,0);     
       burn=false; 
       invincible=0;
+      justCollided=0;
       //engineV2=false;
     }
     bool Player::draw();
@@ -203,7 +205,11 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   return false;
 }
 
+
+
+ // all in background.h
 bool Player::checkcollision(){  //return true if armor drops below 0 (but it's unsigned so >200)
+/*
   vec2 temp=elementCollision(this->pos,invincible==1? 10:6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
     if (0x80!=(setup&0x80)){ //not in Race mode
@@ -230,9 +236,10 @@ bool Player::checkcollision(){  //return true if armor drops below 0 (but it's u
       target=temp;
     }
   }
-  return false;
+  return false;*/
 }
-void Player::checkShotscollision(){ //not in shot.h because "background.h" needs "shots.h"
+void Player::checkShotscollision(){ //not in shot.h because "background.h" needs "shots.h" 
+  /*
   for (int i=0; i<SHOTS_MAX; i++){
     if (gun.shots[i].active>0){
       vec2 temp=elementCollision(gun.shots[i].pos,0,0,gun.dmg);
@@ -241,7 +248,7 @@ void Player::checkShotscollision(){ //not in shot.h because "background.h" needs
         //gun.shots[i].active=false;
       }
     }
-  }
+  }*/
 }
 
 void  Player::drawFlames(){  //if both flames at the same time, they aren't animated anymore

@@ -73,7 +73,7 @@ byte menu(byte state, Player* ship){
             //randomSeed(timer * 3000);            
             if (DVICE_SHIELD==(ship->setup&DVICE_SHIELD))
               ship->shield=SHIELD_MAX;              
-            sectorInit(0x10|(ship->setup&DVICE_ANTENNA)?1:0,0);  //only two size for now
+            sectorInit(SCT_METEOR_LOT|((ship->setup&DVICE_ANTENNA)?1:0),0);  //only two size for now
             ship->mapCenter(true);//, vec2(sectorColumns, sectorLines));
             return( STATE_GAME );
           break;
@@ -209,7 +209,7 @@ byte menu(byte state, Player* ship){
           selector=0;
       }            
       else if (ab.justPressed(B_BUTTON)) {
-        return( STATE_SHOP);
+        return( STATE_MENU);
       }
       else if (ab.justPressed(A_BUTTON)){
         switch(selector){
@@ -263,7 +263,7 @@ byte menu(byte state, Player* ship){
           selector=0;
       }            
       else if (ab.justPressed(B_BUTTON)) {
-        return( STATE_SHOP);
+        return( STATE_MENU);
       }
       else if (ab.justPressed(A_BUTTON)){
         switch(selector){

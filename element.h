@@ -188,7 +188,8 @@ class Meteor : public Element {
 class Ennemies : public Element {
   public:
     byte frame;
-    byte type;    
+    byte type;
+    byte radius;
     //byte randBytes[10];
     Ennemies():Element(){}
     Ennemies::reboot(vec2 pos_, vec2 speed_, byte type_){
@@ -198,14 +199,20 @@ class Ennemies : public Element {
       type=type_;
       if (ENNEMI_SPACEINVADER==type){
         life=SPACEINVADER_LIFE;
+        radius=5;
       }
       else if (ENNEMI_BIGEYEMONSTER==type){
         life=BIGEYEMONSTER_LIFE;
+        radius=8;
       }
       else if (ENNEMI_FLYINGSAUCER==type){
         life=FLYINGSAUCER_LIFE;
+        radius=8;
       }
-      else life=DEFAULT_ENNEMI_LIFE;
+      else {
+        life=DEFAULT_ENNEMI_LIFE;
+        radius=8;
+      }
     }
     bool Ennemies::update(void){  //return true if Ennemi is shooting
       vec2 pointD;
