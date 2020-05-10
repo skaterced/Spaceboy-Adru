@@ -7,7 +7,13 @@
 #include "shot.h"
 
 void controls(Player* p1){ //, bool raceMode){
-bool raceMode=(0x80==(p1->setup&0x80))?true:false;
+//bool raceMode=(0x80==(p1->setup&0x80))?true:false; 
+#ifdef RACE_MODE //todo: suppress bool raceMode and add #ifdef inside the control routine
+  bool raceMode=true;
+#else
+  bool raceMode=false;
+#endif  
+
   if (ab.pressed(RIGHT_BUTTON)){
     if (p1->turnTimer--<=0){
       p1->turnTimer=2;

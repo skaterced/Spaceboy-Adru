@@ -138,6 +138,16 @@ byte trigoInv(vec2 a, vec2 b){ //to get the direction from a to b
   //return 0;
 }
 
+int trigoInv2 (vec2 A, vec2 B, vec2 C) {
+  int temp = trigoInv(A,B);
+  int temp2 = trigoInv(A,C);
+  int temp3 =temp2-temp;
+  if ((temp3<-10)||(temp3>10)) {
+    temp+=16;
+  }
+  return (temp2-temp);  
+}
+
 void drawVecLine(vec2 A, vec2 B){
   ab.drawLine(A.x,A.y,B.x,B.y);
 }

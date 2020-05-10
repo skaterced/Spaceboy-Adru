@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "trigo.h"
 #include "shot.h"
-#include "background.h"
+//#include "background.h"
 
 #define SPEED_MAX 160
 //#define SPEED_DIVISOR -> in globals.h
@@ -49,6 +49,7 @@ class Player {
     byte lives;
     bool burn;
     //bool engineV2;
+    //byte justCollided;
     byte setup;
     /*
      * //TODO: create "State" byte including 
@@ -74,6 +75,7 @@ class Player {
       reste=vec2(0,0);     
       burn=false; 
       invincible=0;
+      //justCollided=0;
       //engineV2=false;
     }
     bool Player::draw();
@@ -122,6 +124,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   this->reste=(this->speed+this->reste)%SPEED_DIVISOR;  
 
   //Background ajust
+  
   if (pos.x<64){
     //int temp = -(sectorLines-1)*IMAGE_HEIGHT);
     if (mapCoord.x-(pos.x-64)<0){
@@ -134,7 +137,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     }
   }  
   else if (pos.x>64){
-    int temp = -(sectorColumns-1)*IMAGE_WIDTH+64;
+    int temp = -(sectorColumns-1)*IMAGE_WIDTH;//+64;
     if (mapCoord.x-(pos.x-64)>temp){
       mapCoord.x-=(pos.x-64);
       pos.x=64;
@@ -146,7 +149,6 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   }
   
   if (pos.y<32){
-    //int temp = -(sectorLines-1)*IMAGE_HEIGHT);
     if (mapCoord.y-(pos.y-32)<0){
       mapCoord.y-=(pos.y-32);
       pos.y=32;
@@ -158,7 +160,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     }
   }  
   else if (pos.y>32){
-    int temp = -(sectorLines-1)*IMAGE_HEIGHT+32;
+    int temp = -(sectorLines-1)*IMAGE_HEIGHT;//+32;
     if (mapCoord.y-(pos.y-32)>temp){
       mapCoord.y-=(pos.y-32);
       pos.y=32;
@@ -169,9 +171,34 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     }      
   }
   //out of bound
-  if (pos.x<-sectorBorderMargin || pos.x>168+sectorBorderMargin || pos.y<-sectorBorderMargin || pos.y>64+sectorBorderMargin )
-    return true;
+  #ifdef CAN_LEAVE_MAP  
+    if (pos.x<-sectorBorderMargin || pos.x>168+sectorBorderMargin || pos.y<-sectorBorderMargin || pos.y>64+sectorBorderMargin ) 
+      return true;
+  #else
+    //rebond 
+    //TODO:  add rotation
+    if (pos.x<6){
+      pos.x=12-pos.x;
+      speed.x=speed.x*(-1);
+      reste.x=reste.x*(-1);
+    }
+    if (pos.x>122){
+      pos.x-=(pos.x-122);
+      speed.x=speed.x*(-1);
+      reste.x=reste.x*(-1);      
+    }
+    if (pos.y<6){
       
+      pos.y=12-pos.y;
+      speed.y=speed.y*(-1);
+      reste.y=reste.y*(-1);      
+    }
+    if (pos.y>58){
+      pos.y-=(pos.y-58);
+      speed.y=speed.y*(-1);
+      reste.y=reste.y*(-1);    
+    }
+  #endif
  //Ship V2 "Half Moon"
   if ((invincible<2)||(burn)){
     //sprites.drawSelfMasked(pos.x-8,pos.y-8,Ship, dir); //Sprites (unmasked) instead of geometrical drawing uses +222 bytes of progmem (1%). Don't know about speed yet. 
@@ -182,28 +209,32 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
     ab.fillCircle(pos.x+trigo((dir+8),6,true),pos.y+trigo((dir+8),6,false),4,0);
     drawVecLine(pos,trigoVec(invDir(dir),4,pos));
   }
-   
-  //Fuel jauge
-  //drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
-  //ab.drawPixel(126,63-(fuelMax/300));  
+   #ifdef STORY_MODE
+    //Fuel jauge
+    //drawVecLine(vec2(126,63),vec2(126,63-(fuel/300))); //todo: modify drawTrigoVec (vec2, dir, length){...
+    //ab.drawPixel(126,63-(fuelMax/300));  
+       
+      //ARMOR
+      drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
+      ab.drawPixel(126,63-(ARMOR_MAX));   
+    
+      //Energy
+      drawVecLine(vec2(124,63),vec2(124,63-(shield/5))); 
+      ab.drawPixel(124,63-(SHIELD_MAX/5));      
+
+      //draw shots
+      gun.draw();
   
-  if (0x80!=(setup&0x80)){ //not in Race mode
-    //ARMOR
-    drawVecLine(vec2(126,63),vec2(126,63-(armor))); 
-    ab.drawPixel(126,63-(ARMOR_MAX));   
-  
-    //Energy
-    drawVecLine(vec2(124,63),vec2(124,63-(shield/5))); 
-    ab.drawPixel(124,63-(SHIELD_MAX/5));      
-     
-    //draw shots
-    gun.draw();
-  }
+    #endif     
 
   return false;
 }
 
+
+
+ // all in background.h
 bool Player::checkcollision(){  //return true if armor drops below 0 (but it's unsigned so >200)
+/*
   vec2 temp=elementCollision(this->pos,invincible==1? 10:6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
     if (0x80!=(setup&0x80)){ //not in Race mode
@@ -230,9 +261,10 @@ bool Player::checkcollision(){  //return true if armor drops below 0 (but it's u
       target=temp;
     }
   }
-  return false;
+  return false;*/
 }
-void Player::checkShotscollision(){ //not in shot.h because "background.h" needs "shots.h"
+void Player::checkShotscollision(){ //not in shot.h because "background.h" needs "shots.h" 
+  /*
   for (int i=0; i<SHOTS_MAX; i++){
     if (gun.shots[i].active>0){
       vec2 temp=elementCollision(gun.shots[i].pos,0,0,gun.dmg);
@@ -241,7 +273,7 @@ void Player::checkShotscollision(){ //not in shot.h because "background.h" needs
         //gun.shots[i].active=false;
       }
     }
-  }
+  }*/
 }
 
 void  Player::drawFlames(){  //if both flames at the same time, they aren't animated anymore

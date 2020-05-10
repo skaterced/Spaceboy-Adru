@@ -13,6 +13,8 @@
 #define EXPLOSION_MEDIUM 2
 #define EXPLOSION_BIG 3
 
+#define BH_RADIUS 30
+
 #define METEOR_LIFE 10
 #define ENNEMI_SPACEINVADER 0x20
 #define SPACEINVADER_LIFE 5
@@ -152,11 +154,30 @@ class CheckPoint {
     }
 };
 
+//#ifdef BILLARD_MODE //maybe also in some part of the story mode
+class BlackHole {
+  public:
+  vec2 pos;
+  byte blink;
+    BlackHole(){
+      blink=8;
+    }
+    void BlackHole::draw() {
+      ab.fillCircle(pos.x+mapCoord.x, pos.y+mapCoord.y,BH_RADIUS);      
+      /*
+      ab.fillCircle(pos.x+mapCoord.x, pos.y+mapCoord.y,blink,0);
+      if (--blink<3)
+        blink=BH_RADIUS;
+        */
+    }
+};
+//#endif
 class Element {  
   public:
     vec2 pos;
     vec2 speed;
     vec2 reste;
+    byte radius;
     //byte dir; //will add it if needed
     int life;
     bool active;
@@ -165,7 +186,8 @@ class Element {
       speed=vec2(0,0);
       reste=vec2(0,0);
       //dir=0;
-      int life=METEOR_LIFE; 
+      radius=6;
+      life=METEOR_LIFE; 
       active=false;
     }
     bool Element::update(){
@@ -180,8 +202,35 @@ class Meteor : public Element {
       this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
       ab.fillCircle(pos.x+mapCoord.x, pos.y+mapCoord.y,6,0);      
       sprites.drawSelfMasked(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6,  this->life<(METEOR_LIFE/2)? meteor_dmg:meteor,0); 
-      //sprites.drawExternalMask(pos.x+mapCoord.x-6, pos.y+mapCoord.y-6, this->life<(METEOR_LIFE/2)? meteor_dmg:meteor, meteor_mask, 0,0); //mask is "drooling". Don't know why...
-      //mask is "leaking" on the left side. No idea why. 
+      #ifdef BILLARD_MODE
+        //"frottement..."
+        if (ab.everyXFrames(10)){
+          speed-=trigoVec(trigoInv(vec2(0,0),speed),3,vec2(0,0));
+        }
+        //rebond 
+        //TODO:  add rotation
+        if (pos.x<6){
+          pos.x=-pos.x;
+          speed.x=speed.x*(-1);
+          reste.x=reste.x*(-1);
+        }
+        if (pos.x>MAP_WIDTH-6){
+          pos.x-=(pos.x-(MAP_WIDTH-6));
+          speed.x=speed.x*(-1);
+          reste.x=reste.x*(-1);      
+        }
+        if (pos.y<6){
+          
+          pos.y=12-pos.y;
+          speed.y=speed.y*(-1);
+          reste.y=reste.y*(-1);      
+        }
+        if (pos.y>MAP_HEIGHT-6){
+          pos.y-=(pos.y-(MAP_HEIGHT-6));
+          speed.y=speed.y*(-1);
+          reste.y=reste.y*(-1);    
+        }
+      #endif
     }
 };
 
@@ -198,14 +247,20 @@ class Ennemies : public Element {
       type=type_;
       if (ENNEMI_SPACEINVADER==type){
         life=SPACEINVADER_LIFE;
+        radius=5;
       }
       else if (ENNEMI_BIGEYEMONSTER==type){
         life=BIGEYEMONSTER_LIFE;
+        radius=8;
       }
       else if (ENNEMI_FLYINGSAUCER==type){
         life=FLYINGSAUCER_LIFE;
+        radius=8;
       }
-      else life=DEFAULT_ENNEMI_LIFE;
+      else {
+        life=DEFAULT_ENNEMI_LIFE;
+        radius=8;
+      }
     }
     bool Ennemies::update(void){  //return true if Ennemi is shooting
       vec2 pointD;
