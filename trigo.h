@@ -163,7 +163,22 @@ void drawCylinder (vec2 A, vec2 B, int R,bool Hz, bool white){ //Hz :must be tru
     drawVecLine(A-(temp*i),B-(temp*i));
   }
 }
-
+/*
+void drawEmptyCylinder (vec2 A, int R, int L, bool Hz ){ //Hz :
+  ab.DrawCircle(A.x,A.y,R, 1);
+  if (Hz){
+    
+  }
+  ab.fillCircle(B.x,B.y,R, 1);
+  vec2 temp;  
+  if (Hz){ temp=vec2(0,1); }
+  else { temp=vec2(1,0);}
+  for (int i=0; i<R+1;i++){
+    drawVecLine(A+(temp*i),B+(temp*i));
+    drawVecLine(A-(temp*i),B-(temp*i));
+  }
+}
+*/
 void drawGrid (vec2 pos, vec2 dirA, vec2 dirB,int nbA,int nbB){
 
   vec2 temp=pos+(dirA*(nbA-1));

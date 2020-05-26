@@ -28,6 +28,10 @@
 #define NBMAX_CP 10
 #define NBMAX_BH 7
 
+#define SECTOR_SIZE_SMALL 0
+#define SECTOR_SIZE_MED 1
+#define SECTOR_SIZE_BIG 2
+
 #define BIL_POS_INIT_X MAP_WIDTH * 1.5
 #define BIL_POS_INIT_Y MAP_HEIGHT/2
 
@@ -50,14 +54,22 @@ Meteor met[NBMAX_METEOR]; //not sure if there will be meteors in Race Mode but w
 #ifdef BILLARD_MODE
   BlackHole BH[NBMAX_BH];
 #else  
-
-  Ennemies enn[NBMAX_ENNEMI];
-  Waves waves;
+#ifndef STORY_MODE_TUTO
+  Ennemies enn[NBMAX_ENNEMI];  
   Shot ennShot;
+#endif  
+  Waves waves;
   Explosion xplo[NBMAX_EXPLOSION];
   byte xploIt = 0;
   Gem gems[NBMAX_GEM];
+  //bool station_active=false;
 #endif
+//bool station_active=false;
+#ifdef STORY_MODE_TUTO
+  Station home=Station (vec2(100,100));
+//  station_active=true;
+#endif  
+
 
 byte sectorType;
 
@@ -75,11 +87,11 @@ byte sectorType;
  * normal
  * 7 6 5 4 3 2 1 0        
  * I I I I I I I L____ 
- * I I I I I I L______\_____ size (or just one bit?) 
+ * I I I I I I L______\_____ size (or just one bit?)   //(Size: 00 9x18, 01 12x20, 10 ?x?, 11 continuous?)I think I'll forget the different sizes)
  * I I I I I L___________ 
  * I I I I L_______________ Meteor respawn between waves
  * I I I L___________ 
- * I I L_____________ \____ Meteor 0-11 a little -> a lot      //(Size: 00 9x18, 01 12x20, 10 ?x?, 11 continuous?)I think I'll forget the different sizes)
+ * I I L_____________ \____ Meteor 0-11 a little -> a lot    
  * I L_______________ 
  * L_________________ \____ Mode: 00 normal, 01 hard? 10 Race, 11 Rescue, 
  * 
@@ -93,10 +105,7 @@ byte sectorType;
  */
 
 //CP[0].active=true;
-/*
-  Station home=Station (vec2(300,300));
-  bool station_active=false;
-*/
+
 bool isOut(vec2 pos) {
   if ((-128 > pos.x) || pos.x > MAP_WIDTH || (-64 > pos.y) || pos.y > MAP_HEIGHT)
     return true;
@@ -143,6 +152,7 @@ void arrangeMeteors(byte nb){ //bool num 1-9 or
   }
 */
 #ifdef STORY_MODE
+#ifndef STORY_MODE_TUTO
   void clearEnnemies (){
     for (int i = 0; i < NBMAX_ENNEMI; i++) {
       enn[i].active=false;
@@ -196,6 +206,7 @@ void arrangeMeteors(byte nb){ //bool num 1-9 or
       else
         return false;
   }
+#endif
 #endif //Story mode
 
 #ifdef RACE_MODE
@@ -207,8 +218,7 @@ void arrangeMeteors(byte nb){ //bool num 1-9 or
       CP[0].active=true;
       for (int i=1; i<NBMAX_CP; i++){
         CP[i].active=false;
-      }
-           
+      }           
       //   1 2
       //    3
       //   4 5
@@ -275,19 +285,25 @@ void arrangeMeteors(byte nb){ //bool num 1-9 or
   void sectorInit(byte type, byte wavesType){ //, byte difficulty){  
     sectorType=type;
     switch (sectorType&0x03){
-      case 0:
+      case SECTOR_SIZE_MED: default:
         sectorColumns=8;
         sectorLines=10;
       break;
-      case 1: default:
+      case SECTOR_SIZE_SMALL:
+        sectorColumns=4;
+        sectorLines=4;
+      break;
+      case SECTOR_SIZE_BIG:
         sectorColumns=12;
         sectorLines=20;
       break;
     }
     //CP[0].last=true; //so the whole array isn't tested every loop
     //clearEnnemies();
-    waves.init(wavesType); 
+    #ifndef STORY_MODE_TUTO
+    waves.init(wavesType);     
     nextWave();
+    #endif
     putMeteors(true);  
   }
 
@@ -390,6 +406,7 @@ void drawRadar() {
     //}
   #endif
   #ifdef STORY_MODE 
+  #ifndef STORY_MODE_TUTO
       for (int i = 0; i < NBMAX_ENNEMI; i++) {
         if (enn[i].active) {
           temp = (mapCoord.x + enn[i].pos.x - 64/RADAR_DIVISOR) / (IMAGE_WIDTH / RADAR_DIVISOR);
@@ -401,16 +418,18 @@ void drawRadar() {
         }
       }
   #endif
+  #endif
 
-  /*
-    if (station_active){ //not in radar anymore because it will be in a cut scene
-    temp=(mapCoord.x+home.pos.x-49)/IMAGE_WIDTH; //58: IMAGE_WIDTH/2-station_image_width/2= -64 +15
-    temp2=(mapCoord.y+home.pos.y+3)/IMAGE_HEIGHT; //  - 32  +35
-    if ((temp<6&&temp>-6)&&(temp2<5&&temp2>-5)){
-      ab.drawPixel(RADAR_POSX+temp+5,4+RADAR_POSY+temp2,slowBlinking? 0:1);
-    }
-    }
-  */
+  #ifdef STORY_MODE_TUTO
+    //if (station_active){ //not in radar anymore because it will be in a cut scene
+      
+      temp = (mapCoord.x + home.pos.x - 64/RADAR_DIVISOR) / (IMAGE_WIDTH / RADAR_DIVISOR);
+      temp2 = (mapCoord.y + home.pos.y - 32/RADAR_DIVISOR) / (IMAGE_HEIGHT / RADAR_DIVISOR);
+      if ((temp<6&&temp>-6)&&(temp2<5&&temp2>-5)){
+        ab.drawPixel(RADAR_POSX+temp+5,4+RADAR_POSY+temp2,slowBlinking? 0:1);
+      }
+   // }
+  #endif
 }
 
 void drawBackground() { //, int RandSeed){  //-------------------------------------- Draw Background --------------------------
@@ -450,6 +469,7 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
   //#elifdef STORY_MODE 
   #endif
   #ifdef STORY_MODE 
+  #ifndef STORY_MODE_TUTO
     last = 0;
     for (int i = 0; i < NBMAX_ENNEMI; i++) {
       if (enn[i].active) {
@@ -486,6 +506,10 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
         ab.print("Sector Cleared");
       }
     }
+    #else
+    ab.println(strcpy_P(tBuffer, (char*)pgm_read_word(&(tutext[tutIt]))));
+    home.draw();
+    #endif
     for (int i = 0; i < NBMAX_EXPLOSION; i++) {
       xplo[i].update();
     }
@@ -501,21 +525,12 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
   //ab.println(waves[0].type);
 }
 
-
-//todo: add Dmg to both side depending on the speed difference
-/*
-bool checkRadiusCollision(vec2 pos1, byte radius1, vec2 pos2, byte radius2){
-  if ((magn(pos1 - pos2 - mapCoord) != -99) && (magn(pos1 - pos2 - mapCoord) < (radius1 + radius2)))
-    return true;
-  return false;
-}
-*/
 bool checkRadiusCollision(vec2 posDiff, byte radius1, byte radius2){
   if ((magn(posDiff) != -99) && (magn(posDiff) < (radius1 + radius2)))
     return true;
   return false;
 }
-bool elementCollideShip(Player* ship, Element* El){
+bool elementCollideShip(Player* ship, Element* El){ //must add element.radius
   vec2 temp=ship->pos-El->pos-mapCoord;
   vec2 temp2 = ship->speed - El->speed;  
   int temp3 = trigoInv2(vec2(0,0),temp,temp2);
@@ -523,27 +538,35 @@ bool elementCollideShip(Player* ship, Element* El){
       temp=temp/6;
       ship->pos+=temp;
       El->pos-=temp;
-/*      temp=ship->speed;
-      ship->speed=El->speed;
-      El->speed=temp;*/
+
       temp=trigoVec(trigoInv(vec2(0,0),El->speed)+temp3,magn(ship->speed)/2,ship->speed);
       ship->speed=trigoVec(trigoInv(vec2(0,0),ship->speed)-temp3,magn(ship->speed)/2,El->speed);
       El->speed=temp;
       //temp=ship->reste;
       //ship->reste=El->reste;
       //El->reste=ship->reste;
+      /*
       switch (temp3){
         case 0:
         break;
         case 1:
           
         break;      
-      }
+      }*/
       return true;
     }
   return false;
 }
-void checkElementCollisions(){
+bool shotCollideElement(Shot* shot, Element* El){
+  
+      vec2 temp=shot->pos-El->pos-mapCoord;
+      if (checkRadiusCollision(temp, 1, 6)){
+        shot->explode();
+        return true;
+      }       
+  return false;
+}
+void checkElementCollisions(){  //Elements colide Element
   #ifdef BILLARD_MODE  // only check meteors
     //todo: build a quadtree
     for (int i = 0; i < NBMAX_METEOR-1; i++) {
@@ -569,44 +592,76 @@ void checkElementCollisions(){
   }
   #endif
 }
-vec2 checkPlayerCollisions(Player* ship) {  //-------- Collision ----------------------------------------------------------
+
+//vec2 checkPlayerCollisions(Player* ship, bool shot) {  //-------- Collision ----------------------------------------------------------
+bool checkPlayerCollisions(Player* ship, byte shot) {  //-------- Collision ----------------------------------------------------------
+  bool temp2=false;
   vec2 temp;
   int dmg;
   for (int i = 0; i < NBMAX_METEOR; i++) {
     if (met[i].active) {
 
-     if (elementCollideShip(ship, &met[i])){
-
-     #ifdef STORY_MODE   
-        dmg=magn(met[i].speed-ship->speed)/10;
-        dmg=0;
-        ship->armor -= (ship->invincible==1? 0:dmg);
-        met[i].life -= dmg;
-        if (met[i].life <= 0) {
-          met[i].active = false;
-          explode(met[i].pos, EXPLOSION_MEDIUM);          
-          addGem(met[i].pos); //todo add random ?
+     #ifdef STORY_MODE
+        if (0!=shot) {
+          if (shotCollideElement(&ship->gun.shots[shot-1], &met[i])){ 
+            dmg=2;
+            temp2=true;
+          }
         }
+        else {
+          if (elementCollideShip(ship, &met[i])){
+            dmg=magn(met[i].speed-ship->speed)/10;
+            ship->armor -= (ship->invincible==1? 0:dmg);  
+            temp2=true;
+          }
+        }
+        if (temp2){       // something hit the meteor      
+          met[i].life -= dmg;
+            if (met[i].life <= 0) {
+              met[i].active = false;
+              explode(met[i].pos, EXPLOSION_MEDIUM);          
+              addGem(met[i].pos); //todo add random ?
+            }
+            i=99;
+          }
+      #else
+        }
+        elementCollideShip(ship, &met[i]);
       #endif
- /*       if (force > 0) {
-          met[i].speed -= (objPos - met[i].pos - mapCoord) * force /5;
-        }*/
 //        return objPos - met[i].pos - mapCoord;
-      }
-    }
-  }
+  } // end of meteor collision
   
 
 #ifdef STORY_MODE
+#ifndef STORY_MODE_TUTO
     for (int i = 0; i < NBMAX_ENNEMI; i++) {
       if (enn[i].active) {
-        
-        //vec2 temp=objPos - enn[i].pos - mapCoord;
-        //if ((magn(temp) != -99) && (magn(temp) < (radius + ennRadius))) {
-        temp=ship->pos-enn[i].pos-mapCoord;
-        if (checkRadiusCollision(temp, (ship->invincible==1? 10:6), enn[i].radius)){
+        if (0!=shot) {
+          if (shotCollideElement(&ship->gun.shots[shot-1], &enn[i])){ 
+            dmg=2;
+            temp2=true;
+          }
+        }
+        else { //if (checkRadiusCollision(temp, (ship->invincible==1? 10:6), enn[i].radius)){
+          if (elementCollideShip(ship, &enn[i])){
+            dmg=magn(met[i].speed-ship->speed)/10;
+            ship->armor -= (ship->invincible==1? 0:dmg);  
+            temp2=true;
+          }
+        }
+        if (temp2){       // something hit the ennemi      
+          enn[i].life -= dmg;
+            if (enn[i].life <= 0) {
+              enn[i].active = false;
+              explode(enn[i].pos, EXPLOSION_MEDIUM);          
+              addGem(enn[i].pos); //todo add random ?
+            }
+            i=99;
+          }
+        }
+        #endif
           //enn[i].hit()
-          
+          /*
           if (ENNEMI_BLOB!=enn[i].type){
             enn[i].life -= dmg;
             if (enn[i].life <= 0) {
@@ -614,45 +669,51 @@ vec2 checkPlayerCollisions(Player* ship) {  //-------- Collision ---------------
               explode(enn[i].pos, EXPLOSION_MEDIUM);
               addGem(enn[i].pos); //todo add random ?
             }
-//            if (force > 0) {
-  //            enn[i].speed -= (temp) * force / 10;
-    //        }
             return temp;
           }
           else {
 //            putEnnemies(trigoVec(trigoInv(enn[i].pos,objPos)-4,8,enn[i].pos),vec2(0,0),ENNEMI_BLOB);
   //          enn[i].pos=trigoVec(trigoInv(enn[i].pos,objPos)+4,8,enn[i].pos);
+          }*/        
+  } // end of ennemi collision      
+
+
+    if (0==shot){
+      #ifndef STORY_MODE_TUTO
+      if (ennShot.active>0) {               
+        temp=ship->pos-ennShot.pos;
+        if (checkRadiusCollision(temp, (ship->invincible==1? 10:6), 1)){
+          ennShot.explode();
+          //ennShot.active = false;
+          if (0==ship->invincible){
+            ship->armor-=2;
+            if (ship->armor>ARMOR_MAX){
+              return true;
+            }
+          }
+        }
+      }
+      #endif
+      for (int i = 0; i < NBMAX_GEM; i++) {
+        if (gems[i].active) {
+          //if ((radius!=0)&&(magn(objPos - gems[i].pos - mapCoord) != -99) && (magn(objPos - gems[i].pos - mapCoord) < (radius + 3))) {
+          temp=ship->pos-gems[i].pos-mapCoord;
+          if (checkRadiusCollision(temp, (ship->invincible==1? 10:6), 3)){
+            gems[i].active = false;
+            ship->money+=10;
+//            return vec2(98, 2); // x 98 means coin collected
           }
         }
       }
     }
-    if (ennShot.active>0) {
-      //if ((magn(objPos - ennShot.pos) != -99) && (magn(objPos - ennShot.pos) < (radius + 1))) {
-      temp=ship->pos-ennShot.pos-mapCoord;
-      if (checkRadiusCollision(temp, (ship->invincible==1? 10:6), 1)){
-        ennShot.explode();
-        //ennShot.active = false;
-        return vec2(99, 2); // x 99 means hit by an ennemi shot -> y is the dmg inflicted
-      }
-    }
-    for (int i = 0; i < NBMAX_GEM; i++) {
-      if (gems[i].active) {
-        //if ((radius!=0)&&(magn(objPos - gems[i].pos - mapCoord) != -99) && (magn(objPos - gems[i].pos - mapCoord) < (radius + 3))) {
-        temp=ship->pos-gems[i].pos-mapCoord;
-        if (checkRadiusCollision(temp, (ship->invincible==1? 10:6), 3)){
-          gems[i].active = false;
-          return vec2(98, 2); // x 98 means coin collected
-        }
-      }
-    }
+  //return vec2(0, 0);
+  #endif //story collisions
 
-  return vec2(0, 0);
-#endif //story collisions
 #ifdef RACE_MODE
     //if ((sectorType&0xC0)==0x80){ // Race Mode
     for (int i=0; i<NBMAX_CP;i++){
       if(CP[i].active){        
-        if (checkRadiusCollision(ship->pos-CP[i].pos,6,12)){
+        if (checkRadiusCollision(ship->pos-CP[i].pos-mapCoord,6,12)){
           CP[i].active=false;
           CP[i].blink=0; //light it up for a while
           if (CP[i].last){
@@ -663,7 +724,8 @@ vec2 checkPlayerCollisions(Player* ship) {  //-------- Collision ---------------
           }
           else {
             CP[i+1].active=true; 
-            return (CP[i+1].pos);
+            ship->target=CP[i+1].pos;
+            //return (CP[i+1].pos);
             i=99;
           }
         }
@@ -681,7 +743,11 @@ vec2 checkPlayerCollisions(Player* ship) {  //-------- Collision ---------------
       }
     }
 #endif // Billard Mode Black Hole collision
-}
+
+return false;
+}//end of checkPlayerCollisions()
+
+
 
 #endif //background.h
 

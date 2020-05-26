@@ -71,7 +71,12 @@
 #include "vec2.h"
 #include "element.h"
 #include "station.h"
+
+#ifdef STORY_MODE_TUTO
+#include "menu_tuto.h"
+#else
 #include "menus.h"
+#endif
 
 Player ship(64, 32, 4);
 //Station home = Station (vec2(300, 300));
@@ -107,7 +112,6 @@ void setup()
   ab.initRandomSeed();
 
   //pointB+=vec2(pointC);
-
   //putStation();
 }
 
@@ -175,15 +179,15 @@ void loop() {
 */      
       controls(&ship);
       #ifdef RACE_MODE
-        ship.checkcollision();
+        checkPlayerCollisions(&ship, 0);
       #endif
       #ifdef BILLARD_MODE
-        checkPlayerCollisions(&ship);
+        checkPlayerCollisions(&ship, 0);
         checkElementCollisions();
       #endif      
       #ifdef STORY_MODE
-        checkPlayerCollisions(&ship);
-        if (ship.checkcollision()){
+        if (checkPlayerCollisions(&ship, 0)){
+        //if (ship.checkcollision()){
           if (--ship.lives==0){
             state=STATE_GAMEOVER;
           }
@@ -196,11 +200,16 @@ void loop() {
             //mapCenter(true);//, vec2(sectorColumns, sectorLines));       
           }
         }      
-        ship.checkShotscollision();
+        //ship.checkShotscollision();
+        for (int i=0; i<SHOTS_MAX; i++){
+          if (ship.gun.shots[i].active>0){
+            checkPlayerCollisions(&ship, i+1);
+          }
+        }
 
       #endif
-      ab.println(globVec.x);
-      ab.println(globVec.y);      
+      //ab.println(globVec.x);
+      //ab.println(globVec.y);      
       break;
 
 

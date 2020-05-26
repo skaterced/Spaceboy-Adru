@@ -1,5 +1,5 @@
-#ifndef _MENUS_
-#define _MENUS_
+#ifndef _MENU_TUT_
+#define _MENU_TUT_
 
 #include "globals.h"
 #include "background.h"
@@ -8,7 +8,7 @@
 #include "element.h"
 
 #define STATE_MENU 1
-#define STATE_RACE_MENU 6
+//#define STATE_RACE_MENU 6
 #define STATE_SHOP 7
 #define STATE_SHOP_REPAIR 8
 #define STATE_SHOP_GUN 9
@@ -48,7 +48,7 @@ byte menu(byte state, Player* ship){
     case STATE_MENU:
       ab.println(F("   Welcome SpaceBoy"));
       ab.println("");      
-      ab.println("  Race");
+      ab.println("  New Game");
       ab.println("  Shop");
       ab.println("  Start");
       ab.println("  Cheat");
@@ -101,11 +101,10 @@ byte menu(byte state, Player* ship){
             //return( STATE_TESTING);        
           break;
           case 0:
-            return( STATE_RACE_MENU);
-            selector=0;
+
           break;
         }
-        return( STATE_RACE_MENU);
+        return( STATE_MENU);
       }
     break;
 

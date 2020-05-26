@@ -15,7 +15,7 @@
 
 #define BH_RADIUS 30
 
-#define METEOR_LIFE 10
+#define METEOR_LIFE 15
 #define ENNEMI_SPACEINVADER 0x20
 #define SPACEINVADER_LIFE 5
 #define ENNEMI_BIGEYEMONSTER 0x40
@@ -53,11 +53,6 @@ class Explosion {
       pos=vec2(0,0);
       count=50; //means inactive
     }
-    /*Explosion::explode(vec2 pos_, int type_){
-      type=type_;
-      pos=pos_;    
-      count=0;
-    }*/
     Explosion::update(){
       if (count<18){
         count++;

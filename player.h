@@ -273,7 +273,8 @@ void Player::checkShotscollision(){ //not in shot.h because "background.h" needs
         //gun.shots[i].active=false;
       }
     }
-  }*/
+  }
+  */
 }
 
 void  Player::drawFlames(){  //if both flames at the same time, they aren't animated anymore
