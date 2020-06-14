@@ -46,35 +46,36 @@ byte menu(byte state, Player* ship){
       selector=0;
       state=STATE_MENU;
     case STATE_MENU:
-      ab.println(F("   Welcome SpaceBoy"));
+      ab.println(F("  Welcome to tutorial"));
+      ab.println(F("   SpaceBoy"));
       ab.println("");      
-      ab.println("  New Game");
-      ab.println("  Shop");
       ab.println("  Start");
-      ab.println("  Cheat");
+      ab.println("  Shop");
+      /*ab.println("  Start");
+      ab.println("  Cheat");*/
       ab.println("  Credit");      
       //ab.println("  Test");
 
       if (ab.justPressed(UP_BUTTON)) {
         if(0==selector--)
-          selector=4;
+          selector=2;
       }
       if (ab.justPressed(DOWN_BUTTON)) { //race with EngineV2 for now
-        if(++selector>4)
+        if(++selector>2)
           selector=0;
       }      
-      ab.fillRect(2,18+8*selector,3,2);
+      ab.fillRect(2,26+8*selector,3,2);
       
       if (ab.justPressed(A_BUTTON)||ab.justPressed(B_BUTTON)) {
         ship->speed=vec2(0,0);
         //race=false;
         switch(selector){
-          case 2:       // ********************** New Game *****************************
+          case 0:       // ********************** New Game *****************************
             //randomSeed(timer * 3000);            
             if (DVICE_SHIELD==(ship->setup&DVICE_SHIELD))
               ship->shield=SHIELD_MAX;              
             //sectorInit(SCT_METEOR_LOT|((ship->setup&DVICE_ANTENNA)?1:0),0);  //only two size for now
-            sectorInit(SCT_METEOR_LOT|SECTOR_SIZE_SMALL,0);  //only two size for now
+            sectorInit(SCT_METEOR_LOT|SCT_METEOR_RESPAWN|SECTOR_SIZE_MED,0); 
             
             ship->mapCenter(true);//, vec2(sectorColumns, sectorLines));
             return( STATE_GAME );
@@ -90,7 +91,7 @@ byte menu(byte state, Player* ship){
             //ship->gun.canHold=true;
             //ship->gun.multi=true;
             //return( STATE_GAME);
-          case 4:
+          case 2:
             return( STATE_CREDIT);
           break;
           case 1:
@@ -100,7 +101,7 @@ byte menu(byte state, Player* ship){
           case 5:
             //return( STATE_TESTING);        
           break;
-          case 0:
+          case 9:
 
           break;
         }
@@ -309,7 +310,7 @@ byte menu(byte state, Player* ship){
         selector=0;
       }
     break;
-
+/*
 #else
     default:
 
@@ -319,8 +320,6 @@ byte menu(byte state, Player* ship){
       ab.println("Recompile whithout");
       ab.println("#define RACE_MODE ");
       ab.println("in globals.h");           
-/*      ab.println("");
-      ab.println("A or B: back");*/ //16 B for both
       
       if (ab.justPressed(A_BUTTON) || ab.justPressed(B_BUTTON)){
         return( STATE_MENU);
@@ -383,9 +382,11 @@ byte menu(byte state, Player* ship){
     break;
 
 #endif
+*/
     
     }
     return (state);
 }
 
+#endif
 #endif

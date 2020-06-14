@@ -63,7 +63,7 @@ class Player {
       this->pos.x=x;
       this->pos.y=y;
       this->dir=dir;
-      money=0;      
+      money=30;      //for now
       lives=3;
       //this->coolDown=0;
       this->turnTimer=0;
@@ -172,7 +172,7 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
   }
   //out of bound
   #ifdef CAN_LEAVE_MAP  
-    if (pos.x<-sectorBorderMargin || pos.x>168+sectorBorderMargin || pos.y<-sectorBorderMargin || pos.y>64+sectorBorderMargin ) 
+    if (pos.x<-sectorBorderMargin || pos.x>168+sectorBorderMargin || pos.y<-sectorBorderMargin || pos.y>64+sectorBorderMargin )
       return true;
   #else
     //rebond 

@@ -39,6 +39,7 @@
 #define SCT_METEOR_FEW 0x10
 #define SCT_METEOR_MORE 0x20
 #define SCT_METEOR_LOT 0x30
+#define SCT_METEOR_RESPAWN 0x08
 
 
 
@@ -67,7 +68,7 @@ Meteor met[NBMAX_METEOR]; //not sure if there will be meteors in Race Mode but w
 //bool station_active=false;
 #ifdef STORY_MODE_TUTO
   Station home=Station (vec2(100,100));
-//  station_active=true;
+  bool  station_active=false;
 #endif  
 
 
@@ -125,13 +126,13 @@ void putMeteor(vec2 pos, vec2 speed) {
 }
 void putMeteors(bool randomPlace){
     byte temp=(3*((sectorType&0x30)>>4));    
-    bool temp2 = random(100)>50? true:false;
+    //bool temp2 = random(100)>50? true:false;
     while (temp-->0){
       if (randomPlace){
         putMeteor(vec2( random(MAP_WIDTH)+30,random(MAP_HEIGHT)),vec2((random(100)-50),random(20)-10));
       }
       else 
-        putMeteor(vec2( (temp2? 0:MAP_WIDTH),random(MAP_HEIGHT)),vec2((random(50)+2)*(temp2? 1:-1),random(20)-10));
+        putMeteor(vec2( (random(100)>50? 0:MAP_WIDTH),random(MAP_HEIGHT)),vec2((random(50)+2)*(random(100)>50? 1:-1),random(20)-10));
     }    
 }
 
@@ -206,7 +207,7 @@ void arrangeMeteors(byte nb){ //bool num 1-9 or
       else
         return false;
   }
-#endif
+#endif //not tuto
 #endif //Story mode
 
 #ifdef RACE_MODE
@@ -282,7 +283,7 @@ void arrangeMeteors(byte nb){ //bool num 1-9 or
   }
 #endif
 #ifdef STORY_MODE
-  void sectorInit(byte type, byte wavesType){ //, byte difficulty){  
+  void sectorInit(byte type, byte wavesType){ //, byte difficulty){
     sectorType=type;
     switch (sectorType&0x03){
       case SECTOR_SIZE_MED: default:
@@ -406,29 +407,29 @@ void drawRadar() {
     //}
   #endif
   #ifdef STORY_MODE 
-  #ifndef STORY_MODE_TUTO
-      for (int i = 0; i < NBMAX_ENNEMI; i++) {
-        if (enn[i].active) {
-          temp = (mapCoord.x + enn[i].pos.x - 64/RADAR_DIVISOR) / (IMAGE_WIDTH / RADAR_DIVISOR);
-          temp2 = (mapCoord.y + enn[i].pos.y - 32/RADAR_DIVISOR) / (IMAGE_HEIGHT / RADAR_DIVISOR);
-    
-          if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
-            ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, fastBlinking ? 0 : 1);
+    #ifndef STORY_MODE_TUTO
+        for (int i = 0; i < NBMAX_ENNEMI; i++) {
+          if (enn[i].active) {
+            temp = (mapCoord.x + enn[i].pos.x - 64/RADAR_DIVISOR) / (IMAGE_WIDTH / RADAR_DIVISOR);
+            temp2 = (mapCoord.y + enn[i].pos.y - 32/RADAR_DIVISOR) / (IMAGE_HEIGHT / RADAR_DIVISOR);
+      
+            if ((temp < 6 && temp > -6) && (temp2 < 5 && temp2 > -5)) {
+              ab.drawPixel(RADAR_POSX + temp + 5, 4 + RADAR_POSY + temp2, fastBlinking ? 0 : 1);
+            }
           }
         }
-      }
-  #endif
+    #endif
   #endif
 
   #ifdef STORY_MODE_TUTO
-    //if (station_active){ //not in radar anymore because it will be in a cut scene
+    if (station_active){ 
       
       temp = (mapCoord.x + home.pos.x - 64/RADAR_DIVISOR) / (IMAGE_WIDTH / RADAR_DIVISOR);
       temp2 = (mapCoord.y + home.pos.y - 32/RADAR_DIVISOR) / (IMAGE_HEIGHT / RADAR_DIVISOR);
       if ((temp<6&&temp>-6)&&(temp2<5&&temp2>-5)){
         ab.drawPixel(RADAR_POSX+temp+5,4+RADAR_POSY+temp2,slowBlinking? 0:1);
       }
-   // }
+    }
   #endif
 }
 
@@ -438,7 +439,7 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
     if (met[i].active) {
       if (!isOut(met[i].pos)) {
         met[i].draw();
-        last++;
+        last++; //useful?
       }
       else {
         met[i].active = false;                    
@@ -506,10 +507,32 @@ void drawBackground() { //, int RandSeed){  //----------------------------------
         ab.print("Sector Cleared");
       }
     }
-    #else
-    ab.println(strcpy_P(tBuffer, (char*)pgm_read_word(&(tutext[tutIt]))));
-    home.draw();
-    #endif
+    #else  //tuto mode
+    if ((140==progression)/*||(13==progression)*/){
+      tuTimer++;
+      if (tuTimer>100){
+        tutIt=0;    
+        tuTimer=0;
+        progression=13;
+        /*
+        if (10==tutIt){
+          tutIt=0;
+          progression++;
+        }*/
+      }
+    }
+    if (tutIt!=0){      
+      ab.println(strcpy_P(tBuffer, (char*)pgm_read_word(&(tutext[tutIt-1]))));
+      if (0x80==(progression&0x80)){
+        ab.println(strcpy_P(tBuffer, (char*)pgm_read_word(&(tutext[tutIt]))));
+        //ab.println(tuTimer);
+        //ab.println(progression);
+      }
+    }
+    if (station_active)
+      home.draw();
+    #endif //back to story no tuto
+    
     for (int i = 0; i < NBMAX_EXPLOSION; i++) {
       xplo[i].update();
     }
@@ -619,8 +642,11 @@ bool checkPlayerCollisions(Player* ship, byte shot) {  //-------- Collision ----
           met[i].life -= dmg;
             if (met[i].life <= 0) {
               met[i].active = false;
-              explode(met[i].pos, EXPLOSION_MEDIUM);          
+              explode(met[i].pos, EXPLOSION_MEDIUM);
               addGem(met[i].pos); //todo add random ?
+              if (0x08==(sectorType&0x08)){
+                putMeteor(vec2( (random(100)>50? 0:MAP_WIDTH),random(MAP_HEIGHT)),vec2((random(50)+2)*(random(100)>50? 1:-1),random(20)-10));
+              }
             }
             i=99;
           }
@@ -633,7 +659,7 @@ bool checkPlayerCollisions(Player* ship, byte shot) {  //-------- Collision ----
   
 
 #ifdef STORY_MODE
-#ifndef STORY_MODE_TUTO
+  #ifndef STORY_MODE_TUTO
     for (int i = 0; i < NBMAX_ENNEMI; i++) {
       if (enn[i].active) {
         if (0!=shot) {
@@ -658,8 +684,10 @@ bool checkPlayerCollisions(Player* ship, byte shot) {  //-------- Collision ----
             }
             i=99;
           }
-        }
-        #endif
+      }
+    } // end of ennemi collision      
+  #endif
+}
           //enn[i].hit()
           /*
           if (ENNEMI_BLOB!=enn[i].type){
@@ -675,10 +703,9 @@ bool checkPlayerCollisions(Player* ship, byte shot) {  //-------- Collision ----
 //            putEnnemies(trigoVec(trigoInv(enn[i].pos,objPos)-4,8,enn[i].pos),vec2(0,0),ENNEMI_BLOB);
   //          enn[i].pos=trigoVec(trigoInv(enn[i].pos,objPos)+4,8,enn[i].pos);
           }*/        
-  } // end of ennemi collision      
 
 
-    if (0==shot){
+    if (0==shot){  //means we are testing collision with ship, not his shot
       #ifndef STORY_MODE_TUTO
       if (ennShot.active>0) {               
         temp=ship->pos-ennShot.pos;
@@ -687,13 +714,15 @@ bool checkPlayerCollisions(Player* ship, byte shot) {  //-------- Collision ----
           //ennShot.active = false;
           if (0==ship->invincible){
             ship->armor-=2;
-            if (ship->armor>ARMOR_MAX){
-              return true;
-            }
+            temp2=true;
           }
         }
       }
       #endif
+      if (temp2){
+        if (ship->armor>ARMOR_MAX)
+          return true;
+      }
       for (int i = 0; i < NBMAX_GEM; i++) {
         if (gems[i].active) {
           //if ((radius!=0)&&(magn(objPos - gems[i].pos - mapCoord) != -99) && (magn(objPos - gems[i].pos - mapCoord) < (radius + 3))) {
@@ -731,15 +760,14 @@ bool checkPlayerCollisions(Player* ship, byte shot) {  //-------- Collision ----
         }
       }
     }
-#endif // Race Mode checkPonits collision
+#endif // Race Mode checkPoints collision
 
 #ifdef BILLARD_MODE
     
     for (int i=0; i<NBMAX_BH;i++){
       if (checkRadiusCollision(ship->pos- BH[i].pos,6,BH_RADIUS)){
       //if ((magn(ship->pos - BH[i].pos - mapCoord) != -99) && (magn(ship->pos - BH[i].pos - mapCoord) < (6 + 12))) {
-        //todo: ship falls in BH next player turn
-        
+        //todo: ship falls in BH next player turn        
       }
     }
 #endif // Billard Mode Black Hole collision

@@ -72,12 +72,14 @@
 #include "element.h"
 #include "station.h"
 
+
 #ifdef STORY_MODE_TUTO
-#include "menu_tuto.h"
+  #include "menu_tuto.h"
 #else
-#include "menus.h"
+  #include "menus.h"  //maybe create a "menu_race.h"
 #endif
 
+  
 Player ship(64, 32, 4);
 //Station home = Station (vec2(300, 300));
 //bool station_active = false; //3%Progmem...
@@ -138,12 +140,22 @@ void loop() {
       }
       else {
         ab.println("      * Pause *");      
+        ab.println("");
         ab.print("ship(s) left: ");
         ab.println(ship.lives);
       }
       ab.print("score: ");
-      ab.println(ship.money);
-      
+      ab.println(ship.money); //should only be the cristals you are carying
+
+      #ifdef STORY_MODE_TUTO
+        ab.println("");
+        ab.println("press Down to resume");
+        if (11==progression){
+          progression=140;
+          tutIt++;
+          tuTimer=0;
+        }
+      #endif
       if (ab.justPressed(DOWN_BUTTON)&&(STATE_GAMEOVER!=state)){
         state = STATE_GAME;
       }
@@ -199,7 +211,7 @@ void loop() {
               ship.shield=SHIELD_MAX;
             //mapCenter(true);//, vec2(sectorColumns, sectorLines));       
           }
-        }      
+        }
         //ship.checkShotscollision();
         for (int i=0; i<SHOTS_MAX; i++){
           if (ship.gun.shots[i].active>0){

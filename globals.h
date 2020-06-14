@@ -40,32 +40,30 @@ byte selector=0;
 
 #ifdef STORY_MODE_TUTO
   const char tutext01[] PROGMEM = "Press A to shoot";
-  const char tutext02[] PROGMEM = "Press <-/-> to turn";
+  const char tutext02[] PROGMEM = "<- or -> to rotate";
   const char tutext03[] PROGMEM = "Up for thrust";
-  const char tutext04[] PROGMEM = "Down for retro";
+  const char tutext04[] PROGMEM = "Down to slow down";
   const char tutext05[] PROGMEM = "B for shield";
   const char tutext06[] PROGMEM = "Oups not yet...";
-  const char tutext08[] PROGMEM = "Try de get some gems";
-  const char tutext07[] PROGMEM = "<-&-> to pause";
-  const char tutext20[] PROGMEM = "Loosing signal";
-  const char tutext21[] PROGMEM = "Leaving sector will";
-  //const char tutext22[] PROGMEM = "send you back to base";
-  const char tutext22[] PROGMEM = "send you back to base";
-  const char tutext25[] PROGMEM = "for now";
-  const char tutext23[] PROGMEM = "Don't get lost";
-  const char tutext24[] PROGMEM = "I get you back now";
-  //const char tutext25[] PROGMEM = "Because it's the tuto";
-  const char tutext26[] PROGMEM = "but normally you'd die";
-  const char tutext27[] PROGMEM = "so don't get lost";
-  const char tutext28[] PROGMEM = "Bigger sectors will";
-  const char tutext29[] PROGMEM = "come soon";
-  const char tutext30[] PROGMEM = "U lost bro?";
+  const char tutext07[] PROGMEM = "<- and -> to pause";
+  const char tutext08[] PROGMEM = "Destroy asteroids";
+  const char tutext09[] PROGMEM = "to get cristals";
+  const char tutext10[] PROGMEM = "Bumping in asteroids";
+  const char tutext11[] PROGMEM = "is harmful";   
+  const char tutext12[] PROGMEM = "Watch for your shield";
+  const char tutext13[] PROGMEM = "gauge on the right";
+  const char tutext20[] PROGMEM = "Leaving sector will";
+  const char tutext21[] PROGMEM = "send you back to base";
+  const char tutext22[] PROGMEM = "Stop on the circle";
+  const char tutext23[] PROGMEM = "to dock";
+
   
   char tBuffer[22];
-  byte tutIt=2;
+  byte tutIt=1;
+  int tuTimer=0;
   byte progression=0;
 
-  #define TUTPROG_BASIC //prog for progression not program or something
+  //what was the use again? #define TUTPROG_BASIC //prog for progression not program or something
   const char * const tutext[] PROGMEM =
   {
     tutext01,
@@ -74,18 +72,18 @@ byte selector=0;
     tutext04,
     tutext05,
     tutext06,
-/*    tutext07,
+    tutext07,
     tutext08,
-    tutext09,*/
+    tutext09,
+    tutext10,
+    tutext11,
+    tutext12,
+    tutext13,
+    tutext20,
     tutext21,
     tutext22,
     tutext23,
-    tutext24,
-    tutext25,
-    tutext26,
-    tutext27,
-    tutext28,
-    tutext29,    
+    //tutext29,    
   };
   //arduboy.println(strcpy_P(tBuffer, (char*)pgm_read_word(&(tutext[idx]))));
 #endif

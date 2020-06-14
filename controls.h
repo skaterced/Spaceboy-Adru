@@ -7,8 +7,23 @@
 #include "shot.h"
 
 void controls(Player* p1){ //, bool raceMode){
-bool raceMode=(0x80==(p1->setup&0x80))?true:false;
+//bool raceMode=(0x80==(p1->setup&0x80))?true:false;
+#ifdef RACE_MODE
+bool raceMode=true;
+#else
+bool raceMode=false;
+#endif
+
   if (ab.pressed(RIGHT_BUTTON)){
+    #ifdef STORY_MODE_TUTO
+      if (4==(progression&4)){
+        progression|=1;
+        if (7==progression){
+          progression=8;
+          tutIt++;
+        }
+      }
+    #endif    
     if (p1->turnTimer--<=0){
       p1->turnTimer=2;
       if (++p1->dir>15)
@@ -16,6 +31,15 @@ bool raceMode=(0x80==(p1->setup&0x80))?true:false;
     }
   }
   else if (ab.pressed(LEFT_BUTTON)){
+    #ifdef STORY_MODE_TUTO
+      if (4==(progression&4)){
+        progression|=2;
+        if (7==progression){
+          progression=8;
+          tutIt++;
+        }
+      }
+    #endif        
     if (p1->turnTimer--<=0){
       p1->turnTimer=2;
       if (--p1->dir>127)
@@ -26,6 +50,12 @@ bool raceMode=(0x80==(p1->setup&0x80))?true:false;
     p1->turnTimer=0;
   }
   if (ab.pressed(UP_BUTTON)||(raceMode&&ab.pressed(B_BUTTON))){
+    #ifdef STORY_MODE_TUTO
+      if (8==progression){
+        progression++;
+        tutIt++;
+      }
+    #endif    
     if (true){//if (p1->fuel>0){
       p1->drawFlames();
       //p1->fuel-=1;
@@ -38,7 +68,13 @@ bool raceMode=(0x80==(p1->setup&0x80))?true:false;
     }
   }
   if (ab.pressed(DOWN_BUTTON)||(raceMode&&ab.pressed(A_BUTTON))){
-    if (true){//(p1->fuel>0){          
+    #ifdef STORY_MODE_TUTO
+      if (9==progression){
+        progression++;
+        tutIt++;
+      }
+    #endif
+    if (true){//(p1->fuel>0){      
       if (magn(p1->speed)<=5&&magn(p1->speed)!=-99) {
         p1->speed=vec2(0,0);
       }
@@ -47,11 +83,6 @@ bool raceMode=(0x80==(p1->setup&0x80))?true:false;
         p1->drawRetroFlames();      
         if (ab.everyXFrames(2)){
           p1->speed-=trigoVec(trigoInv(vec2(0,0),p1->speed),5+((0x10==(p1->setup&0x10))?4:0),vec2(0,0));
-          /*
-           * // ?? How can that have been working?! a divide by 0 may occur
-          p1->speed.x-=abs(p1->speed.x)/p1->speed.x;
-          p1->speed.y-=abs(p1->speed.y)/p1->speed.y;
-          */
         }
       }
     }
@@ -61,22 +92,48 @@ bool raceMode=(0x80==(p1->setup&0x80))?true:false;
     p1->mapCenter(true);//, vec2(sectorColumns, sectorLines));
     //mapCoord=vec2(0,0);    
   }
-
+  #ifdef STORY_MODE_TUTO
+  if (ab.pressed(B_BUTTON)){
+    if (10==progression){
+      progression++;
+      tutIt++;
+    }
+  }
+  if (6==tutIt){
+    tuTimer++;
+    if (tuTimer>100){
+      tutIt++;    
+      tuTimer=0;
+    }
+  }
+  #endif    
   if(!raceMode){
-    if (ab.pressed(B_BUTTON)&&(p1->shield>0)){
+    if (ab.pressed(B_BUTTON)&&(p1->shield>0)){  
       ab.drawCircle(p1->pos.x,p1->pos.y,11);
       p1->invincible=1;
       p1->shield--;    
     }
-    else { //(can shoot with the force field activated)
+    else { //(can't shoot with the force field activated)
       if (p1->gun.canHold){
         if (ab.pressed(A_BUTTON)){    
           p1->shoot();
+          #ifdef STORY_MODE_TUTO
+            if (0==progression){
+              progression=4;
+              tutIt++;
+            }
+          #endif          
         }
       }
       else {
-        if (ab.justPressed(A_BUTTON)){  
+        if (ab.justPressed(A_BUTTON)){ 
           p1->shoot();
+          #ifdef STORY_MODE_TUTO
+            if (0==progression){
+              progression=4;
+              tutIt++;
+            }
+          #endif
         }
       }
     }
