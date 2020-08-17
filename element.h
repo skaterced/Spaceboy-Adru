@@ -53,7 +53,7 @@ class Explosion {
       pos=vec2(0,0);
       count=50; //means inactive
     }
-    Explosion::update(){
+    void update(){
       if (count<18){
         count++;
         
@@ -100,7 +100,7 @@ class Gem {
     Gem(){
       active=0;
     }
-    void Gem::draw() {
+    void draw() {
       if (ab.everyXFrames(6)){
         blink=!blink;
         if (active>0)
@@ -134,7 +134,7 @@ class CheckPoint {
       blink=0;
       last=false;
     }*/
-    void CheckPoint::update() {
+    void update() {
             
       ab.drawCircle(this->pos.x+mapCoord.x,this->pos.y+mapCoord.y,13);   
       if (ab.everyXFrames(5)){
@@ -157,7 +157,7 @@ class BlackHole {
     BlackHole(){
       blink=8;
     }
-    void BlackHole::draw() {
+    void draw() {
       ab.fillCircle(pos.x+mapCoord.x, pos.y+mapCoord.y,BH_RADIUS);      
       /*
       ab.fillCircle(pos.x+mapCoord.x, pos.y+mapCoord.y,blink,0);
@@ -184,15 +184,15 @@ class Element {
       radius=6;
       life=METEOR_LIFE; 
       active=false;
-    }
+    }/*
     bool Element::update(){
       //ab.fillRect(pos.x,pos.y,5,5);
-    }
+    }*/
 };
 
 class Meteor : public Element {
   public:
-    void Meteor::draw() {
+    void draw() {
       this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
       this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
       ab.fillCircle(pos.x+mapCoord.x, pos.y+mapCoord.y,6,0);      
@@ -235,7 +235,7 @@ class Ennemies : public Element {
     byte type;    
     //byte randBytes[10];
     Ennemies():Element(){}
-    Ennemies::reboot(vec2 pos_, vec2 speed_, byte type_){
+    void reboot(vec2 pos_, vec2 speed_, byte type_){
       active=true;
       pos=pos_;
       speed=speed_;
@@ -257,7 +257,7 @@ class Ennemies : public Element {
         radius=8;
       }
     }
-    bool Ennemies::update(void){  //return true if Ennemi is shooting
+    bool update(void){  //return true if Ennemi is shooting
       vec2 pointD;
       this->pos+=(this->reste+this->speed)/SPEED_DIVISOR;
       this->reste=(this->reste+this->speed)%SPEED_DIVISOR;
@@ -347,7 +347,7 @@ class Blob : public Ennemies {
   Blob(){
     type=3;
   }
-    bool Blob::update(){
+    bool update(){
       //ab.fillCircle(pos.x,pos.y,4);  
       //ab.fillCircle(pos.x+mapCoord.x+type+2*((frame>>0)&0x0F)%4-8,pos.y+type+mapCoord.y+(((frame>>1)&0x0F)%4-4),type-1);  
       /*
@@ -388,7 +388,7 @@ class Blob : public Ennemies {
       ab.fillCircle(temp.x,temp.y,2);
       return false;
     }
-    void Blob::grow(){
+    void grow(){
       type+=10;
     }
     
@@ -414,16 +414,16 @@ class Waves{
     Waves(){
       //type=type;
     }
-    byte Waves::actual(){
+    byte actual(){
       return waveType[it];
     }
-    bool Waves::next(){
+    bool next(){
       if (0==waveType[it]||(it==(NBMAX_WAVE-1)))
         return false;
       it++;
       return true;
     }
-    void Waves::init(byte toto){
+    void init(byte toto){
     //const byte wave1=(ENNEMI_SPACEINVADER|0x3<<WT_FORMATION|WT_FROM_LEFT|WT_RESPAWN);
       it=0;
       waveType[0]=(ENNEMI_EXPLOSIVE_METEOR|(1<<WT_FORMATION));

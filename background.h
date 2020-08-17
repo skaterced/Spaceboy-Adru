@@ -343,6 +343,12 @@ void drawStars() {
 }
 
 void drawRadar() {
+  
+const byte RadarOffsetX1 [8] PROGMEM = {0,0,12,12,0,0,12,12};
+const byte RadarOffsetX2 [8] PROGMEM = {0,2,12,10,0,2,12,10};
+const byte RadarOffsetY1 [8] PROGMEM = {0,0,0,0,10,10,10,10};
+const byte RadarOffsetY2 [8] PROGMEM = {2,0,2,0,8,10,8,10};
+  
   volatile bool blinking;
   volatile bool slowBlinking;
   volatile bool fastBlinking;
@@ -354,6 +360,11 @@ void drawRadar() {
     fastBlinking = !fastBlinking;
   ab.fillRect (RADAR_POSX, RADAR_POSY, 11, 9); //(2,54,21,9);
   //ab.drawPixel(RADAR_POSX + 5, RADAR_POSY + 4, 0);
+
+  for(int i=0; i<8; i++){
+     ab.drawLine(RADAR_POSX + RadarOffsetX1[i] - 1, RADAR_POSY +RadarOffsetY1[i] - 1, RADAR_POSX + RadarOffsetX2[i] - 1, RADAR_POSY + RadarOffsetY2[i] - 1); // corners
+  }
+  /*
   ab.drawLine(RADAR_POSX - 1, RADAR_POSY - 1, RADAR_POSX - 1, RADAR_POSY + 1); // corners
   ab.drawLine(RADAR_POSX - 1, RADAR_POSY - 1, RADAR_POSX + 1, RADAR_POSY - 1);
   ab.drawLine(RADAR_POSX + 11, RADAR_POSY - 1, RADAR_POSX + 11, RADAR_POSY + 1);
@@ -362,7 +373,7 @@ void drawRadar() {
   ab.drawLine(RADAR_POSX - 1, RADAR_POSY + 9, RADAR_POSX + 1, RADAR_POSY + 9);
   ab.drawLine(RADAR_POSX + 11, RADAR_POSY + 9, RADAR_POSX + 11, RADAR_POSY + 7);
   ab.drawLine(RADAR_POSX + 11, RADAR_POSY + 9, RADAR_POSX + 9, RADAR_POSY + 9);
-
+ */
   //SECTOR BORDER
   int temp = (mapCoord.x - 64/RADAR_DIVISOR) / (IMAGE_WIDTH / RADAR_DIVISOR);
   int temp2 = (mapCoord.y - 32/RADAR_DIVISOR) / (IMAGE_HEIGHT / RADAR_DIVISOR);
@@ -778,4 +789,3 @@ return false;
 
 
 #endif //background.h
-

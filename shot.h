@@ -25,8 +25,8 @@ class Shot {
       dir=0;
       active=false;
     }  
-    void Shot::draw(bool bigB);
-    void Shot::explode();
+    void draw(bool bigB);
+    void explode();
 };
 void Shot::explode(){ //only if bigB?
   active=-18;
@@ -67,7 +67,7 @@ class Gun {
       coolDown=0;
       dmg=2;
     }
-    void Gun::shoot(vec2 pos, vec2 speed, byte dir){
+    void shoot(vec2 pos, vec2 speed, byte dir){
       byte temp=0;
       if (0==coolDown){ 
         for (int i=0;i<maxBullets;i++){                  
@@ -84,7 +84,7 @@ class Gun {
         }
       }     
     }
-    void Gun::draw(){
+    void draw(){
     for (int i=0;i<SHOTS_MAX;i++){
       if (shots[i].active!=0){      
         shots[i].draw(bigB);

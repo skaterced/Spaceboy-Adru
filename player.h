@@ -78,13 +78,13 @@ class Player {
       //justCollided=0;
       //engineV2=false;
     }
-    bool Player::draw();
-    void Player::drawFlames();
-    void Player::drawRetroFlames();
-    bool Player::checkcollision(); //return true if armor drops below 0 (but it's unsigned so >200)
-    void Player::checkShotscollision();
-    void Player::shoot();  
-    void Player::mapCenter(bool center); //, vec2 mapSize);
+    bool draw();
+    void drawFlames();
+    void drawRetroFlames();
+    //bool checkcollision(); //return true if armor drops below 0 (but it's unsigned so >200)
+    void checkShotscollision();
+    void shoot();  
+    void mapCenter(bool center); //, vec2 mapSize);
 };
 
 void Player::mapCenter(bool center) { //finalement, pas beoin de passer la taille en param, si?
@@ -231,10 +231,9 @@ bool Player::draw(){ //(return true if ship dies) ------------------------------
 }
 
 
-
- // all in background.h
+ /*
+  * // all in background.h now
 bool Player::checkcollision(){  //return true if armor drops below 0 (but it's unsigned so >200)
-/*
   vec2 temp=elementCollision(this->pos,invincible==1? 10:6,magn(this->speed)/10,1);
   if (temp!=vec2(0,0)){
     if (0x80!=(setup&0x80)){ //not in Race mode
@@ -261,8 +260,8 @@ bool Player::checkcollision(){  //return true if armor drops below 0 (but it's u
       target=temp;
     }
   }
-  return false;*/
-}
+  return false;
+}*/
 void Player::checkShotscollision(){ //not in shot.h because "background.h" needs "shots.h" 
   /*
   for (int i=0; i<SHOTS_MAX; i++){

@@ -272,7 +272,7 @@ void loop() {
        testEnnemi.pos=pointA;
        testPtrEl->update();
        //testEnnemies[0].update();
-/*
+/ *
       for (int i=0; i<5; i++){
         ab.fillCircle(pointB.x+2*((frame>>i)&0x07)-8,pointB.y+(((frame>>(i+1))&0x07)-4),2);  
       }

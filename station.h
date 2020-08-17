@@ -17,7 +17,7 @@ class Station {
       pos=_pos;
       blinking=0;
     }
-    void Station::draw();
+    void draw();
 };
 
 void drawPorthole(vec2 pos){

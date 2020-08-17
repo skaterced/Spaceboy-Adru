@@ -90,6 +90,7 @@ byte menu(byte state, Player* ship){
             //ship->gun.canHold=true;
             //ship->gun.multi=true;
             //return( STATE_GAME);
+          break;
           case 4:
             return( STATE_CREDIT);
           break;

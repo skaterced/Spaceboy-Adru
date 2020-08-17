@@ -1,6 +1,23 @@
 // File for temporary stuff
 
+/*
+Before cleaning the warnings 17.08.20: 
 
+Sketch uses 21898 bytes (76%) of program storage space. Maximum is 28672 bytes.
+Global variables use 2059 bytes (80%) of dynamic memory, leaving 501 bytes for local variables. Maximum is 2560 bytes.
+
+after cleanup:
+
+Sketch uses 21902 bytes (76%) of program storage space. Maximum is 28672 bytes.
+Global variables use 2059 bytes (80%) of dynamic memory, leaving 501 bytes for local variables. Maximum is 2560 bytes.
+
+after "Drawline loop" in drawRadar
+
+Sketch uses 21864 bytes (76%) of program storage space. Maximum is 28672 bytes.
+Global variables use 2091 bytes (81%) of dynamic memory, leaving 469 bytes for local variables. Maximum is 2560 bytes.
+
+*/
+ 
 /*************************  RACE MODE *************************************
  * in this mode you can't shoot anymore. A and B do the same as up and down.
  * you have to pass the 9 checkpoints in the right order (a compas will show 

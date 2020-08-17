@@ -45,6 +45,7 @@ byte menu(byte state, Player* ship){
     case 0:
       selector=0;
       state=STATE_MENU;
+    break;
     case STATE_MENU:
       ab.println(F("  Welcome to tutorial"));
       ab.println(F("   SpaceBoy"));
@@ -91,6 +92,7 @@ byte menu(byte state, Player* ship){
             //ship->gun.canHold=true;
             //ship->gun.multi=true;
             //return( STATE_GAME);
+          break;
           case 2:
             return( STATE_CREDIT);
           break;
