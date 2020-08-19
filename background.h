@@ -54,7 +54,7 @@ constexpr  byte RadarOffsetY1 [8] PROGMEM = {0,0,0,0,10,10,10,10};
 constexpr  byte RadarOffsetY2 [8] PROGMEM = {2,0,2,0,8,10,8,10};
 
 //const byte stars[STARS_TOT]={59,12,41,5,59,33,38,28,5,2,35,27,14,29,63,14,7,57,28,30,57,5,52,31,6,32,37,22,34,33,24,48,46,27,6,10,45,35,14,4,9}; //42 -> 21190
-const byte stars[STARS_TOT] ={59,12,41,5,59,33,38,28,5,2,35,27,14,29,63,14,7,57,28,30,57,5,52,31,6,32,37,22,34,33,24,48,46,27,6,10,45,35,14,4,9,39,49,63,10,25,52,41,10,52,53,23,13,2,40,57,0};//,48,26,43,41,30,3,61};//,0,17,58,28,48,18,6}; //72 -> 21220
+const byte stars[STARS_TOT] PROGMEM ={59,12,41,5,59,33,38,28,5,2,35,27,14,29,63,14,7,57,28,30,57,5,52,31,6,32,37,22,34,33,24,48,46,27,6,10,45,35,14,4,9,39,49,63,10,25,52,41,10,52,53,23,13,2,40,57,0};//,48,26,43,41,30,3,61};//,0,17,58,28,48,18,6}; //72 -> 21220
 
 Meteor met[NBMAX_METEOR]; //not sure if there will be meteors in Race Mode but we never know
 #ifdef RACE_MODE
@@ -346,7 +346,7 @@ void drawStars() {
         temp=0;    
       for (int k = 0; k < STARS_PER_SCREEN ; k++) {
         //ab.drawPixel(mapCoord.x + i * IMAGE_WIDTH + random(128), mapCoord.y + j * IMAGE_HEIGHT + random(64)); //far too slow
-        ab.drawPixel(mapCoord.x + i * IMAGE_WIDTH + 2*stars[(temp*STARS_PER_SCREEN+k)], mapCoord.y + j * IMAGE_HEIGHT + stars[temp*STARS_PER_SCREEN+k+1]);
+        ab.drawPixel(mapCoord.x + i * IMAGE_WIDTH + 2*pgm_read_byte(&stars[(temp*STARS_PER_SCREEN+k)]), mapCoord.y + j * IMAGE_HEIGHT + pgm_read_byte(&stars[temp*STARS_PER_SCREEN+k+1]));
       }
     }
   }
@@ -365,8 +365,9 @@ void drawRadar() {
   if (ab.everyXFrames(3)) //3
     fastBlinking = !fastBlinking;*/
   //if (ab.everyXFrames(3)){
-  if (++blinking>0x0E)
-    blinking=0;
+  blinking++; // no need to reinit
+  //if (++blinking>0x0E)
+    //blinking=0;
   //}
   
   ab.fillRect (RADAR_POSX, RADAR_POSY, 11, 9); //(2,54,21,9);
