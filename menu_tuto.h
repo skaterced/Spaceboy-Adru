@@ -112,14 +112,14 @@ byte menu(byte state, Player* ship){
     break;
 
     case STATE_CREDIT:
-      ab.println("");
-      ab.println("Written by");
-      ab.println("   C" "\x82" "dric Martin");
-      ab.println("");
-      ab.println("  Mai 2020");
-      ab.println("");
-      ab.println("");
-      ab.println("A or B: back");
+      ab.println("\n"
+                 "Written by"
+                 "   C" "\x82" "dric Martin\n"
+                 "\n"
+                 "  Mai 2020\n"
+                 "\n"
+                 "\n"
+                 "A or B: back");
 
       if (ab.justPressed(A_BUTTON) || ab.justPressed(B_BUTTON))
         return( STATE_MENU);
@@ -130,9 +130,9 @@ byte menu(byte state, Player* ship){
     case STATE_SHOP:  //sounds like skate shop... makes me wanna pop some kickflips...
 
       shopMsg(ship->money);
-      ab.println("  Repair");
-      ab.println("  Gun upgrade");
-      ab.println("  Devices");      
+      ab.print("  Repair\n"
+               "  Gun upgrade\n"
+               "  Devices");    
       //ab.println("  New Ship");
 
       if (ab.justPressed(UP_BUTTON)) {
@@ -198,9 +198,9 @@ byte menu(byte state, Player* ship){
     case STATE_SHOP_GUN :  //sounds like "click clack... BOOOOOOM"
 
       shopMsg(ship->money);
-      ab.println("  Big Bullets  40");
-      ab.println("  Auto Fire    60");
-      ab.println("  Multiple     80");      
+      ab.println("  Big Bullets  40\n"
+                 "  Auto Fire    60\n"                 
+                 "  Multiple     80");    
       //ab.println("  New Ship");
 
       ab.fillRect(2,26+8*selector,3,2);
@@ -252,9 +252,9 @@ byte menu(byte state, Player* ship){
  * L_________________ EngineV2
      */
           shopMsg(ship->money);
-      ab.println("  Radar     20");
-      ab.println("  Shield    60");
-      ab.println("  Antenna   80");      
+      ab.print("  Radar     20\n"
+               "  Shield    60\n"
+               "  Antenna   80");      
       //ab.println("  New Ship");
 
       ab.fillRect(2,26+8*selector,3,2);

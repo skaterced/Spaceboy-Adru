@@ -2,7 +2,7 @@
 
 /*
 Before cleaning the warnings 17.08.20: 
-
+(tuto_mode)
 Sketch uses 21898 bytes (76%) of program storage space. Maximum is 28672 bytes.
 Global variables use 2059 bytes (80%) of dynamic memory, leaving 501 bytes for local variables. Maximum is 2560 bytes.
 
@@ -10,11 +10,17 @@ after cleanup:
 
 Sketch uses 21902 bytes (76%) of program storage space. Maximum is 28672 bytes.
 Global variables use 2059 bytes (80%) of dynamic memory, leaving 501 bytes for local variables. Maximum is 2560 bytes.
-
 after "Drawline loop" in drawRadar
+Sketch uses 21840 bytes (76%) of program storage space. Maximum is 28672 bytes.
+Global variables use 2059 bytes (80%) of dynamic memory, leaving 501 bytes for local variables. Maximum is 2560 bytes.
+after changing radar blinking
+Sketch uses 21788 bytes (75%) of program storage space. Maximum is 28672 bytes.
+Global variables use 2060 bytes (80%) of dynamic memory, leaving 500 bytes for local variables. Maximum is 2560 bytes.
 
-Sketch uses 21864 bytes (76%) of program storage space. Maximum is 28672 bytes.
-Global variables use 2091 bytes (81%) of dynamic memory, leaving 469 bytes for local variables. Maximum is 2560 bytes.
+normal mode
+Sketch uses 24930 bytes (86%) of program storage space. Maximum is 28672 bytes.
+Global variables use 2278 bytes (88%) of dynamic memory, leaving 282 bytes for local variables. Maximum is 2560 bytes.
+
 
 */
  

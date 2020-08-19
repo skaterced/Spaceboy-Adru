@@ -28,7 +28,7 @@ byte selector=0;
 //#define RACE_MODE 
 //#define BILLARD_MODE
 #define STORY_MODE  // for Story Mode this one must be defined along with one of the following
-#define STORY_MODE_TUTO
+//#define STORY_MODE_TUTO
 //#define STORY_MODE_lvl1
 
 // 24698, 2349 bytes used before splitting

@@ -8,7 +8,7 @@
 
 #define SPEED_MAX 160
 //#define SPEED_DIVISOR -> in globals.h
-
+#define MONEY_INIT 30 //for now
 #define ARMOR_MAX 50
 #define SHIELD_MAX 250
 
@@ -63,7 +63,7 @@ class Player {
       this->pos.x=x;
       this->pos.y=y;
       this->dir=dir;
-      money=30;      //for now
+      money=MONEY_INIT;
       lives=3;
       //this->coolDown=0;
       this->turnTimer=0;
